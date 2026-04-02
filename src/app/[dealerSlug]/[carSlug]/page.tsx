@@ -21,16 +21,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!profile || !car) return {};
 
-  const carName = `${car.make} ${car.model}${car.year ? ` ${car.year}` : ""}`;
-  const priceStr = car.price ? formatPrice(car.price) : "Zapytaj o cenę";
-  const title = `${carName} — ${priceStr}`;
+  const carName = `${car.make} ${car.model}${car.year ? ` (${car.year})` : ""}`;
+  const priceStr = car.price ? `${formatPrice(car.price)} PLN` : "Zapytaj o cenę";
+  const title = `${carName} - ${priceStr} | ${profile.business_name}`;
   const description = `${carName}${car.mileage ? `, ${car.mileage.toLocaleString("pl-PL")} km` : ""}${car.fuel_type ? `, ${car.fuel_type}` : ""}. Sprawdź ogłoszenie w ${profile.business_name}${profile.city ? `, ${profile.city}` : ""}.`;
 
   return {
     title,
     description,
     openGraph: {
-      title: `${car.make} ${car.model} | ${priceStr}`,
+      title,
       description,
       type: "website",
       images: car.images?.[0]
@@ -88,6 +88,7 @@ export default async function CarDetailPage({ params }: Props) {
               {car.price && !car.is_sold && (
                 <div className="car-detail__price">
                   {formatPrice(car.price)}
+                  <span className="car-detail__price-currency">PLN</span>
                 </div>
               )}
               {car.is_sold && (
@@ -103,6 +104,23 @@ export default async function CarDetailPage({ params }: Props) {
               <div className="car-detail__description">
                 <h2>Opis</h2>
                 <p>{car.description}</p>
+              </div>
+            )}
+
+            {/* CROSS-SELLING: Uslugi Dodatkowe */}
+            {(profile.has_towing || profile.has_buying) && (
+              <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
+                <h3 style={{ fontSize: '1.0625rem', fontWeight: 600, marginBottom: '0.75rem' }}>Usługi zadilerowane dla Ciebie</h3>
+                {profile.has_towing && (
+                  <div style={{ background: '#eff6ff', padding: '1rem', borderRadius: '0.75rem', border: '1px solid #bfdbfe', marginBottom: '0.5rem' }}>
+                    <p style={{ fontWeight: 600, color: '#1e40af', margin: 0 }}>🚨 Potrzebna Laweta? Zadzwoń: {profile.contact_phone}</p>
+                  </div>
+                )}
+                {profile.has_buying && (
+                  <div style={{ background: '#f0fdf4', padding: '1rem', borderRadius: '0.75rem', border: '1px solid #bbf7d0' }}>
+                    <p style={{ fontWeight: 600, color: '#166534', margin: 0 }}>💰 Skupujemy Auta za Gotówkę. Kliknij po wycenę</p>
+                  </div>
+                )}
               </div>
             )}
           </div>

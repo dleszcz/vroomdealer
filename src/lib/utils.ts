@@ -7,8 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatPrice(price: number): string {
   return new Intl.NumberFormat("pl-PL", {
-    style: "currency",
-    currency: "PLN",
+    style: "decimal",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(price).replace(/\s|\u202f|\u00a0/g, " ");

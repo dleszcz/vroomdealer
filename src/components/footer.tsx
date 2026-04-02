@@ -2,15 +2,10 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="footer" id="footer">
-      <div className="footer__container">
-        <Link href="/" className="footer__brand">
-          <span className="footer__logo">V</span>
-          <span className="footer__brand-text">VroomDealer</span>
-        </Link>
-        <p className="footer__copy">
-          © {new Date().getFullYear()} VroomDealer.pl — Platforma sprzedażowa
-          dla komisów samochodowych.
+    <footer className="footer" id="footer" style={{ borderTop: 'none', background: 'transparent' }}>
+      <div className="footer__container" style={{ justifyContent: 'center', padding: '1.5rem 1.25rem', display: 'flex', width: '100%' }}>
+        <p className="footer__powered-by" style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', textAlign: 'center', margin: 0 }}>
+          Powered by <strong>vroomdealer.pl</strong>
         </p>
       </div>
     </footer>

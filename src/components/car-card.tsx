@@ -66,7 +66,7 @@ export function CarCard({ car, dealerSlug }: CarCardProps) {
         </div>
 
         {car.price && (
-          <div className="car-card__price">{formatPrice(car.price)}</div>
+          <div className="car-card__price">{formatPrice(car.price)} PLN</div>
         )}
       </div>
     </Link>
