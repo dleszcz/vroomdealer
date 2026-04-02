@@ -23,11 +23,10 @@ export default function HomePage() {
           {/* Left: Text */}
           <div className="landing__text">
             <h1 className="landing__title">
-              Sprzedawaj auta szybciej. Twój własny salon online w&nbsp;30&nbsp;sekund.
+              Twój prywatny system sprzedaży i pozyskiwania samochodów.
             </h1>
             <p className="landing__subtitle">
-              Wykorzystaj Meta Pixel i profesjonalne landingi, aby Twoje oferty
-              nie ginęły w tłumie. Budujemy przyszłość marketingu dla komisów.
+              Zbieraj bezpośrednie telefony od kupców, buduj własną markę i automatycznie generuj zapytania o skup aut.
             </p>
             <a href={telUrl} className="landing__cta">
               Zadzwoń i zapytaj o dostęp
