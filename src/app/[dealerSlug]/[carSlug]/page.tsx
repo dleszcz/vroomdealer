@@ -6,7 +6,7 @@ import { formatPrice } from "@/lib/utils";
 import { CarGallery } from "@/components/car-gallery";
 import { CarSpecs } from "@/components/car-specs";
 import { VehicleSchema } from "@/components/vehicle-schema";
-import { FloatingWhatsApp } from "@/components/floating-whatsapp";
+import { ContactBar } from "@/components/contact-bar";
 
 type Props = {
   params: Promise<{ dealerSlug: string; carSlug: string }>;
@@ -22,24 +22,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!profile || !car) return {};
 
   const carName = `${car.make} ${car.model}${car.year ? ` ${car.year}` : ""}`;
-  const priceStr = car.price ? ` — ${formatPrice(car.price)}` : "";
-  const title = `${carName}${priceStr}`;
+  const priceStr = car.price ? formatPrice(car.price) : "Zapytaj o cenę";
+  const title = `${carName} — ${priceStr}`;
   const description = `${carName}${car.mileage ? `, ${car.mileage.toLocaleString("pl-PL")} km` : ""}${car.fuel_type ? `, ${car.fuel_type}` : ""}. Sprawdź ogłoszenie w ${profile.business_name}${profile.city ? `, ${profile.city}` : ""}.`;
 
   return {
     title,
     description,
     openGraph: {
-      title: `${carName}${priceStr} | ${profile.business_name}`,
+      title: `${car.make} ${car.model} | ${priceStr}`,
       description,
       type: "website",
       images: car.images?.[0]
         ? [
             {
               url: car.images[0],
-              width: 800,
-              height: 600,
-              alt: carName,
+              width: 1200,
+              height: 630,
+              alt: title,
             },
           ]
         : [],
@@ -109,12 +109,8 @@ export default async function CarDetailPage({ params }: Props) {
         </div>
       </article>
 
-      {profile.whatsapp_number && !car.is_sold && (
-        <FloatingWhatsApp
-          phone={profile.whatsapp_number}
-          car={car}
-          slug={dealerSlug}
-        />
+      {(!car.is_sold) && (
+        <ContactBar profile={profile} car={car} />
       )}
     </>
   );

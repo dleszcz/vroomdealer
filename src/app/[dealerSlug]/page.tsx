@@ -4,7 +4,7 @@ import { getProfile, getCars } from "@/lib/data";
 import { CarCard } from "@/components/car-card";
 import { DealerServices } from "@/components/dealer-services";
 import { DealerSchema } from "@/components/vehicle-schema";
-import { FloatingWhatsApp } from "@/components/floating-whatsapp";
+import { ContactBar } from "@/components/contact-bar";
 
 type Props = {
   params: Promise<{ dealerSlug: string }>;
@@ -53,7 +53,7 @@ export default async function DealerPage({ params }: Props) {
         description={profile.business_description}
         address={profile.address}
         city={profile.city}
-        phone={profile.phone_number}
+        phone={profile.contact_phone}
         url={`${baseUrl}/${profile.slug}`}
       />
 
@@ -103,11 +103,8 @@ export default async function DealerPage({ params }: Props) {
         />
       </div>
 
-      {profile.whatsapp_number && (
-        <FloatingWhatsApp
-          phone={profile.whatsapp_number}
-          slug={dealerSlug}
-        />
+      {(profile.whatsapp_number || profile.contact_phone) && (
+        <ContactBar profile={profile} />
       )}
     </>
   );

@@ -19,11 +19,11 @@ export default async function DealerLayout({
   }
 
   return (
-    <>
+    <div className="dealer-layout">
       {profile.pixel_id && <MetaPixel pixelId={profile.pixel_id} />}
       <DealerHeader profile={profile} />
-      <main>{children}</main>
+      <main className="dealer-main">{children}</main>
       <Footer />
-    </>
+    </div>
   );
 }

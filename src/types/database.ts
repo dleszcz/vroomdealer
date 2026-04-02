@@ -6,7 +6,7 @@ export interface Profile {
   logo_url: string | null;
   pixel_id: string | null;
   whatsapp_number: string | null;
-  phone_number: string | null;
+  contact_phone: string | null;
   address: string | null;
   city: string | null;
   has_towing: boolean;

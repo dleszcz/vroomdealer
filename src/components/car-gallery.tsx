@@ -13,13 +13,12 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
 
   if (!images || images.length === 0) {
     return (
-      <div className="gallery__empty">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <div className="gallery__empty" style={{ background: 'var(--color-bg-subtle)' }}>
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
           <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
           <path d="M5 17H3v-6l2-5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0H9m-6-6h15m-6 0V6" />
         </svg>
-        <p>Brak zdjęć</p>
       </div>
     );
   }
@@ -27,18 +26,20 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
   return (
     <div className="gallery" id="car-gallery">
       {/* Main image */}
-      <div className="gallery__main">
+      <div className="gallery__main" style={{ borderRadius: 'var(--radius-lg)' }}>
         <Image
           src={images[activeIndex]}
           alt={`${alt} — zdjęcie ${activeIndex + 1}`}
           fill
+          priority
           sizes="(max-width: 768px) 100vw, 60vw"
           style={{ objectFit: "cover" }}
-          preload={activeIndex === 0}
           className="gallery__main-image"
+          placeholder="blur"
+          blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9Ijk5OSIgaGVpZ2h0PSI5OTkiIGZpbGw9IiNmMTRmMTVmOCIvPjwvc3ZnPg=="
         />
         {images.length > 1 && (
-          <div className="gallery__counter">
+          <div className="gallery__counter" style={{ background: 'rgba(0,0,0,0.7)', padding: '0.375rem 0.875rem', fontSize: '0.8125rem' }}>
             {activeIndex + 1} / {images.length}
           </div>
         )}
@@ -51,7 +52,7 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
               }
               aria-label="Poprzednie zdjęcie"
             >
-              ‹
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             </button>
             <button
               className="gallery__nav gallery__nav--next"
@@ -60,7 +61,7 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
               }
               aria-label="Następne zdjęcie"
             >
-              ›
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
             </button>
           </>
         )}
@@ -68,11 +69,12 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="gallery__thumbs">
+        <div className="gallery__thumbs" style={{ gap: '0.75rem', marginTop: '1rem', scrollSnapType: 'x mandatory' }}>
           {images.map((src, i) => (
             <button
               key={i}
               className={`gallery__thumb ${i === activeIndex ? "gallery__thumb--active" : ""}`}
+              style={{ width: '80px', height: '60px', scrollSnapAlign: 'start', borderRadius: 'var(--radius-sm)' }}
               onClick={() => setActiveIndex(i)}
               aria-label={`Zdjęcie ${i + 1}`}
             >
@@ -81,7 +83,9 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
                 alt={`${alt} — miniatura ${i + 1}`}
                 fill
                 sizes="80px"
-                style={{ objectFit: "cover" }}
+                style={{ objectFit: "cover", opacity: i === activeIndex ? 1 : 0.6 }}
+                placeholder="blur"
+                blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9Ijk5OSIgaGVpZ2h0PSI5OTkiIGZpbGw9IiNmMTRmMTVmOCIvPjwvc3ZnPg=="
               />
             </button>
           ))}

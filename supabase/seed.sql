@@ -3,7 +3,7 @@
 -- Wklej w Supabase Dashboard > SQL Editor
 -- ============================================================
 
-INSERT INTO profiles (id, slug, business_name, business_description, whatsapp_number, phone_number, address, city, has_towing, has_buying)
+INSERT INTO profiles (id, slug, business_name, business_description, whatsapp_number, contact_phone, address, city, has_towing, has_buying)
 VALUES (
   '550e8400-e29b-41d4-a716-446655440000',
   'komis-maciek',
@@ -23,7 +23,7 @@ INSERT INTO cars (profile_id, slug, make, model, year, price, mileage, fuel_type
   'bmw-320d-xdrive-2019-diesel',
   'BMW', '320d xDrive', 2019, 89000, 145000, 'Diesel', '2.0 TDI 190KM', 'Automatyczna', 'Czarny Metalik',
   'BMW 320d xDrive w doskonałym stanie technicznym i wizualnym. Samochód serwisowany w ASO, bezwypadkowy. Wyposażenie: skórzana tapicerka, nawigacja, kamera cofania, podgrzewane fotele, LED, asystent pasa ruchu. Komplet opon zimowych na alufelgach w cenie.',
-  ARRAY['https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop', 'https://images.unsplash.com/photo-1520050206757-80cc65483542?w=800&h=600&fit=crop', 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop'],
+  ARRAY['https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop', 'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=800&h=600&fit=crop', 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop'],
   false, true
 ),
 (
@@ -31,7 +31,7 @@ INSERT INTO cars (profile_id, slug, make, model, year, price, mileage, fuel_type
   'volkswagen-golf-viii-2021-benzyna',
   'Volkswagen', 'Golf VIII', 2021, 95000, 67000, 'Benzyna', '1.5 TSI 150KM', 'Manualna', 'Biały',
   'Volkswagen Golf VIII w wersji Style. Pierwszy właściciel, serwisowany w ASO. Wyposażenie premium: Digital Cockpit Pro, nawigacja Discover Pro, LED Matrix, ACC, Lane Assist, podgrzewane fotele.',
-  ARRAY['https://images.unsplash.com/photo-1471444928139-48c5bf5173f8?w=800&h=600&fit=crop', 'https://images.unsplash.com/photo-1549317661-bd32c8ce0afa?w=800&h=600&fit=crop'],
+  ARRAY['https://images.unsplash.com/photo-1471444928139-48c5bf5173f8?w=800&h=600&fit=crop', 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop'],
   false, true
 ),
 (

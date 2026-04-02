@@ -21,7 +21,7 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: var(--font-geist-sans), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --max-width: 1200px;
   --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -195,6 +195,20 @@ img {
 
 @media (max-width: 480px) {
   .dealer-header__phone span { display: none; }
+}
+
+/* ============================================================
+   DEALER LAYOUT
+   ============================================================ */
+.dealer-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 5.5rem; /* Zabezpieczenie przed ucięciem stopki przez fixed ContactBar */
+}
+
+.dealer-main {
+  flex: 1;
 }
 
 /* ============================================================
@@ -404,7 +418,7 @@ img {
 .car-detail {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 1.5rem 1.25rem 6rem;
+  padding: 1.5rem 1.25rem 4rem; /* Zmniejszony dolny padding, bo layout ma już padding-bottom na ContactBar */
 }
 
 .car-detail__grid {
@@ -628,38 +642,74 @@ img {
 }
 
 /* ============================================================
-   FLOATING WHATSAPP
+   CONTACT BAR (DUAL CTA)
    ============================================================ */
-.floating-whatsapp {
+.contact-bar {
   position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   z-index: 50;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1rem 1.25rem;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.04);
+}
+
+.contact-bar__container {
+  max-width: 600px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.contact-bar__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
-  background: var(--color-accent);
+  height: 52px;
+  border-radius: var(--radius-md);
   color: white;
-  border-radius: 9999px;
   font-weight: 600;
   font-size: 0.9375rem;
-  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
-  transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+  transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition);
 }
 
-.floating-whatsapp:hover {
-  transform: scale(1.04);
+.contact-bar__btn:hover {
+  transform: translateY(-2px);
+}
+
+.contact-bar__call {
+  flex: 2; /* approx 66% width */
+  background: var(--color-brand);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+  font-size: 1.0625rem;
+}
+
+.contact-bar__call:hover {
+  background: var(--color-brand-light);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
+}
+
+.contact-bar__wa {
+  flex: 1; /* approx 33% width */
+  background: var(--color-accent);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.contact-bar__wa:hover {
   background: var(--color-accent-hover);
-  box-shadow: 0 6px 28px rgba(37, 211, 102, 0.45);
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
 }
 
-@media (max-width: 480px) {
-  .floating-whatsapp {
-    bottom: 1rem;
-    left: 1rem;
-    right: 1rem;
-    justify-content: center;
+@media (max-width: 380px) {
+  .contact-bar__btn span {
+    display: none;
   }
 }
 

@@ -12,7 +12,7 @@ CREATE TABLE profiles (
   logo_url text,                      -- URL logo
   pixel_id text,                      -- Meta Pixel ID
   whatsapp_number text,               -- Numer WhatsApp (format: 48123456789)
-  phone_number text,                  -- Numer telefonu (wyświetlany)
+  contact_phone text,                 -- Numer telefonu do dzwonienia
   address text,                       -- Adres ulicy
   city text,                          -- Miasto
   has_towing boolean DEFAULT false,   -- Sekcja "Laweta"

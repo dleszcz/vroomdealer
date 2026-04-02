@@ -13,7 +13,7 @@ export const seedProfile: Profile = {
   logo_url: null,
   pixel_id: null,
   whatsapp_number: "48123456789",
-  phone_number: "+48 123 456 789",
+  contact_phone: "+48 123 456 789",
   address: "ul. Krakowska 123",
   city: "Kraków",
   has_towing: true,
@@ -39,7 +39,7 @@ export const seedCars: Car[] = [
       "BMW 320d xDrive w doskonałym stanie technicznym i wizualnym. Samochód serwisowany w ASO, bezwypadkowy. Wyposażenie: skórzana tapicerka, nawigacja, kamera cofania, podgrzewane fotele, LED, asystent pasa ruchu. Komplet opon zimowych na alufelgach w cenie.",
     images: [
       "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1520050206757-80cc65483542?w=800&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=800&h=600&fit=crop",
       "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop",
     ],
     is_sold: false,
@@ -63,7 +63,7 @@ export const seedCars: Car[] = [
       "Volkswagen Golf VIII w wersji Style. Pierwszy właściciel, serwisowany w ASO. Wyposażenie premium: Digital Cockpit Pro, nawigacja Discover Pro, LED Matrix, ACC, Lane Assist, podgrzewane fotele.",
     images: [
       "https://images.unsplash.com/photo-1471444928139-48c5bf5173f8?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1549317661-bd32c8ce0afa?w=800&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop",
     ],
     is_sold: false,
     is_featured: true,
