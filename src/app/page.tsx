@@ -23,10 +23,10 @@ export default function HomePage() {
           {/* Left: Text */}
           <div className="landing__text">
             <h1 className="landing__title">
-              Twój prywatny system sprzedaży i pozyskiwania samochodów.
+              Twój prywatny system sprzedaży i pozyskiwania aut.
             </h1>
             <p className="landing__subtitle">
-              Zbieraj bezpośrednie telefony od kupców, buduj własną markę i automatycznie generuj zapytania o skup aut.
+              Zbieraj bezpośrednie telefony od kupców, buduj własną markę i automatycznie generuj zapytania o skup samochodów.
             </p>
             <a href={telUrl} className="landing__cta">
               Zadzwoń i zapytaj o dostęp
