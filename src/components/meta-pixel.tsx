@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 
@@ -13,19 +13,19 @@ declare global {
 
 export function MetaPixel({ pixelId }: { pixelId: string }) {
   const pathname = usePathname();
-
-  const [isInitialRender, setIsInitialRender] = useState(true);
+  const firstRender = useRef(true);
 
   useEffect(() => {
-    if (isInitialRender) {
-      setIsInitialRender(false);
+    // Skip tracking on initial render because it's handled by the <Script> tag below
+    if (firstRender.current) {
+      firstRender.current = false;
       return;
     }
 
     if (typeof window !== "undefined" && window.fbq) {
       window.fbq("track", "PageView");
     }
-  }, [pathname, isInitialRender]);
+  }, [pathname]);
 
   return (
     <Script

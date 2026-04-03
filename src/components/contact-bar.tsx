@@ -39,7 +39,7 @@ export function ContactBar({ profile, car }: ContactBarProps) {
         value: car.price || 0,
         currency: "PLN"
       } : undefined);
-      console.log("➡️ Meta Pixel: ClickWhatsApp tracked");
+      console.log("💬 Meta Pixel: ClickWhatsApp tracked");
     }
   };
 
@@ -51,7 +51,7 @@ export function ContactBar({ profile, car }: ContactBarProps) {
         value: car.price || 0,
         currency: "PLN"
       } : undefined);
-      console.log("➡️ Meta Pixel: ClickCall tracked");
+      console.log("📞 Meta Pixel: ClickCall tracked");
     }
   };
 
