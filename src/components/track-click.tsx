@@ -13,7 +13,7 @@ export function TrackClick({ eventName, eventParams, children, className }: Trac
   const handleClick = () => {
     if (typeof window !== "undefined" && window.fbq) {
       window.fbq("trackCustom", eventName, eventParams);
-      console.log(`➡️ Meta Pixel: Custom Event tracked: ${eventName}`, eventParams);
+      console.log(`🎯 Meta Pixel: Custom Event tracked: ${eventName}`, eventParams);
     }
   };
 
