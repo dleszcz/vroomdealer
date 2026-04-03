@@ -26,12 +26,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `${carName} - ${priceStr} | ${profile.business_name}`;
   const description = `${carName}${car.mileage ? `, ${car.mileage.toLocaleString("pl-PL")} km` : ""}${car.fuel_type ? `, ${car.fuel_type}` : ""}. Sprawdź ogłoszenie w ${profile.business_name}${profile.city ? `, ${profile.city}` : ""}.`;
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://vroomdealer.pl";
+  const pageUrl = `${baseUrl}/${dealerSlug}/${carSlug}`;
+
   return {
     title,
     description,
     openGraph: {
       title,
       description,
+      url: pageUrl,
       type: "website",
       images: car.images?.[0]
         ? [
@@ -43,6 +47,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             },
           ]
         : [],
+    },
+    facebook: {
+      appId: process.env.NEXT_PUBLIC_FB_APP_ID || "",
     },
   };
 }

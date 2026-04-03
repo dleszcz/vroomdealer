@@ -21,13 +21,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     profile.business_description ||
     `Sprawdź ofertę samochodów w ${profile.business_name}. Uczciwy komis samochodowy${profile.city ? ` w ${profile.city}` : ""}.`;
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://vroomdealer.pl";
+  const url = `${baseUrl}/${dealerSlug}`;
+
   return {
     title,
     description,
     openGraph: {
       title,
       description,
+      url,
       type: "website",
+    },
+    facebook: {
+      appId: process.env.NEXT_PUBLIC_FB_APP_ID || "",
     },
   };
 }

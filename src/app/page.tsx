@@ -1,3 +1,19 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "VroomDealer.pl — Twój prywatny system sprzedaży i pozyskiwania aut",
+  description: "Zbieraj bezpośrednie telefony od kupców, buduj własną markę i automatycznie generuj zapytania o skup samochodów.",
+  openGraph: {
+    title: "VroomDealer.pl — Twój prywatny system sprzedaży i pozyskiwania aut",
+    description: "Zbieraj bezpośrednie telefony od kupców, buduj własną markę i automatycznie generuj zapytania o skup samochodów.",
+    url: "https://vroomdealer.pl",
+    type: "website",
+  },
+  facebook: {
+    appId: process.env.NEXT_PUBLIC_FB_APP_ID || "",
+  },
+};
+
 export default function HomePage() {
   const phone = "48609525935";
   const whatsappMsg = encodeURIComponent(
@@ -40,33 +56,42 @@ export default function HomePage() {
           {/* Right: Visual mockup */}
           <div className="landing__visual">
             <div className="landing__visual-bg" />
-            <div className="landing__visual-card">
-              <img
-                src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&h=1200&fit=crop"
-                alt="Wnętrze luksusowego samochodu"
-              />
-              <div className="landing__visual-gradient" />
+            
+            <div className="landing__visual-container">
+              <div className="landing__visual-card">
+                <img
+                  src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&h=1200&fit=crop"
+                  alt="Wnętrze luksusowego samochodu"
+                />
+                <div className="landing__visual-gradient" />
+              </div>
 
-              {/* Floating stats */}
-              {/* <div className="landing__stats">
+              {/* Floating App Mockup Elements */}
+              <div className="landing__stats">
                 <div className="landing__stats-header">
-                  <span className="landing__stats-label">Status systemu</span>
+                  <span className="landing__stats-label">PULPIT SPRZEDAWCY</span>
                   <span className="landing__stats-live">
                     <span className="landing__stats-dot" />
-                    Podgląd na żywo
+                    Live
                   </span>
                 </div>
                 <div className="landing__stats-grid">
                   <div className="landing__stats-item">
-                    <div className="landing__stats-item-label">Konwersja</div>
-                    <div className="landing__stats-item-value">+320%</div>
+                    <div className="landing__stats-item-label">WYŚWIETLEŃ TEL.</div>
+                    <div className="landing__stats-item-value">124</div>
                   </div>
                   <div className="landing__stats-item">
-                    <div className="landing__stats-item-label">Czas konfiguracji</div>
-                    <div className="landing__stats-item-value">30s</div>
+                    <div className="landing__stats-item-label">ZAPYTANIA 24H</div>
+                    <div className="landing__stats-item-value">+8</div>
                   </div>
                 </div>
-              </div> */}
+              </div>
+
+              {/* Status Toast Mockup */}
+              <div className="landing__visual-toast">
+                <div className="landing__visual-toast-icon">✓</div>
+                <span>Oferta widoczna w Google</span>
+              </div>
             </div>
           </div>
         </div>
