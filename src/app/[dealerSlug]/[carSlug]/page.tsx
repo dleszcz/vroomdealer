@@ -119,14 +119,22 @@ export default async function CarDetailPage({ params }: Props) {
               <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
                 <h3 style={{ fontSize: '1.0625rem', fontWeight: 600, marginBottom: '0.75rem' }}>Usługi zadilerowane dla Ciebie</h3>
                 {profile.has_towing && (
-                  <div style={{ background: '#eff6ff', padding: '1rem', borderRadius: '0.75rem', border: '1px solid #bfdbfe', marginBottom: '0.5rem' }}>
-                    <p style={{ fontWeight: 600, color: '#1e40af', margin: 0 }}>🚨 Potrzebna Laweta? Zadzwoń: {profile.contact_phone}</p>
-                  </div>
+                  <a
+                    href={`tel:${profile.contact_phone}`}
+                    className="cta-banner cta-banner--towing"
+                  >
+                    <p>🚨 Potrzebna Laweta? Zadzwoń: {profile.contact_phone}</p>
+                  </a>
                 )}
                 {profile.has_buying && (
-                  <div style={{ background: '#f0fdf4', padding: '1rem', borderRadius: '0.75rem', border: '1px solid #bbf7d0' }}>
-                    <p style={{ fontWeight: 600, color: '#166534', margin: 0 }}>💰 Skupujemy Auta za Gotówkę. Kliknij po wycenę</p>
-                  </div>
+                  <a
+                    href={`https://wa.me/${profile.whatsapp_number}?text=${encodeURIComponent("Dzień dobry, chciałbym wycenę mojego auta.")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cta-banner cta-banner--buying"
+                  >
+                    <p>💰 Skupujemy Auta za Gotówkę. Kliknij po wycenę</p>
+                  </a>
                 )}
               </div>
             )}

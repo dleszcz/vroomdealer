@@ -36,7 +36,7 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
           style={{ objectFit: "cover" }}
           className="gallery__main-image"
           placeholder="blur"
-          blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9Ijk5OSIgaGVpZ2h0PSI5OTkiIGZpbGw9IiNmMTRmMTVmOCIvPjwvc3ZnPg=="
+          blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjZjhmYWZjIi8+PC9zdmc+"
         />
         {images.length > 1 && (
           <div className="gallery__counter" style={{ background: 'rgba(0,0,0,0.7)', padding: '0.375rem 0.875rem', fontSize: '0.8125rem' }}>
@@ -85,7 +85,7 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
                 sizes="80px"
                 style={{ objectFit: "cover", opacity: i === activeIndex ? 1 : 0.6 }}
                 placeholder="blur"
-                blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9Ijk5OSIgaGVpZ2h0PSI5OTkiIGZpbGw9IiNmMTRmMTVmOCIvPjwvc3ZnPg=="
+                blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjZjhmYWZjIi8+PC9zdmc+"
               />
             </button>
           ))}
