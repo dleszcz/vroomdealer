@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 
@@ -14,11 +14,18 @@ declare global {
 export function MetaPixel({ pixelId }: { pixelId: string }) {
   const pathname = usePathname();
 
+  const [isInitialRender, setIsInitialRender] = useState(true);
+
   useEffect(() => {
-    if (window.fbq) {
+    if (isInitialRender) {
+      setIsInitialRender(false);
+      return;
+    }
+
+    if (typeof window !== "undefined" && window.fbq) {
       window.fbq("track", "PageView");
     }
-  }, [pathname]);
+  }, [pathname, isInitialRender]);
 
   return (
     <Script

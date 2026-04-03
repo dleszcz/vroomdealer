@@ -7,6 +7,8 @@ import { CarGallery } from "@/components/car-gallery";
 import { CarSpecs } from "@/components/car-specs";
 import { VehicleSchema } from "@/components/vehicle-schema";
 import { ContactBar } from "@/components/contact-bar";
+import { TrackViewContent } from "@/components/track-view-content";
+import { TrackClick } from "@/components/track-click";
 
 type Props = {
   params: Promise<{ dealerSlug: string; carSlug: string }>;
@@ -40,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: car.images?.[0]
         ? [
             {
-              url: car.images[0],
+              url: car.images[0].startsWith("http") ? car.images[0] : `${baseUrl}${car.images[0]}`,
               width: 1200,
               height: 630,
               alt: title,
@@ -48,8 +50,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           ]
         : [],
     },
-    facebook: {
-      appId: process.env.NEXT_PUBLIC_FB_APP_ID || "",
+    other: {
+      "fb:app_id": process.env.NEXT_PUBLIC_FB_APP_ID || "",
     },
   };
 }
@@ -116,23 +118,45 @@ export default async function CarDetailPage({ params }: Props) {
 
             {/* CROSS-SELLING: Uslugi Dodatkowe */}
             {(profile.has_towing || profile.has_buying) && (
-              <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
-                <h3 style={{ fontSize: '1.0625rem', fontWeight: 600, marginBottom: '0.75rem' }}>Usługi zadilerowane dla Ciebie</h3>
+              <div style={{ marginTop: '2rem', marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <h3 style={{ fontSize: '1.0625rem', fontWeight: 600, marginBottom: '0.25rem' }}>Usługi zadilerowane dla Ciebie</h3>
                 {profile.has_towing && (
-                  <div style={{ background: '#eff6ff', padding: '1rem', borderRadius: '0.75rem', border: '1px solid #bfdbfe', marginBottom: '0.5rem' }}>
-                    <p style={{ fontWeight: 600, color: '#1e40af', margin: 0 }}>🚨 Potrzebna Laweta? Zadzwoń: {profile.contact_phone}</p>
-                  </div>
+                  <TrackClick eventName="ClickTowing" eventParams={{ type: 'towing' }}>
+                    <a
+                      href={`tel:${profile.contact_phone?.replace(/\s/g, "")}`}
+                      className="cta-banner cta-banner--towing"
+                    >
+                      <p>🚨 Potrzebna Laweta? Zadzwoń: {profile.contact_phone}</p>
+                      <span className="cta-banner__action-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 12h14m-7-7 7 7-7 7" />
+                        </svg>
+                      </span>
+                    </a>
+                  </TrackClick>
                 )}
                 {profile.has_buying && (
-                  <div style={{ background: '#f0fdf4', padding: '1rem', borderRadius: '0.75rem', border: '1px solid #bbf7d0' }}>
-                    <p style={{ fontWeight: 600, color: '#166534', margin: 0 }}>💰 Skupujemy Auta za Gotówkę. Kliknij po wycenę</p>
-                  </div>
+                  <TrackClick eventName="ClickSMS" eventParams={{ type: 'buying' }}>
+                    <a
+                      href={`sms:${profile.contact_phone?.replace(/\s/g, "")}?body=${encodeURIComponent(`Dzień dobry, chciałbym wycenę mojego auta: ${carName} (${pageUrl})`)}`}
+                      className="cta-banner cta-banner--buying"
+                    >
+                      <p>💰 Skupujemy Auta za Gotówkę. Wyceń auto</p>
+                      <span className="cta-banner__action-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 12h14m-7-7 7 7-7 7" />
+                        </svg>
+                      </span>
+                    </a>
+                  </TrackClick>
                 )}
               </div>
             )}
           </div>
         </div>
       </article>
+
+      <TrackViewContent car={car} />
 
       {(!car.is_sold) && (
         <ContactBar profile={profile} car={car} />

@@ -11,7 +11,7 @@ export const seedProfile: Profile = {
   business_description:
     "Sprawdzony komis samochodowy w Krakowie. Oferujemy samochody osobowe i dostawcze z gwarancją. Każde auto przechodzi szczegółową kontrolę techniczną przed sprzedażą.",
   logo_url: null,
-  pixel_id: null,
+  pixel_id: "1636959447346992",
   whatsapp_number: "48123456789",
   contact_phone: "+48 123 456 789",
   address: "ul. Krakowska 123",

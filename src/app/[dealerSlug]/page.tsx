@@ -73,8 +73,14 @@ export default async function DealerPage({ params }: Props) {
           </div>
         )}
 
+        <DealerServices
+          hasTowing={profile.has_towing}
+          hasBuying={profile.has_buying}
+          contactPhone={profile.contact_phone}
+        />
+
         {availableCars.length > 0 ? (
-          <section>
+          <section style={{ marginTop: '3.5rem' }}>
             <h2 className="dealer-page__section-title">
               Dostępne samochody ({availableCars.length})
             </h2>
@@ -91,7 +97,7 @@ export default async function DealerPage({ params }: Props) {
         )}
 
         {soldCars.length > 0 && (
-          <section style={{ marginTop: "3rem", opacity: 0.7 }}>
+          <section style={{ marginTop: "3.5rem", opacity: 0.7 }}>
             <h2 className="dealer-page__section-title">
               Sprzedane ({soldCars.length})
             </h2>
@@ -102,12 +108,6 @@ export default async function DealerPage({ params }: Props) {
             </div>
           </section>
         )}
-
-        <DealerServices
-          hasTowing={profile.has_towing}
-          hasBuying={profile.has_buying}
-          whatsappNumber={profile.whatsapp_number}
-        />
       </div>
 
       {(profile.whatsapp_number || profile.contact_phone) && (
