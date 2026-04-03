@@ -65,33 +65,6 @@ export default function HomePage() {
                 />
                 <div className="landing__visual-gradient" />
               </div>
-
-              {/* Floating App Mockup Elements */}
-              <div className="landing__stats">
-                <div className="landing__stats-header">
-                  <span className="landing__stats-label">PULPIT SPRZEDAWCY</span>
-                  <span className="landing__stats-live">
-                    <span className="landing__stats-dot" />
-                    Live
-                  </span>
-                </div>
-                <div className="landing__stats-grid">
-                  <div className="landing__stats-item">
-                    <div className="landing__stats-item-label">WYŚWIETLEŃ TEL.</div>
-                    <div className="landing__stats-item-value">124</div>
-                  </div>
-                  <div className="landing__stats-item">
-                    <div className="landing__stats-item-label">ZAPYTANIA 24H</div>
-                    <div className="landing__stats-item-value">+8</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Status Toast Mockup */}
-              <div className="landing__visual-toast">
-                <div className="landing__visual-toast-icon">✓</div>
-                <span>Oferta widoczna w Google</span>
-              </div>
             </div>
           </div>
         </div>
