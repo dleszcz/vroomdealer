@@ -120,20 +120,28 @@ export default async function CarDetailPage({ params }: Props) {
                 <h3 style={{ fontSize: '1.0625rem', fontWeight: 600, marginBottom: '0.75rem' }}>Usługi zadilerowane dla Ciebie</h3>
                 {profile.has_towing && (
                   <a
-                    href={`tel:${profile.contact_phone}`}
+                    href={`tel:${profile.contact_phone?.replace(/\s/g, "")}`}
                     className="cta-banner cta-banner--towing"
                   >
                     <p>🚨 Potrzebna Laweta? Zadzwoń: {profile.contact_phone}</p>
+                    <span className="cta-banner__action-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14m-7-7 7 7-7 7" />
+                      </svg>
+                    </span>
                   </a>
                 )}
                 {profile.has_buying && (
                   <a
-                    href={`https://wa.me/${profile.whatsapp_number}?text=${encodeURIComponent("Dzień dobry, chciałbym wycenę mojego auta.")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={`sms:${profile.contact_phone?.replace(/\s/g, "")}?body=${encodeURIComponent(`Dzień dobry, chciałbym wycenę mojego auta: ${carName} (${pageUrl})`)}`}
                     className="cta-banner cta-banner--buying"
                   >
-                    <p>💰 Skupujemy Auta za Gotówkę. Kliknij po wycenę</p>
+                    <p>💰 Skupujemy Auta za Gotówkę. Wyceń auto</p>
+                    <span className="cta-banner__action-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14m-7-7 7 7-7 7" />
+                      </svg>
+                    </span>
                   </a>
                 )}
               </div>
