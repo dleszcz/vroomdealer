@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { getProfile } from "@/lib/data";
+import { resolveTenant } from "@/lib/tenant";
+import { BrandProvider } from "@/components/brand-provider";
 import { DealerHeader } from "@/components/dealer-header";
 import { Footer } from "@/components/footer";
 import { MetaPixel } from "@/components/meta-pixel";
@@ -12,18 +13,20 @@ export default async function DealerLayout({
   params: Promise<{ dealerSlug: string }>;
 }) {
   const { dealerSlug } = await params;
-  const profile = await getProfile(dealerSlug);
+  const tenant = await resolveTenant({ slug: dealerSlug });
 
-  if (!profile) {
+  if (!tenant) {
     notFound();
   }
 
   return (
-    <div className="dealer-layout">
-      {profile.pixel_id && <MetaPixel pixelId={profile.pixel_id} />}
-      <DealerHeader profile={profile} />
-      <main className="dealer-main">{children}</main>
-      <Footer />
-    </div>
+    <BrandProvider branding={tenant.branding}>
+      {tenant.analytics?.pixelId && <MetaPixel pixelId={tenant.analytics.pixelId} />}
+      <div className="dealer-layout">
+        <DealerHeader tenant={tenant} />
+        <main className="dealer-main">{children}</main>
+        <Footer />
+      </div>
+    </BrandProvider>
   );
 }

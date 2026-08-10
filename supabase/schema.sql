@@ -1,12 +1,13 @@
 -- ============================================================
--- VroomDealer.pl — Supabase Database Schema
+-- VroomDealer.pl — Supabase Database Schema v1.0
 -- Run this SQL in Supabase Dashboard > SQL Editor
 -- ============================================================
 
--- Profile handlarzy (Dealers)
-CREATE TABLE profiles (
+-- Profile handlarzy (Dealers / Tenants)
+CREATE TABLE IF NOT EXISTS profiles (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  slug text UNIQUE NOT NULL,          -- np. 'komis-maciek' (używane w URL)
+  slug text UNIQUE NOT NULL,          -- np. 'd-car' lub 'komis-maciek' (używane w URL)
+  custom_domain text UNIQUE,          -- np. 'd-car.com.pl'
   business_name text NOT NULL,        -- Nazwa widoczna na stronie
   business_description text,          -- Opis firmy
   logo_url text,                      -- URL logo
@@ -15,16 +16,21 @@ CREATE TABLE profiles (
   contact_phone text,                 -- Numer telefonu do dzwonienia
   address text,                       -- Adres ulicy
   city text,                          -- Miasto
-  has_towing boolean DEFAULT false,   -- Sekcja "Laweta"
-  has_buying boolean DEFAULT false,   -- Sekcja "Skup aut"
+  has_towing boolean DEFAULT false,   -- Sekcja "Laweta" (kompatybilność wsteczna)
+  has_buying boolean DEFAULT false,   -- Sekcja "Skup aut" (kompatybilność wsteczna)
+  branding jsonb,                     -- Konfiguracja kolorów, mediów, logo
+  services jsonb,                     -- Kolekcja usług DealerService[]
+  page_config jsonb,                  -- Konfiguracja sekcji LandingPageConfig
+  seo jsonb,                          -- Tytuły i opisy meta
+  analytics jsonb,                    -- Identyfikatory analityczne
   created_at timestamptz DEFAULT now()
 );
 
 -- Ogłoszenia (Cars)
-CREATE TABLE cars (
+CREATE TABLE IF NOT EXISTS cars (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   profile_id uuid REFERENCES profiles(id) ON DELETE CASCADE,
-  slug text NOT NULL,                 -- np. 'bmw-320d-xdrive-2019-diesel' (używane w URL)
+  slug text NOT NULL,                 -- np. 'bmw-320d-xdrive-2019-diesel'
   make text NOT NULL,                 -- Marka (BMW, Audi, etc.)
   model text NOT NULL,                -- Model (320d, A4, etc.)
   year int,                           -- Rocznik
@@ -41,18 +47,36 @@ CREATE TABLE cars (
   created_at timestamptz DEFAULT now()
 );
 
+-- Zgłoszenia i Wyceny (Leads)
+CREATE TABLE IF NOT EXISTS leads (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  dealer_id uuid REFERENCES profiles(id) ON DELETE CASCADE,
+  source text NOT NULL DEFAULT 'landing_form',
+  campaign text,
+  landing_path text,
+  customer_name text,
+  customer_phone text NOT NULL,
+  customer_email text,
+  vehicle_details jsonb,
+  status text NOT NULL DEFAULT 'new',
+  created_at timestamptz DEFAULT now()
+);
+
 -- Indeksy dla wydajności
-CREATE INDEX idx_cars_profile ON cars(profile_id);
-CREATE INDEX idx_cars_not_sold ON cars(profile_id) WHERE is_sold = false;
-CREATE INDEX idx_profiles_slug ON profiles(slug);
+CREATE INDEX IF NOT EXISTS idx_cars_profile ON cars(profile_id);
+CREATE INDEX IF NOT EXISTS idx_cars_not_sold ON cars(profile_id) WHERE is_sold = false;
+CREATE INDEX IF NOT EXISTS idx_profiles_slug ON profiles(slug);
+CREATE INDEX IF NOT EXISTS idx_profiles_custom_domain ON profiles(custom_domain);
+CREATE INDEX IF NOT EXISTS idx_leads_dealer ON leads(dealer_id);
 
 -- ============================================================
--- Row Level Security (RLS) — publiczny dostęp do odczytu
+-- Row Level Security (RLS)
 -- ============================================================
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cars ENABLE ROW LEVEL SECURITY;
+ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
 
--- Pozwól na odczyt publiczny (anonimowy)
+-- Odczyt publiczny profili i aut
 CREATE POLICY "Profiles are publicly readable"
   ON profiles FOR SELECT
   TO anon
@@ -63,18 +87,8 @@ CREATE POLICY "Cars are publicly readable"
   TO anon
   USING (true);
 
--- ============================================================
--- Opcjonalnie: przykładowe dane testowe
--- ============================================================
--- INSERT INTO profiles (slug, business_name, business_description, whatsapp_number, phone_number, address, city, has_towing, has_buying)
--- VALUES (
---   'komis-maciek',
---   'Auto Komis Maciek',
---   'Sprawdzony komis samochodowy w Krakowie.',
---   '48123456789',
---   '+48 123 456 789',
---   'ul. Krakowska 123',
---   'Kraków',
---   true,
---   true
--- );
+-- Tworzenie leadów przez publicznych użytkowników
+CREATE POLICY "Leads can be created publicly"
+  ON leads FOR INSERT
+  TO anon
+  WITH CHECK (true);

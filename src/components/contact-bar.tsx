@@ -2,6 +2,7 @@
 
 import { Car, Profile } from "@/types/database";
 import { formatPrice } from "@/lib/utils";
+import { trackEvent } from "@/lib/analytics";
 import { Phone } from "lucide-react";
 
 interface ContactBarProps {
@@ -13,49 +14,41 @@ export function ContactBar({ profile, car }: ContactBarProps) {
   const getWhatsAppLink = () => {
     if (!profile.whatsapp_number) return "#";
     const cleanPhone = profile.whatsapp_number.replace(/\D/g, "");
-    
+
     let msg = "Dzień dobry, piszę z vroomdealer.pl. Czy możemy porozmawiać o ofercie?";
     if (car) {
       const carName = `${car.make} ${car.model}${car.year ? ` (${car.year})` : ""}`;
       const priceStr = car.price ? formatPrice(car.price) : "do negocjacji";
       msg = `Dzień dobry, piszę z vroomdealer.pl w sprawie ${carName} za ${priceStr}. Czy oferta jest aktualna?`;
     }
-    
+
     return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
   };
 
   const getPhoneLink = () => {
     if (!profile.contact_phone) return "#";
-    // Usunięcie spacji dla linku tel:
     const cleanPhone = profile.contact_phone.replace(/\s+/g, "");
     return `tel:${cleanPhone}`;
   };
 
   const trackWhatsApp = () => {
-    if (typeof window !== "undefined" && window.fbq) {
-      window.fbq("trackCustom", "ClickWhatsApp", car ? {
-        content_name: `${car.make} ${car.model}`,
-        content_category: "Car",
-        value: car.price || 0,
-        currency: "PLN"
-      } : undefined);
-      console.log("💬 Meta Pixel: ClickWhatsApp tracked");
-    }
+    trackEvent("whatsapp_clicked", car ? {
+      content_name: `${car.make} ${car.model}`,
+      content_category: "Car",
+      value: car.price || 0,
+      currency: "PLN",
+    } : { source: "contact_bar" });
   };
 
   const trackCall = () => {
-    if (typeof window !== "undefined" && window.fbq) {
-      window.fbq("trackCustom", "ClickCall", car ? {
-        content_name: `${car.make} ${car.model}`,
-        content_category: "Car",
-        value: car.price || 0,
-        currency: "PLN"
-      } : undefined);
-      console.log("📞 Meta Pixel: ClickCall tracked");
-    }
+    trackEvent("phone_clicked", car ? {
+      content_name: `${car.make} ${car.model}`,
+      content_category: "Car",
+      value: car.price || 0,
+      currency: "PLN",
+    } : { source: "contact_bar" });
   };
 
-  // Jeśli brak obu numerów, nie pokazuj baru
   if (!profile.whatsapp_number && !profile.contact_phone) {
     return null;
   }
@@ -74,7 +67,7 @@ export function ContactBar({ profile, car }: ContactBarProps) {
             <span>Zadzwoń teraz</span>
           </a>
         )}
-        
+
         {profile.whatsapp_number && (
           <a
             href={getWhatsAppLink()}

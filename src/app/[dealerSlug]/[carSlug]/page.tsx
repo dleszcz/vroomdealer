@@ -7,8 +7,8 @@ import { CarGallery } from "@/components/car-gallery";
 import { CarSpecs } from "@/components/car-specs";
 import { VehicleSchema } from "@/components/vehicle-schema";
 import { ContactBar } from "@/components/contact-bar";
-import { TrackViewContent } from "@/components/track-view-content";
-import { TrackClick } from "@/components/track-click";
+import { TrackVehicleView } from "@/components/track-vehicle-view";
+import { resolveTenant } from "@/lib/tenant";
 
 type Props = {
   params: Promise<{ dealerSlug: string; carSlug: string }>;
@@ -67,9 +67,15 @@ export default async function CarDetailPage({ params }: Props) {
     notFound();
   }
 
+  const tenant = await resolveTenant({ slug: dealerSlug });
   const carName = `${car.make} ${car.model}${car.year ? ` ${car.year}` : ""}`;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://vroomdealer.pl";
   const pageUrl = `${baseUrl}/${dealerSlug}/${carSlug}`;
+
+  // Get cross-sell services from tenant config
+  const crossSellServices = tenant?.services.filter(
+    (s) => s.enabled && (s.type === "towing" || s.type === "car_buying")
+  ) || [];
 
   return (
     <>
@@ -116,47 +122,39 @@ export default async function CarDetailPage({ params }: Props) {
               </div>
             )}
 
-            {/* CROSS-SELLING: Uslugi Dodatkowe */}
-            {(profile.has_towing || profile.has_buying) && (
+            {/* Cross-sell: services from tenant config */}
+            {crossSellServices.length > 0 && (
               <div style={{ marginTop: '2rem', marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <h3 style={{ fontSize: '1.0625rem', fontWeight: 600, marginBottom: '0.25rem' }}>Usługi zadilerowane dla Ciebie</h3>
-                {profile.has_towing && (
-                  <TrackClick eventName="ClickTowing" eventParams={{ type: 'towing' }}>
-                    <a
-                      href={`tel:${profile.contact_phone?.replace(/\s/g, "")}`}
-                      className="cta-banner cta-banner--towing"
-                    >
-                      <p>🚨 Potrzebna Laweta? Zadzwoń: {profile.contact_phone}</p>
-                      <span className="cta-banner__action-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M5 12h14m-7-7 7 7-7 7" />
-                        </svg>
-                      </span>
-                    </a>
-                  </TrackClick>
-                )}
-                {profile.has_buying && (
-                  <TrackClick eventName="ClickSMS" eventParams={{ type: 'buying' }}>
-                    <a
-                      href={`sms:${profile.contact_phone?.replace(/\s/g, "")}?body=${encodeURIComponent(`Dzień dobry, chciałbym wycenę mojego auta: ${carName} (${pageUrl})`)}`}
-                      className="cta-banner cta-banner--buying"
-                    >
-                      <p>💰 Skupujemy Auta za Gotówkę. Wyceń auto</p>
-                      <span className="cta-banner__action-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M5 12h14m-7-7 7 7-7 7" />
-                        </svg>
-                      </span>
-                    </a>
-                  </TrackClick>
-                )}
+                <h3 style={{ fontSize: '1.0625rem', fontWeight: 600, marginBottom: '0.25rem' }}>Usługi dodatkowe</h3>
+                {crossSellServices.map((service) => (
+                  <a
+                    key={service.id}
+                    href={
+                      service.ctaType === "phone"
+                        ? `tel:${(service.ctaValue || profile.contact_phone || "").replace(/\s/g, "")}`
+                        : service.ctaType === "lead_form"
+                        ? "#lead-form"
+                        : service.ctaValue || "#"
+                    }
+                    className={`cta-banner cta-banner--${service.type}`}
+                  >
+                    <p>
+                      {service.type === "towing" ? "🚨" : "💰"} {service.title}
+                    </p>
+                    <span className="cta-banner__action-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14m-7-7 7 7-7 7" />
+                      </svg>
+                    </span>
+                  </a>
+                ))}
               </div>
             )}
           </div>
         </div>
       </article>
 
-      <TrackViewContent car={car} />
+      <TrackVehicleView car={car} />
 
       {(!car.is_sold) && (
         <ContactBar profile={profile} car={car} />
