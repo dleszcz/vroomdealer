@@ -92,6 +92,22 @@ export const seedProfile: Profile = {
   contact_phone: "+48 123 456 789",
   address: "ul. Krakowska 123",
   city: "Kraków",
+  branding: {
+    logoUrl: null,
+    colors: {
+      primary: "#0f172a",
+      primaryForeground: "#ffffff",
+      background: "#ffffff",
+      foreground: "#020617",
+      accent: "#2563eb",
+      accentForeground: "#ffffff",
+      surface: "#f8fafc",
+      muted: "#f1f5f9",
+    },
+    media: {
+      heroImageUrl: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1200&h=800&fit=crop",
+    },
+  },
   created_at: new Date().toISOString(),
 };
 
@@ -228,7 +244,7 @@ const USE_SEED =
 export async function getProfile(slug: string): Promise<Profile | null> {
   if (USE_SEED) {
     const found = allSeedProfiles.find((p) => p.slug === slug);
-    return found || (slug === "komis-maciek" ? seedProfile : seedProfileDCar);
+    return found || null;
   }
 
   try {
@@ -242,12 +258,12 @@ export async function getProfile(slug: string): Promise<Profile | null> {
 
     if (error || !data) {
       const found = allSeedProfiles.find((p) => p.slug === slug);
-      return found || seedProfileDCar;
+      return found || null;
     }
     return data;
   } catch {
     const found = allSeedProfiles.find((p) => p.slug === slug);
-    return found || seedProfileDCar;
+    return found || null;
   }
 }
 

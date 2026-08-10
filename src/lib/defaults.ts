@@ -24,32 +24,14 @@ export const DEFAULT_BRANDING: DealerBranding = {
 
 export const DEFAULT_SERVICES: DealerService[] = [
   {
-    id: "srv-buying",
-    type: "car_buying",
-    enabled: true,
-    title: "Skup Samochodów",
-    description: "Kupujemy auta za gotówkę. Szybka wycena i formalności na miejscu.",
-    ctaLabel: "Wyceń swoje auto",
-    ctaType: "lead_form",
-  },
-  {
     id: "srv-sales",
     type: "car_sales",
     enabled: true,
-    title: "Sprzedaż Aut",
+    title: "Sprzedaż Samochodów Używanych",
     description: "Sprawdzone samochody osobowe i dostawcze z gwarancją jakości.",
-    ctaLabel: "Zobacz ofertę",
+    ctaLabel: "Zobacz naszą ofertę",
     ctaType: "link",
     ctaValue: "#vehicles",
-  },
-  {
-    id: "srv-towing",
-    type: "towing",
-    enabled: true,
-    title: "Pomoc Drogowa / Laweta",
-    description: "Transport aut na terenie całego kraju — 24/7. Szybki dojazd.",
-    ctaLabel: "Zadzwoń po pomoc",
-    ctaType: "phone",
   },
 ];
 
@@ -117,22 +99,20 @@ export function mergeBranding(
   };
 }
 
-/** Validates and returns services array, falling back to defaults */
+/** Validates and returns services array, returning empty array if no services are configured */
 export function mergeServices(
   tenantServices?: unknown[] | null
 ): DealerService[] {
   if (!Array.isArray(tenantServices) || tenantServices.length === 0) {
-    return [...DEFAULT_SERVICES];
+    return [];
   }
 
   // Validate each service has required fields
-  const validServices = tenantServices.filter((s): s is DealerService => {
+  return tenantServices.filter((s): s is DealerService => {
     if (!s || typeof s !== "object") return false;
     const svc = s as Record<string, unknown>;
     return typeof svc.id === "string" && typeof svc.type === "string" && typeof svc.title === "string";
   });
-
-  return validServices.length > 0 ? validServices : [...DEFAULT_SERVICES];
 }
 
 /** Validates and returns page config, falling back to defaults */
