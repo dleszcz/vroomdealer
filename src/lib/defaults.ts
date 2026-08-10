@@ -24,32 +24,14 @@ export const DEFAULT_BRANDING: DealerBranding = {
 
 export const DEFAULT_SERVICES: DealerService[] = [
   {
-    id: "srv-buying",
-    type: "car_buying",
-    enabled: true,
-    title: "Skup Samochodów",
-    description: "Kupujemy auta za gotówkę. Szybka wycena i formalności na miejscu.",
-    ctaLabel: "Wyceń swoje auto",
-    ctaType: "lead_form",
-  },
-  {
     id: "srv-sales",
     type: "car_sales",
     enabled: true,
-    title: "Sprzedaż Aut",
+    title: "Sprzedaż Samochodów Używanych",
     description: "Sprawdzone samochody osobowe i dostawcze z gwarancją jakości.",
-    ctaLabel: "Zobacz ofertę",
+    ctaLabel: "Zobacz naszą ofertę",
     ctaType: "link",
     ctaValue: "#vehicles",
-  },
-  {
-    id: "srv-towing",
-    type: "towing",
-    enabled: true,
-    title: "Pomoc Drogowa / Laweta",
-    description: "Transport aut na terenie całego kraju — 24/7. Szybki dojazd.",
-    ctaLabel: "Zadzwoń po pomoc",
-    ctaType: "phone",
   },
 ];
 
