@@ -99,22 +99,20 @@ export function mergeBranding(
   };
 }
 
-/** Validates and returns services array, falling back to defaults */
+/** Validates and returns services array, returning empty array if no services are configured */
 export function mergeServices(
   tenantServices?: unknown[] | null
 ): DealerService[] {
   if (!Array.isArray(tenantServices) || tenantServices.length === 0) {
-    return [...DEFAULT_SERVICES];
+    return [];
   }
 
   // Validate each service has required fields
-  const validServices = tenantServices.filter((s): s is DealerService => {
+  return tenantServices.filter((s): s is DealerService => {
     if (!s || typeof s !== "object") return false;
     const svc = s as Record<string, unknown>;
     return typeof svc.id === "string" && typeof svc.type === "string" && typeof svc.title === "string";
   });
-
-  return validServices.length > 0 ? validServices : [...DEFAULT_SERVICES];
 }
 
 /** Validates and returns page config, falling back to defaults */

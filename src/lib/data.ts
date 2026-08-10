@@ -108,27 +108,6 @@ export const seedProfile: Profile = {
       heroImageUrl: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1200&h=800&fit=crop",
     },
   },
-  services: [
-    {
-      id: "srv-maciek-sales",
-      type: "car_sales",
-      enabled: true,
-      title: "Sprzedaż Samochodów Używanych",
-      description: "Szeroki wybór aut z polskiego salonu i sprowadzonych. Gwarancja przebiegu i stacji kontroli.",
-      ctaLabel: "Przeglądaj auta",
-      ctaType: "link",
-      ctaValue: "#vehicles",
-    },
-    {
-      id: "srv-maciek-buying",
-      type: "car_buying",
-      enabled: true,
-      title: "Odkup Aut w Rozliczeniu",
-      description: "Zostaw swoje dotychczasowe auto w rozliczeniu przy zakupie nowego z naszej oferty.",
-      ctaLabel: "Wyceń swoje auto",
-      ctaType: "lead_form",
-    },
-  ],
   created_at: new Date().toISOString(),
 };
 
