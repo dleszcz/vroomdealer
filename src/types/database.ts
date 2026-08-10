@@ -9,8 +9,12 @@ export interface Profile {
   contact_phone: string | null;
   address: string | null;
   city: string | null;
-  has_towing: boolean;
-  has_buying: boolean;
+  custom_domain?: string | null;
+  branding?: Record<string, unknown>;
+  services?: Record<string, unknown>[];
+  page_config?: Record<string, unknown>;
+  seo?: Record<string, unknown>;
+  analytics?: Record<string, unknown>;
   created_at: string;
 }
 

@@ -5,16 +5,23 @@
    DESIGN TOKENS
    ============================================================ */
 :root {
-  --color-bg: #ffffff;
-  --color-bg-subtle: #f8fafc;
-  --color-bg-muted: #f1f5f9;
-  --color-text: #0f172a;
+  --color-primary: #1e293b;
+  --color-primary-fg: #ffffff;
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  --color-accent: #25d366;
+  --color-accent-fg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-muted: #f1f5f9;
+
+  --color-bg: var(--color-background);
+  --color-bg-subtle: var(--color-surface);
+  --color-bg-muted: var(--color-muted);
+  --color-text: var(--color-foreground);
   --color-text-secondary: #64748b;
   --color-text-muted: #94a3b8;
-  --color-brand: #1e293b;
+  --color-brand: var(--color-primary);
   --color-brand-light: #334155;
-  --color-accent: #25d366;
-  --color-accent-hover: #20b858;
   --color-sold: #ef4444;
   --color-featured: #f59e0b;
   --color-border: #e2e8f0;

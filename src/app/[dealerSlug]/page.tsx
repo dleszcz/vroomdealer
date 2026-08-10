@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProfile, getCars } from "@/lib/data";
-import { CarCard } from "@/components/car-card";
-import { DealerServices } from "@/components/dealer-services";
+import { resolveTenant } from "@/lib/tenant";
 import { DealerSchema } from "@/components/vehicle-schema";
 import { ContactBar } from "@/components/contact-bar";
+import { SectionRenderer } from "@/components/sections/section-renderer";
 
 type Props = {
   params: Promise<{ dealerSlug: string }>;
@@ -12,106 +11,73 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { dealerSlug } = await params;
-  const profile = await getProfile(dealerSlug);
+  const tenant = await resolveTenant({ slug: dealerSlug });
 
-  if (!profile) return {};
+  if (!tenant) return {};
 
-  const title = `${profile.business_name} — Samochody na sprzedaż${profile.city ? ` | ${profile.city}` : ""}`;
+  const title = tenant.seo?.metaTitle || `${tenant.businessName} — Samochody i skup aut${tenant.location?.city ? ` | ${tenant.location.city}` : ""}`;
   const description =
-    profile.business_description ||
-    `Sprawdź ofertę samochodów w ${profile.business_name}. Uczciwy komis samochodowy${profile.city ? ` w ${profile.city}` : ""}.`;
+    tenant.seo?.metaDescription ||
+    tenant.businessDescription ||
+    `Sprawdź ofertę samochodów w ${tenant.businessName}. Uczciwy komis samochodowy i skup aut.`;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://vroomdealer.pl";
-  const url = `${baseUrl}/${dealerSlug}`;
+  const baseUrl = tenant.customDomain ? `https://${tenant.customDomain}` : `https://vroomdealer.pl/${dealerSlug}`;
 
   return {
     title,
     description,
+    alternates: {
+      canonical: baseUrl,
+    },
     openGraph: {
       title,
       description,
-      url,
+      url: baseUrl,
       type: "website",
-    },
-    facebook: {
-      appId: process.env.NEXT_PUBLIC_FB_APP_ID || "",
     },
   };
 }
 
 export default async function DealerPage({ params }: Props) {
   const { dealerSlug } = await params;
-  const profile = await getProfile(dealerSlug);
+  const tenant = await resolveTenant({ slug: dealerSlug });
 
-  if (!profile) {
+  if (!tenant) {
     notFound();
   }
 
-  const cars = await getCars(profile.id);
-  const availableCars = cars.filter((c) => !c.is_sold);
-  const soldCars = cars.filter((c) => c.is_sold);
+  const baseUrl = tenant.customDomain ? `https://${tenant.customDomain}` : `https://vroomdealer.pl/${tenant.slug}`;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://vroomdealer.pl";
+  // Build profile shim for ContactBar & DealerSchema compatibility
+  const profileShim = {
+    id: tenant.id,
+    slug: tenant.slug,
+    business_name: tenant.businessName,
+    business_description: tenant.businessDescription || null,
+    logo_url: tenant.logoUrl || null,
+    pixel_id: tenant.analytics?.pixelId || null,
+    whatsapp_number: tenant.contact.whatsapp || null,
+    contact_phone: tenant.contact.phone || null,
+    address: tenant.location?.address || null,
+    city: tenant.location?.city || null,
+    created_at: new Date().toISOString(),
+  };
 
   return (
     <>
       <DealerSchema
-        name={profile.business_name}
-        description={profile.business_description}
-        address={profile.address}
-        city={profile.city}
-        phone={profile.contact_phone}
-        url={`${baseUrl}/${profile.slug}`}
+        name={tenant.businessName}
+        description={tenant.businessDescription || undefined}
+        address={tenant.location?.address || undefined}
+        city={tenant.location?.city || undefined}
+        phone={tenant.contact.phone || undefined}
+        url={baseUrl}
       />
 
-      <div className="dealer-page" id="dealer-page">
-        {profile.business_description && (
-          <div className="dealer-page__intro">
-            <p className="dealer-page__description">
-              {profile.business_description}
-            </p>
-          </div>
-        )}
+      <SectionRenderer tenant={tenant} />
 
-        <DealerServices
-          hasTowing={profile.has_towing}
-          hasBuying={profile.has_buying}
-          contactPhone={profile.contact_phone}
-        />
-
-        {availableCars.length > 0 ? (
-          <section style={{ marginTop: '3.5rem' }}>
-            <h2 className="dealer-page__section-title">
-              Dostępne samochody ({availableCars.length})
-            </h2>
-            <div className="car-grid">
-              {availableCars.map((car) => (
-                <CarCard key={car.id} car={car} dealerSlug={dealerSlug} />
-              ))}
-            </div>
-          </section>
-        ) : (
-          <div className="dealer-page__empty">
-            <p>Obecnie brak dostępnych samochodów.</p>
-          </div>
-        )}
-
-        {soldCars.length > 0 && (
-          <section style={{ marginTop: "3.5rem", opacity: 0.7 }}>
-            <h2 className="dealer-page__section-title">
-              Sprzedane ({soldCars.length})
-            </h2>
-            <div className="car-grid">
-              {soldCars.map((car) => (
-                <CarCard key={car.id} car={car} dealerSlug={dealerSlug} />
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
-
-      {(profile.whatsapp_number || profile.contact_phone) && (
-        <ContactBar profile={profile} />
+      {(tenant.contact.whatsapp || tenant.contact.phone) && (
+        <ContactBar profile={profileShim} />
       )}
     </>
   );

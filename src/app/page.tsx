@@ -1,24 +1,90 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { resolveTenant } from "@/lib/tenant";
+import { BrandProvider } from "@/components/brand-provider";
+import { DealerHeader } from "@/components/dealer-header";
+import { SectionRenderer } from "@/components/sections/section-renderer";
+import { ContactBar } from "@/components/contact-bar";
+import { Footer } from "@/components/footer";
+import { MetaPixel } from "@/components/meta-pixel";
+import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "VroomDealer.pl — Twój prywatny system sprzedaży i pozyskiwania aut",
-  description: "Zbieraj bezpośrednie telefony od kupców, buduj własną markę i automatycznie generuj zapytania o skup samochodów.",
-  openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+  const reqHeaders = await headers();
+  const host = reqHeaders.get("host") || undefined;
+
+  // Check if host resolves to a specific tenant custom domain (e.g. d-car.com.pl)
+  if (host && !host.includes("localhost") && !host.includes("vroomdealer.pl") && !host.includes("vercel.app")) {
+    const tenant = await resolveTenant({ domain: host });
+    if (tenant) {
+      const title = tenant.seo?.metaTitle || `${tenant.businessName} — Skup Aut i Sprzedaż`;
+      const description = tenant.seo?.metaDescription || tenant.businessDescription || "Twój prywatny system sprzedaży i pozyskiwania aut.";
+      return {
+        title,
+        description,
+        alternates: { canonical: `https://${tenant.customDomain}` },
+        openGraph: { title, description, url: `https://${tenant.customDomain}`, type: "website" },
+      };
+    }
+  }
+
+  // Default SaaS Landing Page Metadata for VroomDealer.pl
+  return {
     title: "VroomDealer.pl — Twój prywatny system sprzedaży i pozyskiwania aut",
     description: "Zbieraj bezpośrednie telefony od kupców, buduj własną markę i automatycznie generuj zapytania o skup samochodów.",
-    url: "https://vroomdealer.pl",
-    type: "website",
-  },
-  facebook: {
-    appId: process.env.NEXT_PUBLIC_FB_APP_ID || "",
-  },
-};
+    openGraph: {
+      title: "VroomDealer.pl — Twój prywatny system sprzedaży i pozyskiwania aut",
+      description: "Zbieraj bezpośrednie telefony od kupców, buduj własną markę i automatycznie generuj zapytania o skup samochodów.",
+      url: "https://vroomdealer.pl",
+      type: "website",
+    },
+    facebook: {
+      appId: process.env.NEXT_PUBLIC_FB_APP_ID || "",
+    },
+  };
+}
 
-export default function HomePage() {
+export default async function HomePage() {
+  const reqHeaders = await headers();
+  const host = reqHeaders.get("host") || undefined;
+
+  // If request comes from a custom domain (e.g. d-car.com.pl), render that tenant
+  if (host && !host.includes("localhost") && !host.includes("vroomdealer.pl") && !host.includes("vercel.app")) {
+    const tenant = await resolveTenant({ domain: host });
+    if (tenant) {
+      const profileShim = {
+        id: tenant.id,
+        slug: tenant.slug,
+        business_name: tenant.businessName,
+        business_description: tenant.businessDescription || null,
+        logo_url: tenant.logoUrl || null,
+        pixel_id: tenant.analytics?.pixelId || null,
+        whatsapp_number: tenant.contact.whatsapp || null,
+        contact_phone: tenant.contact.phone || null,
+        address: tenant.location?.address || null,
+        city: tenant.location?.city || null,
+        created_at: new Date().toISOString(),
+      };
+
+      return (
+        <BrandProvider branding={tenant.branding}>
+          {tenant.analytics?.pixelId && <MetaPixel pixelId={tenant.analytics.pixelId} />}
+          <div className="dealer-layout">
+            <DealerHeader tenant={tenant} />
+            <main className="dealer-main">
+              <SectionRenderer tenant={tenant} />
+            </main>
+            <ContactBar profile={profileShim} />
+            <Footer />
+          </div>
+        </BrandProvider>
+      );
+    }
+  }
+
+  // Otherwise, render VroomDealer SaaS Main Platform Landing Page
   const phone = "48609525935";
-  const whatsappMsg = encodeURIComponent(
-    "Dzień dobry, jestem zainteresowany testami VroomDealer dla mojego komisu."
-  );
+  const whatsappMsg = encodeURIComponent("Dzień dobry, jestem zainteresowany testami VroomDealer dla mojego komisu.");
   const waUrl = `https://wa.me/${phone}?text=${whatsappMsg}`;
   const telUrl = `tel:+${phone}`;
 
@@ -26,9 +92,25 @@ export default function HomePage() {
     <main className="landing" id="landing-page">
       {/* Header */}
       <header className="landing__header">
-        <div className="landing__header-inner">
+        <div className="landing__header-inner" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div className="landing__logo">
             Vroom<span>Dealer</span>.pl
+          </div>
+          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+            <Link
+              href="/d-car"
+              style={{
+                fontSize: "0.9rem",
+                fontWeight: 600,
+                color: "var(--color-primary)",
+                padding: "0.4rem 0.8rem",
+                borderRadius: "8px",
+                border: "1px solid var(--color-border)",
+                background: "var(--color-surface)",
+              }}
+            >
+              Zobacz demo D-Car ➔
+            </Link>
           </div>
         </div>
       </header>
@@ -36,7 +118,6 @@ export default function HomePage() {
       {/* Hero */}
       <section className="landing__hero">
         <div className="landing__hero-inner">
-          {/* Left: Text */}
           <div className="landing__text">
             <h1 className="landing__title">
               Twój prywatny system sprzedaży i pozyskiwania aut.
@@ -44,28 +125,73 @@ export default function HomePage() {
             <p className="landing__subtitle">
               Zbieraj bezpośrednie telefony od kupców, buduj własną markę i automatycznie generuj zapytania o skup samochodów.
             </p>
-            <a href={telUrl} className="landing__cta">
-              Zadzwoń i zapytaj o dostęp
-            </a>
-            <p className="landing__teaser">
-              Obecnie prowadzimy zamknięte testy. Kolejne miejsca dostępne
-              wkrótce.
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginTop: "1.5rem" }}>
+              <a href={telUrl} className="landing__cta">
+                Zadzwoń i zapytaj o dostęp
+              </a>
+              <Link
+                href="/d-car"
+                className="landing__cta"
+                style={{ background: "var(--color-surface)", color: "var(--color-text)", border: "1px solid var(--color-border)" }}
+              >
+                Zobacz Landing D-Car ➔
+              </Link>
+            </div>
+            <p className="landing__teaser" style={{ marginTop: "1.25rem" }}>
+              Obecnie prowadzimy zamknięte testy. Kolejne miejsca dostępne wkrótce.
             </p>
           </div>
 
-          {/* Right: Visual mockup */}
           <div className="landing__visual">
             <div className="landing__visual-bg" />
-            
             <div className="landing__visual-container">
               <div className="landing__visual-card">
                 <img
                   src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&h=1200&fit=crop"
-                  alt="Wnętrze luksusowego samochodu"
+                  alt="VroomDealer System"
                 />
                 <div className="landing__visual-gradient" />
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Demo Links Section */}
+      <section style={{ padding: "3rem 1.5rem", background: "var(--color-surface)", borderTop: "1px solid var(--color-border)" }}>
+        <div style={{ maxWidth: "var(--max-width)", margin: "0 auto", textAlign: "center" }}>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "1rem" }}>
+            Przetestuj Landing Engine dla Komisów
+          </h2>
+          <p style={{ color: "var(--color-text-secondary)", marginBottom: "1.5rem" }}>
+            Zobacz jak wygląda gotowa strona komisu generowana przez silnik VroomDealer:
+          </p>
+          <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
+            <Link
+              href="/d-car"
+              style={{
+                padding: "0.75rem 1.5rem",
+                borderRadius: "8px",
+                background: "var(--color-primary)",
+                color: "var(--color-primary-fg)",
+                fontWeight: 700,
+              }}
+            >
+              Komis D-Car (/d-car)
+            </Link>
+            <Link
+              href="/komis-maciek"
+              style={{
+                padding: "0.75rem 1.5rem",
+                borderRadius: "8px",
+                background: "var(--color-background)",
+                border: "1px solid var(--color-border)",
+                color: "var(--color-foreground)",
+                fontWeight: 600,
+              }}
+            >
+              Auto Komis Maciek (/komis-maciek)
+            </Link>
           </div>
         </div>
       </section>
