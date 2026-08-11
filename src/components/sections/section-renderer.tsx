@@ -9,6 +9,7 @@ import { VehiclesSection } from "./vehicles-section";
 import { ReviewsSection } from "./reviews-section";
 import { FAQSection } from "./faq-section";
 import { ContactSection } from "./contact-section";
+import { AboutSection } from "./about-section";
 
 interface SectionRendererProps {
   tenant: DealerTenant;
@@ -18,8 +19,22 @@ export function SectionRenderer({ tenant }: SectionRendererProps) {
   const sections = tenant.pageConfig?.sections || [];
   const enabledSections = sections.filter((s) => s.enabled !== false);
 
+  const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
+  const accentColor = tenant.branding?.colors?.accent || primaryColor;
+  const headerBg = tenant.branding?.colors?.headerBg || "#080808";
+  const footerBg = tenant.branding?.colors?.footerBg || "#080808";
+
   return (
-    <div className="landing-engine-sections">
+    <div
+      className="landing-engine-sections"
+      style={{
+        ["--color-primary" as string]: primaryColor,
+        ["--color-accent" as string]: accentColor,
+        ["--color-brand" as string]: primaryColor,
+        ["--color-header-bg" as string]: headerBg,
+        ["--color-footer-bg" as string]: footerBg,
+      }}
+    >
       {enabledSections.map((config: SectionConfig) => {
         switch (config.type) {
           case "hero":
@@ -36,6 +51,8 @@ export function SectionRenderer({ tenant }: SectionRendererProps) {
             return <VehiclesSection key={config.id} tenant={tenant} config={config} />;
           case "reviews":
             return <ReviewsSection key={config.id} tenant={tenant} config={config} />;
+          case "about":
+            return <AboutSection key={config.id} tenant={tenant} config={config} />;
           case "faq":
             return <FAQSection key={config.id} tenant={tenant} config={config} />;
           case "contact":

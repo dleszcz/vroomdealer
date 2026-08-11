@@ -5,32 +5,35 @@
    DESIGN TOKENS
    ============================================================ */
 :root {
-  --color-primary: #1e293b;
+  --color-primary: #1686E0;
   --color-primary-fg: #ffffff;
   --color-background: #ffffff;
-  --color-foreground: #0f172a;
-  --color-accent: #25d366;
+  --color-foreground: #0B0B0D;
+  --color-dark: #080808;
+  --color-accent: #1686E0;
   --color-accent-fg: #ffffff;
-  --color-surface: #f8fafc;
-  --color-muted: #f1f5f9;
+  --color-surface: #F1F3F5;
+  --color-muted: #6B7280;
 
   --color-bg: var(--color-background);
   --color-bg-subtle: var(--color-surface);
-  --color-bg-muted: var(--color-muted);
+  --color-bg-muted: #F1F3F5;
   --color-text: var(--color-foreground);
-  --color-text-secondary: #64748b;
-  --color-text-muted: #94a3b8;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #9CA3AF;
   --color-brand: var(--color-primary);
-  --color-brand-light: #334155;
+  --color-brand-light: #38BDF8;
   --color-sold: #ef4444;
   --color-featured: #f59e0b;
-  --color-border: #e2e8f0;
-  --color-shadow: rgba(0, 0, 0, 0.06);
+  --color-border: #E5E7EB;
+  --color-shadow: rgba(0, 0, 0, 0.05);
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
+  --radius-button: 10px;
+  --radius-card: 12px;
   --font-sans: var(--font-geist-sans), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --max-width: 1200px;
+  --max-width: 1280px;
   --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -127,20 +130,7 @@ img {
 /* --- Hero --- */
 .landing__hero {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 1.5rem 3rem;
-  max-width: var(--max-width);
   width: 100%;
-  margin: 0 auto;
-  background: var(--color-bg-subtle);
-}
-
-@media (min-width: 768px) {
-  .landing__hero {
-    padding: 4rem 0 5rem;
-  }
 }
 
 .landing__hero-inner {
@@ -483,8 +473,7 @@ img {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-bottom: 5.5rem;
-  /* Zabezpieczenie przed ucięciem stopki przez fixed ContactBar */
+  width: 100%;
 }
 
 .dealer-main {

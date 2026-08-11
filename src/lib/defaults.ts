@@ -79,6 +79,8 @@ export function mergeColors(
     accentForeground: isValidHexColor(tenantColors.accentForeground) ? tenantColors.accentForeground : DEFAULT_COLORS.accentForeground,
     surface: isValidHexColor(tenantColors.surface) ? tenantColors.surface : DEFAULT_COLORS.surface,
     muted: isValidHexColor(tenantColors.muted) ? tenantColors.muted : DEFAULT_COLORS.muted,
+    headerBg: isValidHexColor(tenantColors.headerBg) ? tenantColors.headerBg : tenantColors.primary,
+    footerBg: isValidHexColor(tenantColors.footerBg) ? tenantColors.footerBg : tenantColors.primary,
   };
 }
 

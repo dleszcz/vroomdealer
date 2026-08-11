@@ -6,75 +6,115 @@ interface ProcessSectionProps {
   config?: SectionConfig;
 }
 
-export function ProcessSection({ config }: ProcessSectionProps) {
+export function ProcessSection({ tenant, config }: ProcessSectionProps) {
   const steps = [
     {
-      step: "01",
-      title: "Wypełnij formularz lub zadzwoń",
-      desc: "Podaj podstawowe informacje o samochodzie (marka, model, rocznik, stan) w formularzu online lub zadzwoń bezpośrednio.",
+      num: "1",
+      title: "Zostaw dane",
+      desc: "Wypełnij formularz lub zadzwoń.",
     },
     {
-      step: "02",
-      title: "Szybka wycena i bezpłatne oględziny",
-      desc: "Przedstawiamy Ci natychmiastową wycenę. Jeśli ją zaakceptujesz, przyjeżdżamy we wskazane miejsce na bezpłatny przegląd.",
+      num: "2",
+      title: "Wycena",
+      desc: "Ocenimy auto i przedstawimy ofertę.",
     },
     {
-      step: "03",
-      title: "Umowa i wypłata gotówki od ręki",
-      desc: "Podpisujemy prostą umowę kupna-sprzedaży i przekazujemy pieniądze do ręki lub robimy przelew ekspresowy na miejscu.",
+      num: "3",
+      title: "Umowa i płatność",
+      desc: "Podpiszemy umowę i wypłacimy pieniądze.",
+    },
+    {
+      num: "4",
+      title: "Odbiór auta",
+      desc: "Odbierzemy auto lub przyjedziesz do nas.",
     },
   ];
 
   return (
-    <section id="process" style={{ padding: "4rem 1.5rem", background: "var(--color-surface)", borderTop: "1px solid var(--color-border)", borderBottom: "1px solid var(--color-border)" }}>
-      <div style={{ maxWidth: "var(--max-width)", margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-          <h2 style={{ fontSize: "2rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
-            {config?.title || "Jak wygląda skup auta w 3 prostych krokach?"}
+    <section id="process" style={{ width: "100%", background: "#ffffff", padding: "5rem 0", borderTop: "1px solid #E5E7EB" }}>
+      <div style={{ maxWidth: "var(--max-width, 1280px)", margin: "0 auto", padding: "0 1.5rem" }}>
+        
+        {/* Section Header */}
+        <div style={{ marginBottom: "3.5rem" }}>
+          <span
+            style={{
+              display: "inline-block",
+              color: "var(--color-primary, #1686E0)",
+              fontSize: "0.85rem",
+              fontWeight: 800,
+              letterSpacing: "0.08em",
+              marginBottom: "0.5rem",
+              textTransform: "uppercase",
+            }}
+          >
+            JAK TO DZIAŁA?
+          </span>
+          <h2 style={{ fontSize: "2.25rem", fontWeight: 800, color: "#090B0B", margin: 0 }}>
+            Prosty 4-etapowy proces
           </h2>
-          <p style={{ color: "var(--color-text-secondary)", fontSize: "1.05rem" }}>
-            Oszczędź czas — od zgłoszenia do wypłaty gotówki w mniej niż 2 godziny!
-          </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem" }}>
-          {steps.map((s, idx) => (
-            <div
-              key={idx}
-              style={{
-                background: "var(--color-background)",
-                border: "1px solid var(--color-border)",
-                borderRadius: "16px",
-                padding: "2rem",
-                position: "relative",
-              }}
-            >
+        {/* 4 Steps Timeline Row */}
+        <div style={{ position: "relative" }}>
+          {/* Horizontal Connecting Line (Desktop) */}
+          <div
+            style={{
+              position: "absolute",
+              top: "22px",
+              left: "5%",
+              right: "5%",
+              height: "2px",
+              background: "#E5E7EB",
+              zIndex: 0,
+            }}
+          />
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "2rem", position: "relative", zIndex: 1 }}>
+            {steps.map((st, idx) => (
               <div
+                key={idx}
                 style={{
-                  fontSize: "1.5rem",
-                  fontWeight: 900,
-                  color: "var(--color-primary)",
-                  marginBottom: "1rem",
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
-                  background: "rgba(30, 41, 59, 0.08)",
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  position: "relative",
+                  background: "#ffffff",
+                  paddingRight: "1rem",
                 }}
               >
-                {s.step}
+                {/* Step Circle Number */}
+                <div
+                  style={{
+                    width: "44px",
+                    height: "44px",
+                    borderRadius: "50%",
+                    background: "var(--color-primary, #1686E0)",
+                    color: "#ffffff",
+                    fontSize: "1.1rem",
+                    fontWeight: 900,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: "1.25rem",
+                    boxShadow: "0 4px 14px rgba(22, 134, 224, 0.35)",
+                    position: "relative",
+                    zIndex: 2,
+                  }}
+                >
+                  {st.num}
+                </div>
+
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#090B0B", marginBottom: "0.5rem" }}>
+                  {st.title}
+                </h3>
+                <p style={{ color: "#6B7280", fontSize: "0.9rem", lineHeight: 1.5, margin: 0 }}>
+                  {st.desc}
+                </p>
               </div>
-              <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
-                {s.title}
-              </h3>
-              <p style={{ color: "var(--color-text-secondary)", fontSize: "0.95rem", lineHeight: 1.5 }}>
-                {s.desc}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+
       </div>
     </section>
   );

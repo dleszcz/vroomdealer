@@ -10,48 +10,58 @@ interface VehiclesSectionProps {
 
 export async function VehiclesSection({ tenant, config }: VehiclesSectionProps) {
   const cars = await getCars(tenant.id);
-  const availableCars = cars.filter((c) => !c.is_sold);
-  const soldCars = cars.filter((c) => c.is_sold);
 
   if (cars.length === 0) return null;
 
   return (
-    <section id="vehicles" style={{ padding: "4rem 1.5rem", background: "var(--color-background)" }}>
-      <div style={{ maxWidth: "var(--max-width)", margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-          <h2 style={{ fontSize: "2rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
-            {config?.title || "Aktualna Oferta i Ostatnio Kupione Samochody"}
-          </h2>
-          <p style={{ color: "var(--color-text-secondary)", fontSize: "1.05rem" }}>
-            Przeglądaj wyselekcjonowane auta dostępne od ręki oraz przykłady pojazdów, które niedawno odkupiliśmy.
-          </p>
+    <section id="vehicles" style={{ width: "100%", background: "#ffffff", padding: "5rem 0" }}>
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
+        
+        {/* Section Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "2.5rem" }}>
+          <div>
+            <span
+              style={{
+                display: "inline-block",
+                color: "var(--color-primary, #1686E0)",
+                fontSize: "0.85rem",
+                fontWeight: 800,
+                letterSpacing: "0.08em",
+                marginBottom: "0.4rem",
+                textTransform: "uppercase",
+              }}
+            >
+              AKTUALNA OFERTA
+            </span>
+            <h2 style={{ fontSize: "2rem", fontWeight: 800, color: "#090B0B", margin: 0 }}>
+              Samochody na sprzedaż
+            </h2>
+          </div>
+
+          <a
+            href={`/${tenant.slug}#vehicles`}
+            style={{
+              color: "var(--color-primary, #1686E0)",
+              fontWeight: 800,
+              fontSize: "0.9rem",
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.4rem",
+            }}
+          >
+            <span>ZOBACZ WSZYSTKIE</span>
+            <span>→</span>
+          </a>
         </div>
 
-        {availableCars.length > 0 && (
-          <div style={{ marginBottom: "3.5rem" }}>
-            <h3 style={{ fontSize: "1.3rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "1.5rem" }}>
-              Dostępne na placu ({availableCars.length})
-            </h3>
-            <div className="car-grid">
-              {availableCars.map((car) => (
-                <CarCard key={car.id} car={car} dealerSlug={tenant.slug} />
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Cars Grid */}
+        <div className="car-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.25rem" }}>
+          {cars.map((car) => (
+            <CarCard key={car.id} car={car} dealerSlug={tenant.slug} />
+          ))}
+        </div>
 
-        {soldCars.length > 0 && (
-          <div style={{ opacity: 0.8 }}>
-            <h3 style={{ fontSize: "1.3rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "1.5rem" }}>
-              Ostatnio kupione / Sprzedane ({soldCars.length})
-            </h3>
-            <div className="car-grid">
-              {soldCars.map((car) => (
-                <CarCard key={car.id} car={car} dealerSlug={tenant.slug} />
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );

@@ -22,6 +22,8 @@ export function BrandProvider({ branding, children }: BrandProviderProps) {
       ${colors.accentForeground ? `--color-accent-fg: ${colors.accentForeground};` : ""}
       ${colors.surface ? `--color-surface: ${colors.surface};` : ""}
       ${colors.muted ? `--color-muted: ${colors.muted};` : ""}
+      ${colors.headerBg ? `--color-header-bg: ${colors.headerBg};` : ""}
+      ${colors.footerBg ? `--color-footer-bg: ${colors.footerBg};` : ""}
     }
   `;
 

@@ -121,14 +121,16 @@ INSERT INTO profiles (
   '{
     "logoUrl": null,
     "colors": {
-      "primary": "#1e293b",
+      "primary": "#1686E0",
       "primaryForeground": "#ffffff",
       "background": "#ffffff",
-      "foreground": "#0f172a",
-      "accent": "#25d366",
+      "foreground": "#090B0B",
+      "accent": "#1686E0",
       "accentForeground": "#ffffff",
-      "surface": "#f8fafc",
-      "muted": "#f1f5f9"
+      "surface": "#F1F3F5",
+      "muted": "#E2E8F0",
+      "headerBg": "#090B0B",
+      "footerBg": "#090B0B"
     },
     "media": {
       "heroImageUrl": "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1200&h=800&fit=crop"
@@ -159,7 +161,7 @@ INSERT INTO profiles (
       "type": "towing",
       "enabled": true,
       "title": "Pomoc Drogowa & Laweta 24/7",
-      "description": "Transport awaryjny i powypadkowy na terenie Warszawy i całej Polski.",
+      "description": "Transport awaryjny i powypadkowy na terenie całej Polski.",
       "ctaLabel": "Zadzwoń po pomoc",
       "ctaType": "phone",
       "ctaValue": "+48 609 525 935"
@@ -167,15 +169,16 @@ INSERT INTO profiles (
   ]'::jsonb,
   '{
     "sections": [
-      {"id": "sec-hero",     "type": "hero",      "enabled": true},
-      {"id": "sec-lead",     "type": "lead_form", "enabled": true, "title": "Szybka wycena auta"},
-      {"id": "sec-trust",    "type": "trust",     "enabled": true, "title": "Dlaczego D-Car?"},
-      {"id": "sec-services", "type": "services",  "enabled": true, "title": "Nasze Usługi"},
-      {"id": "sec-process",  "type": "process",   "enabled": true, "title": "Jak wygląda skup?"},
-      {"id": "sec-vehicles", "type": "vehicles",  "enabled": true, "title": "Ostatnio kupione i Dostępne Auta"},
-      {"id": "sec-reviews",  "type": "reviews",   "enabled": true, "title": "Opinie klientów"},
-      {"id": "sec-faq",      "type": "faq",       "enabled": true, "title": "Pytania i Odpowiedzi"},
-      {"id": "sec-contact",  "type": "contact",   "enabled": true, "title": "Skontaktuj się z nami"}
+      {"id": "sec-hero",     "type": "hero",      "enabled": true, "title": "Sprzedaj nam swoje auto", "subtitle": "Szybko, bezpiecznie i bez zbędnych formalności."},
+      {"id": "sec-trust",    "type": "trust",     "enabled": true, "title": "Dlaczego D-CAR?"},
+      {"id": "sec-process",  "type": "process",   "enabled": true, "title": "Jak to działa?"},
+      {"id": "sec-services", "type": "services",  "enabled": true, "title": "Nasza Oferta (Usługi)"},
+      {"id": "sec-reviews",  "type": "reviews",   "enabled": true, "title": "Dlaczego warto nam zaufać?"},
+      {"id": "sec-vehicles", "type": "vehicles",  "enabled": true, "title": "Aktualna Oferta Samochodów"},
+      {"id": "sec-about",    "type": "about",     "enabled": true, "title": "O NAS (Lokalny komis D-CAR)"},
+      {"id": "sec-lead",     "type": "lead_form", "enabled": true, "title": "Darmowa, błyskawiczna wycena auta"},
+      {"id": "sec-faq",      "type": "faq",       "enabled": true, "title": "Najczęściej zadawane pytania"},
+      {"id": "sec-contact",  "type": "contact",   "enabled": true, "title": "Kontakt i lokalizacja"}
     ]
   }'::jsonb
 )

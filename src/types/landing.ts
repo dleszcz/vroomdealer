@@ -32,6 +32,8 @@ export interface DealerBranding {
     accentForeground: string;
     surface?: string;
     muted?: string;
+    headerBg?: string;
+    footerBg?: string;
   };
   media?: {
     heroImageUrl?: string;
@@ -47,6 +49,7 @@ export type SectionType =
   | "process"
   | "vehicles"
   | "reviews"
+  | "about"
   | "faq"
   | "lead_form"
   | "map"
