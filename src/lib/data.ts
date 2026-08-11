@@ -11,14 +11,14 @@ export const seedProfileDCar: Profile = {
   business_name: "D-Car",
   business_description:
     "Prywatny komis samochodowy i profesjonalny skup aut w Warszawie. Bezpłatna wycena, natychmiastowa wypłata gotówki oraz auta z gwarancją.",
-  logo_url: "/images/dcar-logo.svg",
+  logo_url: "/images/dcar-logo.png",
   pixel_id: "1636959447346992",
   whatsapp_number: "48609525935",
   contact_phone: "+48 609 525 935",
   address: "ul. Wycenowa 10",
   city: "Warszawa",
   branding: {
-    logoUrl: "/images/dcar-logo.svg",
+    logoUrl: "/images/dcar-logo.png",
     colors: {
       primary: "#1686E0",
       primaryForeground: "#ffffff",

@@ -1,135 +1,38 @@
-"use client";
-
 import React from "react";
+import { Check } from "lucide-react";
 import { DealerTenant, SectionConfig } from "@/types/landing";
 
-interface AboutSectionProps {
-  tenant: DealerTenant;
-  config?: SectionConfig;
-}
+interface Props { tenant: DealerTenant; config?: SectionConfig; }
 
-export function AboutSection({ tenant, config }: AboutSectionProps) {
-  const heroImage =
-    tenant.branding?.media?.heroImageUrl ||
-    "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop";
+export function AboutSection({ tenant, config }: Props) {
+  const title = config?.title || "O nas";
+  const validationMode = /lokalny komis|partner walidacyjny|vroomdealer/i.test(title) || tenant.slug === "d-car";
+  if (!validationMode) {
+    return (
+      <section id="about" className="vd-section vd-section--bordered">
+        <div className="vd-container">
+          <span className="vd-eyebrow">O nas</span>
+          <h2 className="vd-heading">{tenant.businessName}</h2>
+          <p className="vd-copy" style={{ maxWidth: 680, marginTop: 16 }}>{tenant.businessDescription || "Lokalny komis samochodowy."}</p>
+        </div>
+      </section>
+    );
+  }
 
+  const image = (config?.data?.imageUrl as string) || "/images/dcar-validation.png";
   return (
-    <section className="about-section" id="about" style={{ width: "100%", background: "#F1F3F5", padding: "5rem 0" }}>
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-            gap: "3.5rem",
-            alignItems: "center",
-          }}
-        >
-          {/* Left — Image of Dealer Yard */}
-          <div style={{ position: "relative" }}>
-            <div
-              style={{
-                borderRadius: "16px",
-                overflow: "hidden",
-                boxShadow: "0 15px 35px rgba(0,0,0,0.08)",
-                border: "1px solid #E2E8F0",
-                height: "360px",
-              }}
-            >
-              <img
-                src={heroImage}
-                alt={`Plac komisu ${tenant.businessName}`}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-          </div>
-
-          {/* Right — Text & Checklist */}
+    <section id="about" className="vd-section validation">
+      <div className="vd-container validation__layout">
+        <div className="validation__image"><img src={image} alt={`${tenant.businessName} - partner walidacyjny VroomDealer`} /></div>
+        <div className="validation__content">
           <div>
-            <span
-              style={{
-                display: "inline-block",
-                color: "var(--color-primary, #1686E0)",
-                fontSize: "0.85rem",
-                fontWeight: 800,
-                letterSpacing: "0.08em",
-                marginBottom: "0.75rem",
-                textTransform: "uppercase",
-              }}
-            >
-              PIERWSZY PARTNER WALIDACYJNY VROOMDEALER
-            </span>
-
-            <h2
-              style={{
-                fontSize: "2.25rem",
-                fontWeight: 800,
-                color: "#090B0B",
-                marginBottom: "1.25rem",
-                lineHeight: 1.2,
-              }}
-            >
-              {config?.title || `${tenant.businessName} – lokalny komis, realne wyniki`}
-            </h2>
-
-            <p
-              style={{
-                fontSize: "1.05rem",
-                color: "#475569",
-                lineHeight: 1.6,
-                marginBottom: "2rem",
-              }}
-            >
-              {tenant.businessName} to pierwszy komis, z którym rozwijamy VroomDealer. Razem testujemy i udoskonalamy system, który naprawdę działa.
-            </p>
-
-            <ul style={{ display: "flex", flexDirection: "column", gap: "0.85rem", padding: 0, margin: "0 0 2.25rem 0", listStyle: "none" }}>
-              {[
-                "Własna strona komisu",
-                "Pozyskiwanie wartościowych aut",
-                "Pełne wsparcie i technologia VroomDealer",
-              ].map((item, index) => (
-                <li key={index} style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                  <div
-                    style={{
-                      width: "22px",
-                      height: "22px",
-                      borderRadius: "50%",
-                      background: "var(--color-primary, #1686E0)",
-                      color: "#ffffff",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                      fontSize: "0.75rem",
-                      fontWeight: 900,
-                    }}
-                  >
-                    ✓
-                  </div>
-                  <span style={{ fontSize: "0.95rem", color: "#090B0B", fontWeight: 700 }}>
-                    {item}
-                  </span>
-                </li>
-              ))}
-            </ul>
-
-            <a
-              href="#lead-form"
-              style={{
-                display: "inline-block",
-                padding: "0.85rem 2rem",
-                borderRadius: "10px",
-                background: "var(--color-primary, #1686E0)",
-                color: "#ffffff",
-                fontSize: "0.9rem",
-                fontWeight: 800,
-                textDecoration: "none",
-                letterSpacing: "0.03em",
-                boxShadow: "0 4px 14px rgba(22, 134, 224, 0.3)",
-              }}
-            >
-              ZOBACZ NASZĄ STRONĘ
-            </a>
+            <span className="vd-eyebrow">Pierwszy partner walidacyjny VroomDealera</span>
+            <h2 className="vd-heading validation__title">D-CAR – lokalny komis, realne wyniki</h2>
+            <p className="vd-copy validation__text">D-CAR to pierwszy komis, z którym rozwijamy VroomDealera. Razem testujemy i udoskonalamy system, który naprawdę działa.</p>
+            <a className="vd-button vd-button--primary" href="#hero">Zobacz naszą stronę</a>
+          </div>
+          <div className="validation__list">
+            {["Własna strona komisu", "Pozyskiwanie wartościowych aut", "Pełne wsparcie i technologia VroomDealer"].map(item => <div className="validation__item" key={item}><span className="validation__check"><Check size={10} strokeWidth={3} /></span>{item}</div>)}
           </div>
         </div>
       </div>

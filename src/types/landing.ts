@@ -42,6 +42,17 @@ export interface DealerBranding {
   };
 }
 
+
+export interface HeroConfig {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  primaryCta?: { label?: string; sublabel?: string; href?: string };
+  secondaryCta?: { label?: string; sublabel?: string; href?: string };
+  benefits?: { label: string; icon?: "cash" | "check" | "truck" | "scale" }[];
+  showAccent?: boolean;
+}
 export type SectionType =
   | "hero"
   | "services"

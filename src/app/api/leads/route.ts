@@ -6,7 +6,13 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    if (!body.customerPhone || !body.dealerId) {
+    const dealerId = body.dealerId || body.dealer_id;
+    const customerPhone = body.customerPhone || body.phone;
+    const customerName = body.customerName || body.full_name || body.fullName;
+    const customerEmail = body.customerEmail || body.email;
+    const vehicleDetails = body.vehicleDetails || body.vehicle_details || body.car_details || body.carDetails;
+
+    if (!customerPhone || !dealerId) {
       return NextResponse.json(
         { error: "Wymagany jest numer telefonu oraz identyfikator komisu." },
         { status: 400 }
@@ -14,14 +20,14 @@ export async function POST(request: Request) {
     }
 
     const leadData: Lead = {
-      dealerId: body.dealerId,
+      dealerId,
       source: body.source || "lead_form",
       campaign: body.campaign,
       landingPath: body.landingPath || "/",
-      customerName: body.customerName,
-      customerPhone: body.customerPhone,
-      customerEmail: body.customerEmail,
-      vehicleDetails: body.vehicleDetails,
+      customerName,
+      customerPhone,
+      customerEmail,
+      vehicleDetails,
       status: "new",
     };
 
