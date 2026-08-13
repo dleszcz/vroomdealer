@@ -5,14 +5,16 @@ import { DealerBranding, DealerService, LandingPageConfig, SectionConfig } from 
 // ============================================================
 
 export const DEFAULT_COLORS: DealerBranding["colors"] = {
-  primary: "#1e293b",
+  primary: "#1686E0",
   primaryForeground: "#ffffff",
   background: "#ffffff",
-  foreground: "#0f172a",
-  accent: "#25d366",
+  foreground: "#090B0B",
+  accent: "#1686E0",
   accentForeground: "#ffffff",
-  surface: "#f8fafc",
-  muted: "#f1f5f9",
+  surface: "#F1F3F5",
+  muted: "#E2E8F0",
+  headerBg: "#080808",
+  footerBg: "#080808",
 };
 
 export const DEFAULT_BRANDING: DealerBranding = {
@@ -36,15 +38,13 @@ export const DEFAULT_SERVICES: DealerService[] = [
 ];
 
 export const DEFAULT_SECTIONS: SectionConfig[] = [
-  { id: "sec-hero", type: "hero", enabled: true },
-  { id: "sec-lead", type: "lead_form", enabled: true, title: "Darmowa wycena samochodu" },
-  { id: "sec-trust", type: "trust", enabled: true, title: "Dlaczego warto nam zaufać" },
-  { id: "sec-services", type: "services", enabled: true, title: "Nasze Usługi" },
-  { id: "sec-process", type: "process", enabled: true, title: "Prosty proces sprzedaży" },
-  { id: "sec-vehicles", type: "vehicles", enabled: true, title: "Aktualna oferta aut" },
-  { id: "sec-reviews", type: "reviews", enabled: true, title: "Co mówią nasi klienci" },
-  { id: "sec-faq", type: "faq", enabled: true, title: "Najczęściej zadawane pytania" },
-  { id: "sec-contact", type: "contact", enabled: true, title: "Kontakt i Lokalizacja" },
+  { id: "sec-hero", type: "hero", enabled: true, title: "Sprzedaj nam swoje auto" },
+  { id: "sec-value-props", type: "trust", enabled: true, title: "Dlaczego warto nam zaufać" },
+  { id: "sec-process", type: "process", enabled: true, title: "Jak to działa?" },
+  { id: "sec-services", type: "services", enabled: true, title: "Nasza oferta" },
+  { id: "sec-trust", type: "reviews", enabled: true, title: "Dlaczego warto nam zaufać?" },
+  { id: "sec-vehicles", type: "vehicles", enabled: true, title: "Aktualna oferta samochodów" },
+  { id: "sec-about", type: "about", enabled: true, title: "O nas" },
 ];
 
 export const DEFAULT_PAGE_CONFIG: LandingPageConfig = {
@@ -79,6 +79,8 @@ export function mergeColors(
     accentForeground: isValidHexColor(tenantColors.accentForeground) ? tenantColors.accentForeground : DEFAULT_COLORS.accentForeground,
     surface: isValidHexColor(tenantColors.surface) ? tenantColors.surface : DEFAULT_COLORS.surface,
     muted: isValidHexColor(tenantColors.muted) ? tenantColors.muted : DEFAULT_COLORS.muted,
+    headerBg: isValidHexColor(tenantColors.headerBg) ? tenantColors.headerBg : DEFAULT_COLORS.headerBg,
+    footerBg: isValidHexColor(tenantColors.footerBg) ? tenantColors.footerBg : DEFAULT_COLORS.footerBg,
   };
 }
 

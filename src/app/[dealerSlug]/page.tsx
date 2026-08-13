@@ -75,10 +75,6 @@ export default async function DealerPage({ params }: Props) {
       />
 
       <SectionRenderer tenant={tenant} />
-
-      {(tenant.contact.whatsapp || tenant.contact.phone) && (
-        <ContactBar profile={profileShim} />
-      )}
     </>
   );
 }

@@ -32,6 +32,8 @@ export interface DealerBranding {
     accentForeground: string;
     surface?: string;
     muted?: string;
+    headerBg?: string;
+    footerBg?: string;
   };
   media?: {
     heroImageUrl?: string;
@@ -40,6 +42,17 @@ export interface DealerBranding {
   };
 }
 
+
+export interface HeroConfig {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  primaryCta?: { label?: string; sublabel?: string; href?: string };
+  secondaryCta?: { label?: string; sublabel?: string; href?: string };
+  benefits?: { label: string; icon?: "cash" | "check" | "truck" | "scale" }[];
+  showAccent?: boolean;
+}
 export type SectionType =
   | "hero"
   | "services"
@@ -47,6 +60,7 @@ export type SectionType =
   | "process"
   | "vehicles"
   | "reviews"
+  | "about"
   | "faq"
   | "lead_form"
   | "map"

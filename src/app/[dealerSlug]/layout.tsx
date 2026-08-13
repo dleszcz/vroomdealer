@@ -25,7 +25,7 @@ export default async function DealerLayout({
       <div className="dealer-layout">
         <DealerHeader tenant={tenant} />
         <main className="dealer-main">{children}</main>
-        <Footer />
+        <Footer tenant={tenant} />
       </div>
     </BrandProvider>
   );

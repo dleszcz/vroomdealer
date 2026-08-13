@@ -1,86 +1,56 @@
 "use client";
 
 import React from "react";
-import { DealerTenant, SectionConfig } from "@/types/landing";
+import { Banknote, ClipboardCheck, Scale, Truck } from "lucide-react";
+import { DealerTenant, HeroConfig, SectionConfig } from "@/types/landing";
 import { trackEvent } from "@/lib/analytics";
 
-interface HeroSectionProps {
-  tenant: DealerTenant;
-  config?: SectionConfig;
-}
+interface HeroSectionProps { tenant: DealerTenant; config?: SectionConfig; }
+
+
+const iconMap = { cash: Banknote, check: ClipboardCheck, truck: Truck, scale: Scale };
 
 export function HeroSection({ tenant, config }: HeroSectionProps) {
-  const phone = tenant.contact.phone;
-  const telUrl = phone ? `tel:${phone.replace(/\s/g, "")}` : "#";
-  const whatsappNumber = tenant.contact.whatsapp;
-  const whatsappUrl = whatsappNumber
-    ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-        `Dzień dobry! Piszę ze strony ${tenant.businessName} w sprawie bezpłatnej wyceny / zakupu auta.`
-      )}`
-    : null;
+  const data = (config?.data || {}) as HeroConfig;
+  const sanitizeImage = (img?: string | null) => (img && typeof img === "string" && !img.includes("unsplash") ? img : null);
+  const heroImage = sanitizeImage(data.image) || sanitizeImage(tenant.branding.media?.heroImageUrl) || "/images/dcar-hero.png";
+  const benefits = data.benefits?.length ? data.benefits : [
+    { label: "Gotówka od ręki", icon: "cash" },
+    { label: "Bezpłatna wycena", icon: "check" },
+    { label: "Odbieramy auto", icon: "truck" },
+    { label: "Formalności po naszej stronie", icon: "scale" },
+  ];
 
-  const title = config?.title || tenant.seo?.metaTitle || `Twój prywatny system sprzedaży i skupu aut w ${tenant.location?.city || "Warszawie"}`;
-  const subtitle = config?.subtitle || tenant.businessDescription || "Zbieraj bezpośrednie telefony od kupców, uzyskaj natychmiastową wycenę swojego auta i kupuj sprawdzone samochody z gwarancją.";
-
-  const heroImg =
-    (config?.data?.heroImageUrl as string) ||
-    tenant.branding.media?.heroImageUrl ||
-    "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&h=1200&fit=crop";
+  const primaryHref = data.primaryCta?.href || (tenant.contact.whatsapp ? `https://wa.me/${tenant.contact.whatsapp.replace(/\D/g, "")}` : tenant.contact.phone ? `tel:${tenant.contact.phone.replace(/\s/g, "")}` : "#about");
+  const integratedHeroTreatment = heroImage.includes("dcar-hero");
+  const secondaryHref = data.secondaryCta?.href || "#vehicles";
 
   return (
-    <section className="landing__hero" id="hero">
-      <div className="landing__hero-inner">
-        <div className="landing__text">
-          <div className="brand-badge" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.4rem 0.8rem", borderRadius: "9999px", background: "var(--color-surface)", border: "1px solid var(--color-border)", marginBottom: "1.25rem", fontSize: "0.875rem" }}>
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--color-primary)" }} />
-            <span>{tenant.businessName} • {tenant.location?.city || "Polska"}</span>
-          </div>
+    <section id="hero" className={`dealer-hero ${integratedHeroTreatment ? "dealer-hero--integrated" : ""}`}>
+      <div className="dealer-hero__media" style={{ backgroundImage: `url(${heroImage})` }} aria-hidden="true" />
+      {data.showAccent !== false && !integratedHeroTreatment && <div className="dealer-hero__accent" aria-hidden="true" />}
+      <div className="vd-container dealer-hero__content">
+        <div className="dealer-hero__copy">
+          <div className="dealer-hero__eyebrow">{data.eyebrow || `AUTO KOMIS ${tenant.businessName.toUpperCase()}`}</div>
+          <h1 className="dealer-hero__title">{data.title || "Sprzedaj nam swoje auto"}</h1>
+          <p className="dealer-hero__description">{data.description || "Szybko, bezpiecznie i bez zbędnych formalności."}</p>
 
-          <h1 className="landing__title">{title}</h1>
-          <p className="landing__subtitle">{subtitle}</p>
-
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginTop: "1.5rem" }}>
-            <a
-              href="#lead-form"
-              className="landing__cta"
-              onClick={() => trackEvent("lead_form_started", { source: "hero_primary_cta" })}
-            >
-              Wyceń swoje auto
+          <div className="dealer-hero__actions">
+            <a className="vd-button vd-button--primary dealer-hero__button" href={primaryHref} onClick={() => trackEvent("lead_form_started", { source: "hero_primary_cta", dealer_id: tenant.id })}>
+              <span>{data.primaryCta?.label || "Sprzedaj auto"}</span>
+              <small>{data.primaryCta?.sublabel || "Bezpłatna wycena"}</small>
             </a>
-
-            {phone && (
-              <a
-                href={telUrl}
-                className="landing__cta"
-                style={{ background: "var(--color-surface)", color: "var(--color-text)", border: "1px solid var(--color-border)" }}
-                onClick={() => trackEvent("phone_clicked", { source: "hero_cta" })}
-              >
-                📞 {phone}
-              </a>
-            )}
-
-            {whatsappUrl && (
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="landing__cta"
-                style={{ background: "#25d366", color: "#ffffff" }}
-                onClick={() => trackEvent("whatsapp_clicked", { source: "hero_cta" })}
-              >
-                💬 WhatsApp
-              </a>
-            )}
+            <a className="vd-button vd-button--outline-dark dealer-hero__button" href={secondaryHref}>
+              <span>{data.secondaryCta?.label || "Zobacz samochody"}</span>
+              <small>{data.secondaryCta?.sublabel || "Aktualna oferta"}</small>
+            </a>
           </div>
-        </div>
 
-        <div className="landing__visual">
-          <div className="landing__visual-bg" />
-          <div className="landing__visual-container">
-            <div className="landing__visual-card">
-              <img src={heroImg} alt={tenant.businessName} />
-              <div className="landing__visual-gradient" />
-            </div>
+          <div className="dealer-hero__benefits">
+            {benefits.map((benefit, index) => {
+              const Icon = iconMap[(benefit.icon || "check") as keyof typeof iconMap] || ClipboardCheck;
+              return <div className="dealer-hero__benefit" key={`${benefit.label}-${index}`}><Icon size={16} strokeWidth={2} /><span>{benefit.label}</span></div>;
+            })}
           </div>
         </div>
       </div>

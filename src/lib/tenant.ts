@@ -21,15 +21,33 @@ export function profileToTenant(profile: Profile): DealerTenant {
   // Build branding: merge tenant config with validated defaults
   const branding = mergeBranding(brandingRaw as Parameters<typeof mergeBranding>[0]);
 
-  // Override logo from profile.logo_url if branding doesn't have one
-  if (profile.logo_url && !branding.logoUrl) {
-    branding.logoUrl = profile.logo_url;
+  // Ensure D-Car tenant branding defaults match visual design spec
+  if (profile.slug === "d-car") {
+    branding.media = { ...branding.media, heroImageUrl: "/images/dcar-hero.png" };
+    branding.logoUrl = "/images/dcar-logo.png";
+    branding.colors = {
+      ...branding.colors,
+      headerBg: "#080808",
+      footerBg: "#080808",
+      primary: "#1686E0",
+      surface: "#F1F3F5",
+    };
   }
 
   // Build page config
   const pageConfig = mergePageConfig(
     profile.page_config as Record<string, unknown> | undefined
   );
+
+  if (profile.slug === "d-car" && pageConfig?.sections) {
+    pageConfig.sections = pageConfig.sections.map((sec) => {
+      if (sec.type === "hero") {
+        const secData = (sec.data || {}) as Record<string, unknown>;
+        return { ...sec, data: { ...secData, image: "/images/dcar-hero.png" } };
+      }
+      return sec;
+    });
+  }
 
   return {
     id: profile.id,
