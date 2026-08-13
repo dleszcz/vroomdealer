@@ -129,11 +129,11 @@ INSERT INTO profiles (
       "accentForeground": "#ffffff",
       "surface": "#F1F3F5",
       "muted": "#E2E8F0",
-      "headerBg": "#090B0B",
-      "footerBg": "#090B0B"
+      "headerBg": "#080808",
+      "footerBg": "#080808"
     },
     "media": {
-      "heroImageUrl": "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1200&h=800&fit=crop"
+      "heroImageUrl": "/images/dcar-hero.png"
     }
   }'::jsonb,
   '[
