@@ -20,8 +20,10 @@ export function DealerHeader({ tenant }: DealerHeaderProps) {
     ["Kontakt", "#footer"],
   ];
 
+  const headerBg = tenant.branding?.colors?.headerBg || "#080808";
+
   return (
-    <header className="dealer-header">
+    <header className="dealer-header" style={{ background: headerBg }}>
       <div className="dealer-header__inner">
         <a href="#hero" aria-label={tenant.businessName}>
           <img className="dealer-header__logo" src={logo} alt={tenant.businessName} />

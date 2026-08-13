@@ -12,7 +12,8 @@ const iconMap = { cash: Banknote, check: ClipboardCheck, truck: Truck, scale: Sc
 
 export function HeroSection({ tenant, config }: HeroSectionProps) {
   const data = (config?.data || {}) as HeroConfig;
-  const heroImage = data.image || tenant.branding.media?.heroImageUrl || "/images/dcar-hero.png";
+  const sanitizeImage = (img?: string | null) => (img && typeof img === "string" && !img.includes("unsplash") ? img : null);
+  const heroImage = sanitizeImage(data.image) || sanitizeImage(tenant.branding.media?.heroImageUrl) || "/images/dcar-hero.png";
   const benefits = data.benefits?.length ? data.benefits : [
     { label: "Gotówka od ręki", icon: "cash" },
     { label: "Bezpłatna wycena", icon: "check" },

@@ -32,7 +32,7 @@ export const seedProfileDCar: Profile = {
       footerBg: "#080808",
     },
     media: {
-      heroImageUrl: "/images/dcar-hero.jpg",
+      heroImageUrl: "/images/dcar-hero.png",
     },
   },
   services: [

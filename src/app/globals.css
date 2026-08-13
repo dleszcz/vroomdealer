@@ -72,9 +72,9 @@ img { max-width: 100%; }
 .dealer-header__toggle { display: none; border: 0; background: transparent; color: #fff; padding: 8px; }
 
 /* Hero */
-.dealer-hero { position: relative; min-height: 455px; background: #08111a; color: #fff; overflow: hidden; }
+.dealer-hero { position: relative; min-height: 455px; background: #080808; color: #fff; overflow: hidden; }
 .dealer-hero__media { position: absolute; inset: 0; background-size: cover; background-position: center; }
-.dealer-hero__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(4,11,18,.96) 0%, rgba(4,11,18,.9) 31%, rgba(4,11,18,.48) 52%, rgba(4,11,18,.08) 75%); }
+.dealer-hero__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8,8,8,.98) 0%, rgba(8,8,8,.92) 35%, rgba(8,8,8,.5) 55%, rgba(8,8,8,.08) 75%); }
 .dealer-hero__content { position: relative; z-index: 2; min-height: 455px; display: flex; align-items: center; }
 .dealer-hero__copy { width: min(100%, 570px); padding-block: 64px; }
 .dealer-hero__eyebrow { margin-bottom: 18px; color: var(--color-primary); font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }

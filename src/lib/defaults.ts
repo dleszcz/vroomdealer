@@ -5,14 +5,16 @@ import { DealerBranding, DealerService, LandingPageConfig, SectionConfig } from 
 // ============================================================
 
 export const DEFAULT_COLORS: DealerBranding["colors"] = {
-  primary: "#1e293b",
+  primary: "#1686E0",
   primaryForeground: "#ffffff",
   background: "#ffffff",
-  foreground: "#0f172a",
-  accent: "#25d366",
+  foreground: "#090B0B",
+  accent: "#1686E0",
   accentForeground: "#ffffff",
-  surface: "#f8fafc",
-  muted: "#f1f5f9",
+  surface: "#F1F3F5",
+  muted: "#E2E8F0",
+  headerBg: "#080808",
+  footerBg: "#080808",
 };
 
 export const DEFAULT_BRANDING: DealerBranding = {
@@ -77,8 +79,8 @@ export function mergeColors(
     accentForeground: isValidHexColor(tenantColors.accentForeground) ? tenantColors.accentForeground : DEFAULT_COLORS.accentForeground,
     surface: isValidHexColor(tenantColors.surface) ? tenantColors.surface : DEFAULT_COLORS.surface,
     muted: isValidHexColor(tenantColors.muted) ? tenantColors.muted : DEFAULT_COLORS.muted,
-    headerBg: isValidHexColor(tenantColors.headerBg) ? tenantColors.headerBg : tenantColors.primary,
-    footerBg: isValidHexColor(tenantColors.footerBg) ? tenantColors.footerBg : tenantColors.primary,
+    headerBg: isValidHexColor(tenantColors.headerBg) ? tenantColors.headerBg : DEFAULT_COLORS.headerBg,
+    footerBg: isValidHexColor(tenantColors.footerBg) ? tenantColors.footerBg : DEFAULT_COLORS.footerBg,
   };
 }
 

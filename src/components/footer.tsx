@@ -12,10 +12,12 @@ export function Footer({ tenant }: FooterProps) {
   const email = tenant?.contact?.email || "";
   const city = tenant?.location?.city || "";
   const address = tenant?.location?.address || "";
-  const logo = tenant?.logoUrl || tenant?.branding?.logoUrl || "/images/dcar-logo.svg";
+  const logo = tenant?.logoUrl || tenant?.branding?.logoUrl || "/images/dcar-logo.png";
+
+  const footerBg = tenant?.branding?.colors?.footerBg || "#080808";
 
   return (
-    <footer id="footer" className="dealer-footer">
+    <footer id="footer" className="dealer-footer" style={{ background: footerBg }}>
       <div className="vd-container">
         <div className="dealer-footer__grid">
           <div>

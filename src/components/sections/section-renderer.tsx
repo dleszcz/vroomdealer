@@ -21,7 +21,6 @@ export function SectionRenderer({ tenant }: SectionRendererProps) {
   const accentColor = tenant.branding?.colors?.accent || primaryColor;
   const headerBg = tenant.branding?.colors?.headerBg || "#080808";
   const footerBg = tenant.branding?.colors?.footerBg || "#080808";
-
   return (
     <div
       className="landing-engine-sections"
