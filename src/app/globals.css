@@ -250,3 +250,458 @@ img { max-width: 100%; }
 .dealer-footer__contact svg { flex: 0 0 auto; }
 
 .dealer-hero--integrated .dealer-hero__media::after { background: transparent; }
+
+/* ═══════════════════════════════════════════════════════════
+   Coming Soon — VroomDealer.pl
+   ═══════════════════════════════════════════════════════════ */
+
+@layer base {
+
+.cs {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #060609;
+  color: #fff;
+}
+
+/* Animated gradient orbs */
+.cs__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.45;
+  pointer-events: none;
+  will-change: transform;
+}
+.cs__orb--1 {
+  width: 600px; height: 600px;
+  top: -15%; left: -10%;
+  background: radial-gradient(circle, #1686E0 0%, transparent 70%);
+  animation: cs-float-1 14s ease-in-out infinite;
+}
+.cs__orb--2 {
+  width: 500px; height: 500px;
+  bottom: -10%; right: -8%;
+  background: radial-gradient(circle, #6366f1 0%, transparent 70%);
+  animation: cs-float-2 18s ease-in-out infinite;
+}
+.cs__orb--3 {
+  width: 350px; height: 350px;
+  top: 40%; left: 55%;
+  background: radial-gradient(circle, #06b6d4 0%, transparent 70%);
+  animation: cs-float-3 12s ease-in-out infinite;
+  opacity: 0.25;
+}
+
+@keyframes cs-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(60px, 40px) scale(1.08); }
+  66% { transform: translate(-30px, 60px) scale(0.95); }
+}
+@keyframes cs-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-50px, -30px) scale(1.05); }
+  66% { transform: translate(40px, -50px) scale(0.92); }
+}
+@keyframes cs-float-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-40px, 30px) scale(1.12); }
+}
+
+/* Content */
+.cs__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px 64px;
+  max-width: 720px;
+  animation: cs-fade-in 0.8s ease-out both;
+}
+@keyframes cs-fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Logo */
+.cs__logo {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 32px;
+}
+.cs__logo-vroom { color: #fff; }
+.cs__logo-dealer { color: #1686E0; }
+.cs__logo-pl { color: rgba(255,255,255,0.4); font-weight: 600; }
+
+/* Badge */
+.cs__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 28px;
+  backdrop-filter: blur(12px);
+}
+.cs__badge-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34,197,94,0.6);
+  animation: cs-pulse 2s ease-in-out infinite;
+}
+@keyframes cs-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* Title */
+.cs__title {
+  margin: 0 0 20px;
+  font-size: clamp(32px, 5.5vw, 52px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: #fff;
+}
+.cs__title-accent {
+  background: linear-gradient(135deg, #1686E0 0%, #06b6d4 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Subtitle */
+.cs__subtitle {
+  margin: 0 0 36px;
+  font-size: 17px;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.5);
+  max-width: 520px;
+}
+
+/* Buttons */
+.cs__actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 56px;
+}
+.cs__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+.cs__btn:hover { transform: translateY(-2px); }
+.cs__btn--primary {
+  background: linear-gradient(135deg, #1686E0 0%, #1474c4 100%);
+  color: #fff;
+  box-shadow: 0 8px 28px rgba(22,134,224,0.35);
+}
+.cs__btn--primary:hover { box-shadow: 0 12px 36px rgba(22,134,224,0.45); }
+.cs__btn--outline {
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+}
+.cs__btn--outline:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); }
+
+/* Features */
+.cs__features {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+.cs__feature {
+  padding: 24px 16px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(12px);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.cs__feature:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.14);
+  transform: translateY(-2px);
+}
+.cs__feature-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+.cs__feature-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.65);
+}
+
+/* Footer */
+.cs__footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  text-align: center;
+  padding: 20px 24px;
+}
+.cs__footer p {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255,255,255,0.25);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .cs__features { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .cs__feature { padding: 18px 12px; }
+  .cs__actions { flex-direction: column; width: 100%; }
+  .cs__btn { justify-content: center; width: 100%; }
+}
+
+} /* end @layer base */
+
+
+/* Animated gradient orbs */
+.cs__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.45;
+  pointer-events: none;
+  will-change: transform;
+}
+.cs__orb--1 {
+  width: 600px; height: 600px;
+  top: -15%; left: -10%;
+  background: radial-gradient(circle, #1686E0 0%, transparent 70%);
+  animation: cs-float-1 14s ease-in-out infinite;
+}
+.cs__orb--2 {
+  width: 500px; height: 500px;
+  bottom: -10%; right: -8%;
+  background: radial-gradient(circle, #6366f1 0%, transparent 70%);
+  animation: cs-float-2 18s ease-in-out infinite;
+}
+.cs__orb--3 {
+  width: 350px; height: 350px;
+  top: 40%; left: 55%;
+  background: radial-gradient(circle, #06b6d4 0%, transparent 70%);
+  animation: cs-float-3 12s ease-in-out infinite;
+  opacity: 0.25;
+}
+
+@keyframes cs-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(60px, 40px) scale(1.08); }
+  66% { transform: translate(-30px, 60px) scale(0.95); }
+}
+@keyframes cs-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-50px, -30px) scale(1.05); }
+  66% { transform: translate(40px, -50px) scale(0.92); }
+}
+@keyframes cs-float-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-40px, 30px) scale(1.12); }
+}
+
+/* Content */
+.cs__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px 64px;
+  max-width: 720px;
+  animation: cs-fade-in 0.8s ease-out both;
+}
+@keyframes cs-fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Logo */
+.cs__logo {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 32px;
+}
+.cs__logo-vroom { color: #fff; }
+.cs__logo-dealer { color: #1686E0; }
+.cs__logo-pl { color: rgba(255,255,255,0.4); font-weight: 600; }
+
+/* Badge */
+.cs__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 28px;
+  backdrop-filter: blur(12px);
+}
+.cs__badge-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34,197,94,0.6);
+  animation: cs-pulse 2s ease-in-out infinite;
+}
+@keyframes cs-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* Title */
+.cs__title {
+  margin: 0 0 20px;
+  font-size: clamp(32px, 5.5vw, 52px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: #fff;
+}
+.cs__title-accent {
+  background: linear-gradient(135deg, #1686E0 0%, #06b6d4 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Subtitle */
+.cs__subtitle {
+  margin: 0 0 36px;
+  font-size: 17px;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.5);
+  max-width: 520px;
+}
+
+/* Buttons */
+.cs__actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 56px;
+}
+.cs__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+.cs__btn:hover { transform: translateY(-2px); }
+.cs__btn--primary {
+  background: linear-gradient(135deg, #1686E0 0%, #1474c4 100%);
+  color: #fff;
+  box-shadow: 0 8px 28px rgba(22,134,224,0.35);
+}
+.cs__btn--primary:hover { box-shadow: 0 12px 36px rgba(22,134,224,0.45); }
+.cs__btn--outline {
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+}
+.cs__btn--outline:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); }
+
+/* Features */
+.cs__features {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+.cs__feature {
+  padding: 24px 16px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(12px);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.cs__feature:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.14);
+  transform: translateY(-2px);
+}
+.cs__feature-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+.cs__feature-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.65);
+}
+
+/* Footer */
+.cs__footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  text-align: center;
+  padding: 20px 24px;
+}
+.cs__footer p {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255,255,255,0.25);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .cs__features { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .cs__feature { padding: 18px 12px; }
+  .cs__actions { flex-direction: column; width: 100%; }
+  .cs__btn { justify-content: center; width: 100%; }
+}
