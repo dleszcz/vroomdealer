@@ -9,6 +9,8 @@ declare global {
 }
 
 export type EventName =
+  | "page_view"
+  | "cta_click"
   | "phone_clicked"
   | "whatsapp_clicked"
   | "lead_form_started"
@@ -20,6 +22,7 @@ export type EventName =
   | "ClickWhatsApp"
   | "ClickCall"
   | string;
+
 
 export function trackEvent(eventName: EventName, eventParams?: Record<string, unknown>) {
   if (typeof window === "undefined") return;

@@ -22,8 +22,8 @@ export function LeadFormSection({ tenant, config }: LeadFormSectionProps) {
   const [errorMsg, setErrorMsg] = useState("");
 
   const title = config?.title || "Szybka wycena auta";
-  const contactPhone = tenant.contact.phone || "+48 609 525 935";
-  const address = `${tenant.location?.address || "ul. Wycenowa 10"}, ${tenant.location?.city || "Warszawa"}`;
+  const contactPhone = tenant.contact.phone || "";
+  const address = [tenant.location?.address, tenant.location?.city].filter(Boolean).join(", ");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

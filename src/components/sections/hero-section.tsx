@@ -12,8 +12,7 @@ const iconMap = { cash: Banknote, check: ClipboardCheck, truck: Truck, scale: Sc
 
 export function HeroSection({ tenant, config }: HeroSectionProps) {
   const data = (config?.data || {}) as HeroConfig;
-  const sanitizeImage = (img?: string | null) => (img && typeof img === "string" && !img.includes("unsplash") ? img : null);
-  const heroImage = sanitizeImage(data.image) || sanitizeImage(tenant.branding.media?.heroImageUrl) || "/images/dcar-hero.png";
+  const heroImage = data.image || tenant.branding.media?.heroImageUrl || "";
   const benefits = data.benefits?.length ? data.benefits : [
     { label: "Gotówka od ręki", icon: "cash" },
     { label: "Bezpłatna wycena", icon: "check" },
@@ -22,16 +21,15 @@ export function HeroSection({ tenant, config }: HeroSectionProps) {
   ];
 
   const primaryHref = data.primaryCta?.href || (tenant.contact.whatsapp ? `https://wa.me/${tenant.contact.whatsapp.replace(/\D/g, "")}` : tenant.contact.phone ? `tel:${tenant.contact.phone.replace(/\s/g, "")}` : "#about");
-  const integratedHeroTreatment = heroImage.includes("dcar-hero");
   const secondaryHref = data.secondaryCta?.href || "#vehicles";
 
   return (
-    <section id="hero" className={`dealer-hero ${integratedHeroTreatment ? "dealer-hero--integrated" : ""}`}>
-      <div className="dealer-hero__media" style={{ backgroundImage: `url(${heroImage})` }} aria-hidden="true" />
-      {data.showAccent !== false && !integratedHeroTreatment && <div className="dealer-hero__accent" aria-hidden="true" />}
+    <section id="hero" className="dealer-hero">
+      {heroImage && <div className="dealer-hero__media" style={{ backgroundImage: `url(${heroImage})` }} aria-hidden="true" />}
       <div className="vd-container dealer-hero__content">
         <div className="dealer-hero__copy">
-          <div className="dealer-hero__eyebrow">{data.eyebrow || `AUTO KOMIS ${tenant.businessName.toUpperCase()}`}</div>
+          <div className="dealer-hero__eyebrow">{data.eyebrow || `${tenant.businessName.toUpperCase()}`}</div>
+
           <h1 className="dealer-hero__title">{data.title || "Sprzedaj nam swoje auto"}</h1>
           <p className="dealer-hero__description">{data.description || "Szybko, bezpiecznie i bez zbędnych formalności."}</p>
 

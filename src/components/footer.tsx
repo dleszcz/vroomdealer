@@ -7,21 +7,34 @@ import { DealerTenant } from "@/types/landing";
 interface FooterProps { tenant?: DealerTenant | null; }
 
 export function Footer({ tenant }: FooterProps) {
-  const name = tenant?.businessName || "D-CAR";
+  const name = tenant?.businessName || "";
   const phone = tenant?.contact?.phone || "";
   const email = tenant?.contact?.email || "";
   const city = tenant?.location?.city || "";
   const address = tenant?.location?.address || "";
-  const logo = tenant?.logoUrl || tenant?.branding?.logoUrl || "/images/dcar-logo.png";
+  const logo = tenant?.logoUrl || tenant?.branding?.logoUrl;
 
   const footerBg = tenant?.branding?.colors?.footerBg || "#080808";
+
+  // Active service areas for local SEO links
+  const activeLocalPages =
+    tenant?.localSeo?.localPages?.filter(
+      (lp) => lp.enabled && lp.indexable && lp.showInFooter !== false
+    ) || [];
+
 
   return (
     <footer id="footer" className="dealer-footer" style={{ background: footerBg }}>
       <div className="vd-container">
         <div className="dealer-footer__grid">
           <div>
-            <img className="dealer-footer__logo" src={logo} alt={name} />
+            {logo ? (
+              <img className="dealer-footer__logo" src={logo} alt={name} />
+            ) : (
+              <span style={{ fontWeight: 800, fontSize: "20px", color: "#fff", display: "block", marginBottom: "12px" }}>
+                {name}
+              </span>
+            )}
             <p className="dealer-footer__description">Skup i sprzedaż samochodów. Szybko, uczciwie, bezpiecznie.</p>
             <div className="dealer-footer__socials">
               <span className="dealer-footer__social">FB</span>
@@ -33,15 +46,38 @@ export function Footer({ tenant }: FooterProps) {
           <div>
             <h3 className="dealer-footer__heading">Szybkie linki</h3>
             <div className="dealer-footer__links">
-              <a href="#hero">Strona główna</a><a href="#lead-form">Skup aut</a><a href="#vehicles">Samochody</a><a href="#services">Usługi</a><a href="#about">O nas</a><a href="#footer">Kontakt</a>
+              <a href={`/${tenant?.slug || ""}`}>Strona główna</a>
+              <a href={`/${tenant?.slug || ""}#lead-form`}>Skup aut</a>
+              <a href={`/${tenant?.slug || ""}#vehicles`}>Samochody</a>
+              <a href={`/${tenant?.slug || ""}#services`}>Usługi</a>
+              <a href={`/${tenant?.slug || ""}#about`}>O nas</a>
+              <a href={`/${tenant?.slug || ""}#footer`}>Kontakt</a>
             </div>
           </div>
-          <div>
-            <h3 className="dealer-footer__heading">Usługi</h3>
-            <div className="dealer-footer__links">
-              <a href="#lead-form">Skup aut</a><a href="#vehicles">Sprzedaż aut</a><a href="#services">Pomoc drogowa</a><a href="#services">Transport aut</a><a href="#services">Inne usługi</a>
+          {activeLocalPages.length > 0 ? (
+            <div>
+              <h3 className="dealer-footer__heading">Obsługiwane okolice</h3>
+              <div className="dealer-footer__links">
+                {activeLocalPages.slice(0, 5).map((lp) => (
+                  <a key={lp.slug} href={`/${tenant?.slug || ""}/${lp.slug}`}>
+                    Skup aut {lp.city}
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div>
+              <h3 className="dealer-footer__heading">Usługi</h3>
+              <div className="dealer-footer__links">
+                <a href={`/${tenant?.slug || ""}#lead-form`}>Skup aut</a>
+                <a href={`/${tenant?.slug || ""}#vehicles`}>Sprzedaż aut</a>
+                <a href={`/${tenant?.slug || ""}#services`}>Pomoc drogowa</a>
+                <a href={`/${tenant?.slug || ""}#services`}>Transport aut</a>
+                <a href={`/${tenant?.slug || ""}#services`}>Inne usługi</a>
+              </div>
+            </div>
+          )}
+
           <div>
             <h3 className="dealer-footer__heading">Kontakt</h3>
             <div className="dealer-footer__links">
@@ -52,13 +88,8 @@ export function Footer({ tenant }: FooterProps) {
               <span className="dealer-footer__contact">Sob: 9:00–14:00</span>
             </div>
           </div>
-          <div>
-            <h3 className="dealer-footer__heading">Obserwuj nas</h3>
-            <div className="dealer-footer__socials">
-              <span className="dealer-footer__social">FB</span><span className="dealer-footer__social">IG</span><span className="dealer-footer__social">TT</span><span className="dealer-footer__social">YT</span>
-            </div>
-          </div>
         </div>
+
         <div className="dealer-footer__bottom">
           <span>© {new Date().getFullYear()} {name}</span>
           <span className="dealer-footer__powered">Powered by <strong>VroomDealer</strong></span>

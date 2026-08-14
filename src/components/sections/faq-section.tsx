@@ -16,6 +16,26 @@ export function FAQSection({ tenant, config }: FAQSectionProps) {
       q: "Jakie dokumenty są potrzebne do sprzedaży auta?",
       a: "Wystarczy dowód rejestracyjny pojazdu, karta pojazdu (jeśli była wydana), dowód osobisty właściciela oraz ważne ubezpieczenie OC. Jeśli auto ma współwłaściciela, potrzebna jest jego obecność lub upoważnienie.",
     },
+    ...(tenant.businessRules?.tradeIn?.enabled
+      ? [
+          {
+            q: "Czy mogę zostawić obecne auto w rozliczeniu?",
+            a:
+              tenant.businessRules.tradeIn.description ||
+              "Tak! Umożliwiamy pozostawienie swojego dotychczasowego samochodu w rozliczeniu przy zakupie auta z naszej oferty. Zapewniamy szybką wycenę i sprawne rozliczenie.",
+          },
+        ]
+      : []),
+    ...(tenant.businessRules?.purchasePriceLimit?.enabled
+      ? [
+          {
+            q: `Czy skupujecie auta do ${tenant.businessRules.purchasePriceLimit.maxAmount.toLocaleString("pl-PL")} zł?`,
+            a:
+              tenant.businessRules.purchasePriceLimit.description ||
+              `Tak! Skupujemy auta w tym przedziale cenowym (do ${tenant.businessRules.purchasePriceLimit.maxAmount.toLocaleString("pl-PL")} PLN). Skontaktuj się z nami po bezpłatną wycenę.`,
+          },
+        ]
+      : []),
     {
       q: "Jak szybko otrzymam pieniądze za samochód?",
       a: "Pieniądze wypłacamy natychmiast przy podpisaniu umowy — gotówką do ręki lub szybkim przelewem ekspresowym, który pojawia się na Twoim koncie w kilka minut.",
@@ -30,9 +50,10 @@ export function FAQSection({ tenant, config }: FAQSectionProps) {
     },
     {
       q: "Gdzie odbywają się oględziny samochodu?",
-      a: `Przystosowujemy się do Ciebie! Możesz przyjechać na nasz plac (${tenant.location?.address ? `${tenant.location.address}, ${tenant.location.city}` : tenant.location?.city || "Warszawa"}) lub my przyjedziemy bezpłatnie pod Twój dom.`,
+      a: `Przystosowujemy się do Ciebie! Możesz przyjechać na nasz plac${tenant.location?.address || tenant.location?.city ? ` (${[tenant.location?.address, tenant.location?.city].filter(Boolean).join(", ")})` : ""} lub my przyjedziemy bezpłatnie pod Twój dom.`,
     },
   ];
+
 
   const toggle = (idx: number) => {
     setOpenIndex(openIndex === idx ? null : idx);
