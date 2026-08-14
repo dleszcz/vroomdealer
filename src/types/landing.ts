@@ -64,7 +64,9 @@ export type SectionType =
   | "faq"
   | "lead_form"
   | "map"
-  | "contact";
+  | "contact"
+  | "service_areas";
+
 
 export interface SectionConfig {
   id: string;
@@ -78,6 +80,81 @@ export interface SectionConfig {
 
 export interface LandingPageConfig {
   sections: SectionConfig[];
+}
+
+export interface PrimaryLocation {
+  city: string;
+  locality?: string | null;
+  county?: string | null;
+  region?: string | null;
+  postalCode?: string | null;
+}
+
+export interface ServiceArea {
+  city: string;
+  slug: string;
+  enabled: boolean;
+  indexable: boolean;
+  priority: number;
+}
+
+export interface LocalPageSeo {
+  title?: string;
+  metaDescription?: string;
+  h1?: string;
+}
+
+export interface LocalPageFaq {
+  q: string;
+  a: string;
+}
+
+export interface LocalPageContent {
+  intro?: string;
+  serviceDescription?: string;
+  locationNote?: string;
+  faq?: LocalPageFaq[];
+}
+
+export interface LocalPageConfig {
+  slug: string;
+  city: string;
+  enabled: boolean;
+  indexable: boolean;
+  priority: number;
+  showInLocalAreaLinks?: boolean;
+  showInFooter?: boolean;
+  relatedLocations?: string[];
+  seo?: LocalPageSeo;
+  content?: LocalPageContent;
+  media?: {
+    heroImage?: string;
+  };
+}
+
+
+export interface LocalSeoConfig {
+  primaryLocation?: PrimaryLocation;
+  serviceAreas?: ServiceArea[];
+  localPages?: LocalPageConfig[];
+}
+
+export interface TradeInRule {
+  enabled: boolean;
+  title?: string;
+  description?: string;
+}
+
+export interface PurchasePriceLimitRule {
+  enabled: boolean;
+  maxAmount: number;
+  currency: string;
+  description?: string;
+}
+
+export interface DealerBusinessRules {
+  tradeIn?: TradeInRule;
+  purchasePriceLimit?: PurchasePriceLimitRule;
 }
 
 export interface DealerTenant {
@@ -95,6 +172,9 @@ export interface DealerTenant {
   location?: {
     address?: string | null;
     city?: string | null;
+    postalCode?: string | null;
+    county?: string | null;
+    region?: string | null;
     mapCoordinates?: { lat: number; lng: number };
   };
   branding: DealerBranding;
@@ -108,7 +188,11 @@ export interface DealerTenant {
     metaTitle?: string | null;
     metaDescription?: string | null;
   };
+  localSeo?: LocalSeoConfig;
+  businessRules?: DealerBusinessRules;
 }
+
+
 
 export interface Lead {
   id?: string;

@@ -9,11 +9,16 @@ export interface Profile {
   contact_phone: string | null;
   address: string | null;
   city: string | null;
+  postal_code?: string | null;
+  county?: string | null;
+  region?: string | null;
   custom_domain?: string | null;
   branding?: Record<string, unknown>;
   services?: Record<string, unknown>[];
   page_config?: Record<string, unknown>;
   seo?: Record<string, unknown>;
+  local_seo?: Record<string, unknown>;
+  business_rules?: Record<string, unknown>;
   analytics?: Record<string, unknown>;
   created_at: string;
 }

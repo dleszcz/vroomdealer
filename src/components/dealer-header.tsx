@@ -9,15 +9,15 @@ interface DealerHeaderProps { tenant: DealerTenant; }
 export function DealerHeader({ tenant }: DealerHeaderProps) {
   const [open, setOpen] = useState(false);
   const phone = tenant.contact.phone || "";
-  const logo = tenant.logoUrl || tenant.branding.logoUrl || "/images/dcar-logo.png";
+  const logo = tenant.logoUrl || tenant.branding.logoUrl;
   const primaryHref = tenant.contact.whatsapp ? `https://wa.me/${tenant.contact.whatsapp.replace(/\D/g, "")}` : phone ? `tel:${phone.replace(/\s/g, "")}` : "#hero";
   const links = [
-    ["Strona główna", "#hero"],
+    ["Strona główna", `/${tenant.slug}`],
     ["Skup aut", primaryHref],
-    ["Samochody", "#vehicles"],
-    ["Usługi", "#services"],
-    ["O nas", "#about"],
-    ["Kontakt", "#footer"],
+    ["Samochody", `/${tenant.slug}#vehicles`],
+    ["Usługi", `/${tenant.slug}#services`],
+    ["O nas", `/${tenant.slug}#about`],
+    ["Kontakt", `/${tenant.slug}#footer`],
   ];
 
   const headerBg = tenant.branding?.colors?.headerBg || "#080808";
@@ -25,9 +25,15 @@ export function DealerHeader({ tenant }: DealerHeaderProps) {
   return (
     <header className="dealer-header" style={{ background: headerBg }}>
       <div className="dealer-header__inner">
-        <a href="#hero" aria-label={tenant.businessName}>
-          <img className="dealer-header__logo" src={logo} alt={tenant.businessName} />
+        <a href={`/${tenant.slug}`} aria-label={tenant.businessName}>
+
+          {logo ? (
+            <img className="dealer-header__logo" src={logo} alt={tenant.businessName} />
+          ) : (
+            <span style={{ fontWeight: 800, fontSize: "18px", color: "#fff" }}>{tenant.businessName}</span>
+          )}
         </a>
+
 
         <nav className="dealer-header__nav" aria-label="Główna nawigacja">
           {links.map(([label, href]) => <a key={href} href={href}>{label}</a>)}

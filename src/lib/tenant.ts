@@ -5,7 +5,8 @@ import {
   mergeBranding,
   mergeServices,
   mergePageConfig,
-  DEFAULT_SERVICES,
+  mergeLocalSeo,
+  mergeBusinessRules,
 } from "@/lib/defaults";
 
 export function profileToTenant(profile: Profile): DealerTenant {
@@ -21,33 +22,16 @@ export function profileToTenant(profile: Profile): DealerTenant {
   // Build branding: merge tenant config with validated defaults
   const branding = mergeBranding(brandingRaw as Parameters<typeof mergeBranding>[0]);
 
-  // Ensure D-Car tenant branding defaults match visual design spec
-  if (profile.slug === "d-car") {
-    branding.media = { ...branding.media, heroImageUrl: "/images/dcar-hero.png" };
-    branding.logoUrl = "/images/dcar-logo.png";
-    branding.colors = {
-      ...branding.colors,
-      headerBg: "#080808",
-      footerBg: "#080808",
-      primary: "#1686E0",
-      surface: "#F1F3F5",
-    };
-  }
-
   // Build page config
   const pageConfig = mergePageConfig(
     profile.page_config as Record<string, unknown> | undefined
   );
 
-  if (profile.slug === "d-car" && pageConfig?.sections) {
-    pageConfig.sections = pageConfig.sections.map((sec) => {
-      if (sec.type === "hero") {
-        const secData = (sec.data || {}) as Record<string, unknown>;
-        return { ...sec, data: { ...secData, image: "/images/dcar-hero.png" } };
-      }
-      return sec;
-    });
-  }
+  // Build local SEO config
+  const localSeo = mergeLocalSeo(profile.local_seo as Record<string, unknown> | undefined);
+
+  // Build business rules
+  const businessRules = mergeBusinessRules(profile.business_rules as Record<string, unknown> | undefined);
 
   return {
     id: profile.id,
@@ -64,6 +48,9 @@ export function profileToTenant(profile: Profile): DealerTenant {
     location: {
       address: profile.address || null,
       city: profile.city || null,
+      postalCode: profile.postal_code || localSeo?.primaryLocation?.postalCode || null,
+      county: profile.county || localSeo?.primaryLocation?.county || null,
+      region: profile.region || localSeo?.primaryLocation?.region || null,
     },
     branding,
     services,
@@ -75,8 +62,12 @@ export function profileToTenant(profile: Profile): DealerTenant {
       metaTitle: `${profile.business_name} — Samochody i skup aut`,
       metaDescription: profile.business_description || undefined,
     },
+    localSeo,
+    businessRules,
   };
 }
+
+
 
 export async function resolveTenant(identifier: {
   slug?: string;

@@ -10,6 +10,8 @@ import { AboutSection } from "./about-section";
 import { LeadFormSection } from "./lead-form-section";
 import { FAQSection } from "./faq-section";
 import { ContactSection } from "./contact-section";
+import { ServiceAreasSection } from "./service-areas-section";
+
 
 interface SectionRendererProps { tenant: DealerTenant; }
 
@@ -21,6 +23,10 @@ export function SectionRenderer({ tenant }: SectionRendererProps) {
   const accentColor = tenant.branding?.colors?.accent || primaryColor;
   const headerBg = tenant.branding?.colors?.headerBg || "#080808";
   const footerBg = tenant.branding?.colors?.footerBg || "#080808";
+
+  const hasServiceAreasSection = enabled.some((s) => s.type === "service_areas");
+  const hasLocalPages = (tenant.localSeo?.localPages?.filter((lp) => lp.enabled && lp.indexable) || []).length > 0;
+
   return (
     <div
       className="landing-engine-sections"
@@ -48,8 +54,15 @@ export function SectionRenderer({ tenant }: SectionRendererProps) {
             return <VehiclesSection key={config.id} tenant={tenant} config={config} />;
           case "about":
             return <AboutSection key={config.id} tenant={tenant} config={config} />;
+          case "service_areas":
+            return <ServiceAreasSection key={config.id} tenant={tenant} config={config} />;
           case "lead_form":
-            return <LeadFormSection key={config.id} tenant={tenant} config={config} />;
+            return (
+              <React.Fragment key={config.id}>
+                {!hasServiceAreasSection && hasLocalPages && <ServiceAreasSection tenant={tenant} />}
+                <LeadFormSection tenant={tenant} config={config} />
+              </React.Fragment>
+            );
           case "faq":
             return <FAQSection key={config.id} tenant={tenant} config={config} />;
           case "contact":
@@ -61,3 +74,4 @@ export function SectionRenderer({ tenant }: SectionRendererProps) {
     </div>
   );
 }
+

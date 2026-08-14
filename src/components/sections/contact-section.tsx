@@ -101,7 +101,7 @@ export function ContactSection({ tenant, config }: ContactSectionProps) {
             </p>
             <p style={{ color: "var(--color-text-secondary)", fontSize: "0.95rem" }}>
               {tenant.location?.address ? `${tenant.location.address}, ` : ""}
-              {tenant.location?.city || "Warszawa"}
+              {tenant.location?.city || ""}
             </p>
             <p style={{ color: "var(--color-primary)", fontSize: "0.85rem", marginTop: "1rem", fontWeight: 600 }}>
               Dojazd lawetą do klienta 24/7

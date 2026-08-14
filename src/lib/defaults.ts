@@ -141,3 +141,54 @@ export function mergePageConfig(
     sections: validSections.length > 0 ? validSections : [...DEFAULT_SECTIONS],
   };
 }
+
+/** Validates and returns local SEO config */
+export function mergeLocalSeo(
+  tenantLocalSeo?: Record<string, unknown> | null
+): import("@/types/landing").LocalSeoConfig | undefined {
+  if (!tenantLocalSeo || typeof tenantLocalSeo !== "object") {
+    return undefined;
+  }
+
+  const primaryLocation = tenantLocalSeo.primaryLocation as import("@/types/landing").PrimaryLocation | undefined;
+  const serviceAreas = (Array.isArray(tenantLocalSeo.serviceAreas)
+    ? tenantLocalSeo.serviceAreas
+    : []) as import("@/types/landing").ServiceArea[];
+  const localPages = (Array.isArray(tenantLocalSeo.localPages)
+    ? tenantLocalSeo.localPages
+    : []) as import("@/types/landing").LocalPageConfig[];
+
+  return {
+    primaryLocation: primaryLocation && typeof primaryLocation.city === "string" ? primaryLocation : undefined,
+    serviceAreas: serviceAreas.filter((sa) => sa && typeof sa.city === "string" && typeof sa.slug === "string"),
+    localPages: localPages.filter((lp) => lp && typeof lp.city === "string" && typeof lp.slug === "string"),
+  };
+}
+
+/** Validates and returns dealer business rules */
+export function mergeBusinessRules(
+  tenantRules?: Record<string, unknown> | null
+): import("@/types/landing").DealerBusinessRules | undefined {
+  if (!tenantRules || typeof tenantRules !== "object") {
+    return undefined;
+  }
+
+  const tradeInRaw = tenantRules.tradeIn as Record<string, unknown> | undefined;
+  const priceLimitRaw = tenantRules.purchasePriceLimit as Record<string, unknown> | undefined;
+
+  return {
+    tradeIn: tradeInRaw && typeof tradeInRaw.enabled === "boolean" ? {
+      enabled: tradeInRaw.enabled,
+      title: typeof tradeInRaw.title === "string" ? tradeInRaw.title : undefined,
+      description: typeof tradeInRaw.description === "string" ? tradeInRaw.description : undefined,
+    } : undefined,
+    purchasePriceLimit: priceLimitRaw && typeof priceLimitRaw.enabled === "boolean" && typeof priceLimitRaw.maxAmount === "number" ? {
+      enabled: priceLimitRaw.enabled,
+      maxAmount: priceLimitRaw.maxAmount,
+      currency: typeof priceLimitRaw.currency === "string" ? priceLimitRaw.currency : "PLN",
+      description: typeof priceLimitRaw.description === "string" ? priceLimitRaw.description : undefined,
+    } : undefined,
+  };
+}
+
+
