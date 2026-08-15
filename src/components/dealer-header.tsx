@@ -13,7 +13,7 @@ export function DealerHeader({ tenant }: DealerHeaderProps) {
   const primaryHref = tenant.contact.whatsapp ? `https://wa.me/${tenant.contact.whatsapp.replace(/\D/g, "")}` : phone ? `tel:${phone.replace(/\s/g, "")}` : "#hero";
   const links = [
     ["Strona główna", `/${tenant.slug}`],
-    ["Skup aut", primaryHref],
+    ["Skup aut", `/${tenant.slug}/skup-aut`],
     ["Samochody", `/${tenant.slug}#vehicles`],
     ["Usługi", `/${tenant.slug}#services`],
     ["O nas", `/${tenant.slug}#about`],

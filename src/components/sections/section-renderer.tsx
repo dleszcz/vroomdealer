@@ -13,6 +13,8 @@ import { ContactSection } from "./contact-section";
 import { ServiceAreasSection } from "./service-areas-section";
 
 
+import { StickyMobileCta } from "../sticky-mobile-cta";
+
 interface SectionRendererProps { tenant: DealerTenant; }
 
 export function SectionRenderer({ tenant }: SectionRendererProps) {
@@ -71,6 +73,8 @@ export function SectionRenderer({ tenant }: SectionRendererProps) {
             return null;
         }
       })}
+
+      <StickyMobileCta tenant={tenant} />
     </div>
   );
 }

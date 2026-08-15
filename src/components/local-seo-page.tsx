@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { LocalSeoSchema } from "@/components/local-seo-schema";
 import { CheckCircle2, ChevronDown, MapPin, Phone, ShieldCheck, Truck, Wallet } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { StickyMobileCta } from "@/components/sticky-mobile-cta";
 
 interface LocalSeoPageProps {
   tenant: DealerTenant;
@@ -534,6 +535,7 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
             </section>
           );
         })()}
+        <StickyMobileCta tenant={tenant} />
       </div>
     </>
   );

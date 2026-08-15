@@ -47,7 +47,7 @@ export function Footer({ tenant }: FooterProps) {
             <h3 className="dealer-footer__heading">Szybkie linki</h3>
             <div className="dealer-footer__links">
               <a href={`/${tenant?.slug || ""}`}>Strona główna</a>
-              <a href={`/${tenant?.slug || ""}#lead-form`}>Skup aut</a>
+              <a href={`/${tenant?.slug || ""}/skup-aut`}>Skup aut</a>
               <a href={`/${tenant?.slug || ""}#vehicles`}>Samochody</a>
               <a href={`/${tenant?.slug || ""}#services`}>Usługi</a>
               <a href={`/${tenant?.slug || ""}#about`}>O nas</a>

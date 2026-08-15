@@ -87,9 +87,25 @@ CREATE TABLE IF NOT EXISTS leads (
   customer_phone text NOT NULL,
   customer_email text,
   vehicle_details jsonb,
+  attribution jsonb,
+  local_seo_city text,
+  photos jsonb,
   status text NOT NULL DEFAULT 'new',
   created_at timestamptz DEFAULT now()
 );
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'leads' AND column_name = 'attribution') THEN
+    ALTER TABLE leads ADD COLUMN attribution jsonb;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'leads' AND column_name = 'local_seo_city') THEN
+    ALTER TABLE leads ADD COLUMN local_seo_city text;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'leads' AND column_name = 'photos') THEN
+    ALTER TABLE leads ADD COLUMN photos jsonb;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_leads_dealer ON leads(dealer_id);
 
