@@ -29,8 +29,53 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : `https://vroomdealer.pl/${dealerSlug}`;
   const canonicalUrl = `${baseUrl}/${slug}`;
   const heroImage = tenant.branding.media?.heroImageUrl;
-  const ogImageUrl = heroImage ? (heroImage.startsWith("http") ? heroImage : `${baseUrl}${heroImage}`) : undefined;
-  const themeColor = tenant.branding.colors.headerBg || tenant.branding.colors.primary || "#080808";
+  const ogImageUrl = heroImage
+    ? heroImage.startsWith("http")
+      ? heroImage
+      : `${baseUrl}${heroImage}`
+    : undefined;
+  const themeColor =
+    tenant.branding.colors.headerBg || tenant.branding.colors.primary || "#080808";
+
+  // Helper for generating full social metadata
+  const buildMetadata = (
+    title: string,
+    description: string,
+    imageUrl?: string,
+    isIndexable = true
+  ): Metadata => {
+    const finalOgImage = imageUrl || ogImageUrl;
+    return {
+      title,
+      description,
+      alternates: { canonical: canonicalUrl },
+      openGraph: {
+        title,
+        description,
+        url: canonicalUrl,
+        siteName: tenant.businessName,
+        locale: "pl_PL",
+        type: "website",
+        images: finalOgImage
+          ? [{ url: finalOgImage, width: 1200, height: 630, alt: title }]
+          : [],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: finalOgImage ? [finalOgImage] : [],
+      },
+      robots: {
+        index: isIndexable,
+        follow: true,
+      },
+      other: {
+        "fb:app_id": process.env.NEXT_PUBLIC_FB_APP_ID || "",
+        "theme-color": themeColor,
+      },
+    };
+  };
 
   // 1. Check if slug matches a Local SEO page
   const localPage = tenant.localSeo?.localPages?.find((lp) => lp.slug === slug);
@@ -39,92 +84,44 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       return { title: "Not Found", robots: { index: false, follow: false } };
     }
 
-    const title = (localPage.seo?.title || `Skup aut ${localPage.city} | ${tenant.businessName}`).replace(/—|–/g, "-");
+    const title = (
+      localPage.seo?.title || `Skup aut ${localPage.city} | ${tenant.businessName}`
+    ).replace(/—|–/g, "-");
     const description = (
       localPage.seo?.metaDescription ||
-      `Skup samochodów za gotówkę w ${localPage.city}. Bezpłatna wycena i dojazd.`
+      `Skup samochodów za gotówkę w ${localPage.city}. Bezpłatna wycena online, szybki dojazd i natychmiastowa płatność.`
     ).replace(/—|–/g, "-");
 
-    return {
-      title,
-      description,
-      alternates: {
-        canonical: canonicalUrl,
-      },
-      openGraph: {
-        title,
-        description,
-        url: canonicalUrl,
-        type: "website",
-        images: ogImageUrl ? [{ url: ogImageUrl, alt: title }] : [],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title,
-        description,
-        images: ogImageUrl ? [ogImageUrl] : [],
-      },
-      robots: {
-        index: localPage.indexable,
-        follow: true,
-      },
-      other: {
-        "theme-color": themeColor,
-      },
-    };
+    return buildMetadata(title, description, undefined, localPage.indexable);
   }
 
   // 2. Service subpages: /skup-aut, /samochody, /kontakt, /o-nas
   if (slug === "skup-aut") {
     const title = `Skup aut za gotówkę | ${tenant.businessName}`;
-    const description = `Profesjonalny i bezpieczny skup aut w ${tenant.location?.city || "Twojej okolicy"}. Bezpłatna wycena, natychmiastowa wypłata gotówki.`;
-    return {
-      title,
-      description,
-      alternates: { canonical: canonicalUrl },
-      openGraph: { title, description, url: canonicalUrl, type: "website" },
-      twitter: { card: "summary_large_image", title, description },
-      other: { "theme-color": themeColor },
-    };
+    const description = `Profesjonalny i bezpieczny skup aut w ${
+      tenant.location?.city || "Twojej okolicy"
+    }. Bezpłatna wycena online, dojazd do klienta i płatność gotówką od ręki.`;
+    return buildMetadata(title, description);
   }
 
   if (slug === "samochody") {
     const title = `Samochody używane na sprzedaż | ${tenant.businessName}`;
-    const description = `Sprawdź naszą aktualną ofertę samochodów używanych z gwarancją. Pewne auta w ${tenant.businessName}.`;
-    return {
-      title,
-      description,
-      alternates: { canonical: canonicalUrl },
-      openGraph: { title, description, url: canonicalUrl, type: "website" },
-      twitter: { card: "summary_large_image", title, description },
-      other: { "theme-color": themeColor },
-    };
+    const description = `Sprawdź pełną ofertę sprawdzonych samochodów używanych z gwarancją w ${tenant.businessName}. Pewne auta ze sprawdzoną historią.`;
+    return buildMetadata(title, description);
   }
 
   if (slug === "kontakt") {
     const title = `Kontakt | ${tenant.businessName}`;
-    const description = `Skontaktuj się z ${tenant.businessName}. Telefon: ${tenant.contact.phone || ""}, Adres: ${tenant.location?.address || ""}, ${tenant.location?.city || ""}.`;
-    return {
-      title,
-      description,
-      alternates: { canonical: canonicalUrl },
-      openGraph: { title, description, url: canonicalUrl, type: "website" },
-      twitter: { card: "summary_large_image", title, description },
-      other: { "theme-color": themeColor },
-    };
+    const description = `Skontaktuj się z ${tenant.businessName}. Telefon: ${
+      tenant.contact.phone || ""
+    }, Adres: ${tenant.location?.address || ""}, ${tenant.location?.city || ""}.`;
+    return buildMetadata(title, description);
   }
 
   if (slug === "o-nas") {
     const title = `O nas | ${tenant.businessName}`;
-    const description = `Poznaj ${tenant.businessName} - lokalny komis samochodowy i skup aut z wieloletnim doświadczeniem.`;
-    return {
-      title,
-      description,
-      alternates: { canonical: canonicalUrl },
-      openGraph: { title, description, url: canonicalUrl, type: "website" },
-      twitter: { card: "summary_large_image", title, description },
-      other: { "theme-color": themeColor },
-    };
+    const description = `Poznaj ${tenant.businessName} - lokalny skup aut i komis samochodowy z wieloletnim doświadczeniem w uczciwym skupie pojazdów.`;
+    return buildMetadata(title, description);
   }
 
   // 3. Check if slug matches a car listing
@@ -136,39 +133,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const carName = `${car.make} ${car.model}${car.year ? ` (${car.year})` : ""}`;
   const priceStr = car.price ? `${formatPrice(car.price)} PLN` : "Zapytaj o cenę";
   const title = `${carName} - ${priceStr} | ${profile.business_name}`;
-  const description = `${carName}${car.mileage ? `, ${car.mileage.toLocaleString("pl-PL")} km` : ""}${car.fuel_type ? `, ${car.fuel_type}` : ""}. Sprawdź ogłoszenie w ${profile.business_name}${profile.city ? `, ${profile.city}` : ""}.`;
+  const description = `${carName}${
+    car.mileage ? `, ${car.mileage.toLocaleString("pl-PL")} km` : ""
+  }${
+    car.fuel_type ? `, ${car.fuel_type}` : ""
+  }. Sprawdź ogłoszenie, wyposażenie i stan techniczny w ${profile.business_name}${
+    profile.city ? `, ${profile.city}` : ""
+  }.`;
 
-  const pageUrl = `${baseUrl}/${slug}`;
   const carImage = car.images?.[0]
     ? car.images[0].startsWith("http")
       ? car.images[0]
       : `${baseUrl}${car.images[0]}`
     : undefined;
 
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: pageUrl,
-    },
-    openGraph: {
-      title,
-      description,
-      url: pageUrl,
-      type: "website",
-      images: carImage ? [{ url: carImage, width: 1200, height: 630, alt: title }] : [],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: carImage ? [carImage] : [],
-    },
-    other: {
-      "fb:app_id": process.env.NEXT_PUBLIC_FB_APP_ID || "",
-      "theme-color": themeColor,
-    },
-  };
+  return buildMetadata(title, description, carImage);
 }
 
 export default async function DynamicSlugPage({ params }: Props) {
