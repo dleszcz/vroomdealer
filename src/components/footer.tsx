@@ -38,6 +38,8 @@ function YoutubeIcon({ size = 18 }: { size?: number }) {
   );
 }
 
+import { APP_VERSION } from "@/lib/version";
+
 interface FooterProps { tenant?: DealerTenant | null; }
 
 export function Footer({ tenant }: FooterProps) {
@@ -144,7 +146,12 @@ export function Footer({ tenant }: FooterProps) {
 
         <div className="dealer-footer__bottom">
           <span>© {new Date().getFullYear()} {name}</span>
-          <span className="dealer-footer__powered">Powered by <strong>VroomDealer</strong></span>
+          <span className="dealer-footer__powered">
+            Powered by <strong>VroomDealer</strong>{" "}
+            <span style={{ opacity: 0.5, fontSize: "11px", fontWeight: 400, marginLeft: "4px" }}>
+              {APP_VERSION}
+            </span>
+          </span>
         </div>
       </div>
     </footer>
