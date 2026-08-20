@@ -1,7 +1,7 @@
 import { Profile, Car } from "@/types/database";
 
 // ============================================================
-// SEED DATA — used for development before Supabase is connected
+// SEED DATA - used for development before Supabase is connected
 // ============================================================
 
 export const seedProfileDCar: Profile = {
@@ -21,6 +21,7 @@ export const seedProfileDCar: Profile = {
   county: "radziejowski",
   region: "kujawsko-pomorskie",
   branding: {
+    facebook: "https://www.facebook.com/profile.php?id=100068379260209",
     logoUrl: "/images/dcar-logo.png",
     colors: {
       primary: "#1686E0",
@@ -44,7 +45,7 @@ export const seedProfileDCar: Profile = {
       type: "car_buying",
       enabled: true,
       title: "Skup Samochodów Za Gotówkę",
-      description: "Kupujemy auta w każdym stanie — bezpłatny dojazd, wycena w 15 minut i gotówka od ręki.",
+      description: "Kupujemy auta w każdym stanie - bezpłatny dojazd, wycena w 15 minut i gotówka od ręki.",
       ctaLabel: "Wyceń swoje auto",
       ctaType: "lead_form",
     },
@@ -77,7 +78,7 @@ export const seedProfileDCar: Profile = {
       { id: "sec-services", type: "services", enabled: true, title: "Nasza Oferta (Usługi)" },
       { id: "sec-reviews", type: "reviews", enabled: true, title: "Opinie naszych klientów" },
       { id: "sec-vehicles", type: "vehicles", enabled: true, title: "Aktualna Oferta Samochodów" },
-      { id: "sec-about", type: "about", enabled: true, title: "O nas (Lokalny komis D-CAR)" },
+      { id: "sec-about", type: "about", enabled: true, title: "Komis i skup aut" },
       { id: "sec-service-areas", type: "service_areas", enabled: true, title: "Skup aut w Topólce i okolicach" },
       { id: "sec-lead", type: "lead_form", enabled: true, title: "Darmowa, błyskawiczna wycena auta" },
       { id: "sec-faq", type: "faq", enabled: true, title: "Najczęściej zadawane pytania" },
@@ -94,7 +95,7 @@ export const seedProfileDCar: Profile = {
       enabled: true,
       maxAmount: 10000,
       currency: "PLN",
-      description: "Skupujemy również samochody budżetowe do 10 000 zł — zapytaj o szybką wycenę.",
+      description: "Skupujemy również samochody budżetowe do 10 000 zł - zapytaj o szybką wycenę.",
     },
   },
   local_seo: {
@@ -113,11 +114,11 @@ export const seedProfileDCar: Profile = {
       { city: "Brześć Kujawski", slug: "brzesc-kujawski", enabled: true, indexable: true, priority: 5 },
       { city: "Piotrków Kujawski", slug: "piotrkow-kujawski", enabled: true, indexable: true, priority: 6 },
       { city: "Osięciny", slug: "osieciny", enabled: true, indexable: true, priority: 7 },
-      { city: "Włocławek", slug: "wloclawek", enabled: true, indexable: true, priority: 8 },
-      { city: "Kruszwica", slug: "kruszwica", enabled: true, indexable: true, priority: 9 },
+      { city: "Bytoń", slug: "byton", enabled: true, indexable: true, priority: 8 },
+      { city: "Włocławek", slug: "wloclawek", enabled: true, indexable: true, priority: 9 },
       { city: "Inowrocław", slug: "inowroclaw", enabled: true, indexable: true, priority: 10 },
-      { city: "Konin", slug: "konin", enabled: true, indexable: true, priority: 11 },
-      { city: "Lipno", slug: "lipno", enabled: true, indexable: true, priority: 12 },
+      { city: "Kruszwica", slug: "kruszwica", enabled: true, indexable: true, priority: 11 },
+      { city: "Konin", slug: "konin", enabled: true, indexable: true, priority: 12 },
     ],
     localPages: [
       {
@@ -130,9 +131,9 @@ export const seedProfileDCar: Profile = {
         showInFooter: true,
         relatedLocations: ["skup-aut-radziejow", "skup-aut-lubraniec", "skup-aut-izbica-kujawska"],
         seo: {
-          title: "Skup aut Topólka | D-CAR — skup samochodów za gotówkę",
+          title: "Skup aut Topólka | D-CAR - skup samochodów za gotówkę",
           metaDescription: "D-CAR oferuje skup aut w Topólce i okolicach. Bezpłatna wycena, natychmiastowa wypłata gotówki i darmowy odbiór pojazdu. Sprawdź naszą ofertę skupu samochodów.",
-          h1: "Skup aut w Topólce — D-CAR",
+          h1: "Skup aut w Topólce - D-CAR",
         },
         content: {
           intro: "Szukasz rzetelnego skupu aut w Topólce lub okolicach Paniewa? D-CAR to lokalny skup samochodów za gotówkę. Kupujemy auta w każdym stanie technicznym, oferując bezpłatną wycenę i szybką realizację transakcji.",
@@ -141,7 +142,7 @@ export const seedProfileDCar: Profile = {
           faq: [
             { q: "Czy D-CAR skupuje auta w Topólce?", a: "Tak, nasza główna siedziba znajduje się w Paniewie (gmina Topólka). Skupujemy auta bezpośrednio na placu oraz z dojazdem do klienta." },
             { q: "Czy mogę zostawić obecne auto w rozliczeniu przy zakupie innego pojazdu?", a: "Tak! Umożliwiamy pozostawienie dotychczasowego samochodu w rozliczeniu przy zakupie auta z naszej oferty." },
-            { q: "Czy D-CAR skupuje auta budżetowe do 10 000 zł?", a: "Tak, skupujemy również auta w segmencie budżetowym do kwoty 10 000 zł — zapytaj o naszą propozycję cenową." },
+            { q: "Czy D-CAR skupuje auta budżetowe do 10 000 zł?", a: "Tak, skupujemy również auta w segmencie budżetowym do kwoty 10 000 zł - zapytaj o naszą propozycję cenową." },
             { q: "Czy odbiór samochodu z Topólki jest darmowy?", a: "Tak, zapewniamy bezpłatny odbiór pojazdu własną lawetą z terenu gminy Topólka i całego powiatu radziejowskiego." },
           ],
         },
@@ -156,9 +157,9 @@ export const seedProfileDCar: Profile = {
         showInFooter: true,
         relatedLocations: ["skup-aut-topolka", "skup-aut-lubraniec"],
         seo: {
-          title: "Skup aut Radziejów | D-CAR — szybki skup samochodów za gotówkę",
+          title: "Skup aut Radziejów | D-CAR - szybki skup samochodów za gotówkę",
           metaDescription: "Szukasz skupu samochodów w Radziejowie? D-CAR zapewnia szybki skup aut za gotówkę z dojazdem do Radziejowa. Bezpłatna wycena w 15 minut.",
-          h1: "Skup aut w Radziejowie — D-CAR",
+          h1: "Skup aut w Radziejowie - D-CAR",
         },
         content: {
           intro: "Planujesz sprzedać samochód w Radziejowie? D-CAR oferuje ekspresowy skup samochodów z bezpłatnym dojazdem do klienta w Radziejowie i okolicach.",
@@ -166,7 +167,7 @@ export const seedProfileDCar: Profile = {
           locationNote: "D-CAR posiada plac w pobliskim Paniewie (gmina Topólka, ok. 15 km od Radziejowa). Oferujemy jednak pełną obsługę mobilną na terenie Radziejowa.",
           faq: [
             { q: "Czy D-CAR dojeżdża po auto do Radziejowa?", a: "Tak, dojeżdżamy do Radziejowa bezpłatnie i wyceniamy auto na miejscu u klienta." },
-            { q: "Jak szybko można sprzedać auto z Radziejowa?", a: "Zazwyczaj realizujemy transakcję tego samego dnia — wycena i wypłata gotówki trwają około 15–30 minut." },
+            { q: "Jak szybko można sprzedać auto z Radziejowa?", a: "Zazwyczaj realizujemy transakcję tego samego dnia - wycena i wypłata gotówki trwają około 15–30 minut." },
           ],
         },
       },
@@ -180,9 +181,9 @@ export const seedProfileDCar: Profile = {
         showInFooter: true,
         relatedLocations: ["skup-aut-topolka", "skup-aut-izbica-kujawska"],
         seo: {
-          title: "Skup aut Lubraniec | D-CAR — skup samochodów za gotówkę",
+          title: "Skup aut Lubraniec | D-CAR - skup samochodów za gotówkę",
           metaDescription: "D-CAR skupuje samochody osobowe i dostawcze w Lubrańcu. Bezpłatna wycena, darmowa laweta i natychmiastowa wypłata gotówki. Zadzwoń!",
-          h1: "Skup aut w Lubrańcu — D-CAR",
+          h1: "Skup aut w Lubrańcu - D-CAR",
         },
         content: {
           intro: "Potrzebujesz szybko sprzedać auto w Lubrańcu? D-CAR kupuje samochody za gotówkę od mieszkańców Lubrańca i okolicznych miejscowości.",
@@ -203,9 +204,9 @@ export const seedProfileDCar: Profile = {
         showInFooter: true,
         relatedLocations: ["skup-aut-topolka", "skup-aut-lubraniec"],
         seo: {
-          title: "Skup aut Izbica Kujawska | D-CAR — bezpieczna sprzedaż auta",
+          title: "Skup aut Izbica Kujawska | D-CAR - bezpieczna sprzedaż auta",
           metaDescription: "Skup samochodów za gotówkę w Izbicy Kujawskiej. D-CAR gwarantuje bezpłatną wycenę, umowę na miejscu i szybki dojazd lawetą.",
-          h1: "Skup aut w Izbicy Kujawskiej — D-CAR",
+          h1: "Skup aut w Izbicy Kujawskiej - D-CAR",
         },
         content: {
           intro: "Oferujemy profesjonalny skup aut dla mieszkańców Izbicy Kujawskiej i sąsiednich miejscowości. Gwarantujemy uczciwe ceny i natychmiastową płatność.",
@@ -226,13 +227,13 @@ export const seedProfileDCar: Profile = {
         showInFooter: true,
         relatedLocations: ["skup-aut-lubraniec", "skup-aut-wloclawek"],
         seo: {
-          title: "Skup aut Brześć Kujawski | D-CAR — skup samochodów za gotówkę",
+          title: "Skup aut Brześć Kujawski | D-CAR - skup samochodów za gotówkę",
           metaDescription: "D-CAR oferuje szybki skup aut za gotówkę w Brześciu Kujawskim. Bezpłatna wycena, natychmiastowa płatność i darmowy odbiór pojazdu lawetą.",
-          h1: "Skup aut w Brześciu Kujawskim — D-CAR",
+          h1: "Skup aut w Brześciu Kujawskim - D-CAR",
         },
         content: {
           intro: "Chcesz sprzedać samochód w Brześciu Kujawskim? D-CAR kupuje auta za gotówkę od mieszkańców Brześcia Kujawskiego i okolic. Gwarantujemy uczciwą wycenę i odbiór własną lawetą.",
-          serviceDescription: "Kupujemy samochody w każdym stanie technicznym — sprawne, uszkodzone i powypadkowe z dojazdem do Brześcia Kujawskiego.",
+          serviceDescription: "Kupujemy samochody w każdym stanie technicznym - sprawne, uszkodzone i powypadkowe z dojazdem do Brześcia Kujawskiego.",
           locationNote: "Siedziba D-CAR znajduje się w pobliskim Paniewie k. Topólki. Oferujemy bezpłatny dojazd do Brześcia Kujawskiego.",
           faq: [
             { q: "Czy odbiór auta z Brześcia Kujawskiego jest darmowy?", a: "Tak, zapewniamy bezpłatny odbiór pojazdu własną lawetą z terenu Brześcia Kujawskiego." },
@@ -249,9 +250,9 @@ export const seedProfileDCar: Profile = {
         showInFooter: true,
         relatedLocations: ["skup-aut-topolka", "skup-aut-radziejow"],
         seo: {
-          title: "Skup aut Piotrków Kujawski | D-CAR — skup samochodów za gotówkę",
+          title: "Skup aut Piotrków Kujawski | D-CAR - skup samochodów za gotówkę",
           metaDescription: "D-CAR kupuje auta w Piotrkowie Kujawskim i okolicach. Gotówka od ręki, bezpłatna wycena i dojazd lawetą.",
-          h1: "Skup aut w Piotrkowie Kujawskim — D-CAR",
+          h1: "Skup aut w Piotrkowie Kujawskim - D-CAR",
         },
         content: {
           intro: "Oferujemy sprawny i bezpieczny skup samochodów w Piotrkowie Kujawskim. Płacimy gotówką od ręki i załatwiamy formalności na miejscu.",
@@ -272,9 +273,9 @@ export const seedProfileDCar: Profile = {
         showInFooter: true,
         relatedLocations: ["skup-aut-radziejow", "skup-aut-topolka"],
         seo: {
-          title: "Skup aut Osięciny | D-CAR — szybki skup samochodów za gotówkę",
+          title: "Skup aut Osięciny | D-CAR - szybki skup samochodów za gotówkę",
           metaDescription: "Skup samochodów za gotówkę w Osięcinach i okolicach. D-CAR gwarantuje wycenę w 15 minut, umowę na miejscu i bezpłatny dojazd.",
-          h1: "Skup aut w Osięcinach — D-CAR",
+          h1: "Skup aut w Osięcinach - D-CAR",
         },
         content: {
           intro: "Planujesz sprzedaż auta w Osięcinach? D-CAR oferuje skup samochodów za gotówkę w Osięcinach z dojazdem do klienta w kilkanaście minut.",
@@ -295,9 +296,9 @@ export const seedProfileDCar: Profile = {
         showInFooter: true,
         relatedLocations: ["skup-aut-brzesc-kujawski", "skup-aut-lubraniec"],
         seo: {
-          title: "Skup aut Włocławek | D-CAR — bezpieczna sprzedaż auta za gotówkę",
+          title: "Skup aut Włocławek | D-CAR - bezpieczna sprzedaż auta za gotówkę",
           metaDescription: "Skup aut za gotówkę we Włocławku. D-CAR kupuje samochody osobowe i dostawcze z Włocławka. Bezpłatna wycena i darmowy odbiór.",
-          h1: "Skup aut we Włocławku — D-CAR",
+          h1: "Skup aut we Włocławku - D-CAR",
         },
         content: {
           intro: "Szukasz sprawdzonego skupu aut we Włocławku? D-CAR obsługuje mieszkańców Włocławka, oferując wycenę online i natychmiastową wypłatę gotówki.",
@@ -318,9 +319,9 @@ export const seedProfileDCar: Profile = {
         showInFooter: true,
         relatedLocations: ["skup-aut-radziejow", "skup-aut-inowroclaw"],
         seo: {
-          title: "Skup aut Kruszwica | D-CAR — skup samochodów za gotówkę",
+          title: "Skup aut Kruszwica | D-CAR - skup samochodów za gotówkę",
           metaDescription: "Szybki skup aut w Kruszwicy. D-CAR gwarantuje darmowy dojazd lawetą, gotówkę od ręki i legalną umowę.",
-          h1: "Skup aut w Kruszwicy — D-CAR",
+          h1: "Skup aut w Kruszwicy - D-CAR",
         },
         content: {
           intro: "Skupujemy auta osobowe i dostawcze w Kruszwicy i okolicach. Zapewniamy dojazd do klienta oraz płatność w gotówce.",
@@ -341,9 +342,9 @@ export const seedProfileDCar: Profile = {
         showInFooter: true,
         relatedLocations: ["skup-aut-kruszwica", "skup-aut-radziejow"],
         seo: {
-          title: "Skup aut Inowrocław | D-CAR — skup samochodów za gotówkę",
+          title: "Skup aut Inowrocław | D-CAR - skup samochodów za gotówkę",
           metaDescription: "D-CAR oferuje skup aut w Inowrocławiu. Bezpłatna wycena, natychmiastowa wypłata gotówki i darmowy transport lawetą.",
-          h1: "Skup aut w Inowrocławiu — D-CAR",
+          h1: "Skup aut w Inowrocławiu - D-CAR",
         },
         content: {
           intro: "Potrzebujesz pilnie sprzedać auto w Inowrocławiu? D-CAR kupuje samochody używane za gotówkę z dojazdem na terenie Inowrocławia.",
@@ -364,9 +365,9 @@ export const seedProfileDCar: Profile = {
         showInFooter: true,
         relatedLocations: ["skup-aut-izbica-kujawska", "skup-aut-piotrkow-kujawski"],
         seo: {
-          title: "Skup aut Konin | D-CAR — skup samochodów za gotówkę",
+          title: "Skup aut Konin | D-CAR - skup samochodów za gotówkę",
           metaDescription: "Skup samochodów za gotówkę w Koninie. D-CAR oferuje bezpłatną wycenę, płatność na miejscu i bezpieczną transakcję.",
-          h1: "Skup aut w Koninie — D-CAR",
+          h1: "Skup aut w Koninie - D-CAR",
         },
         content: {
           intro: "Oferujemy profesjonalny skup aut dla mieszkańców Konina. Szybka wycena, dojazd lawetą i płatność w gotówce od ręki.",
@@ -378,25 +379,25 @@ export const seedProfileDCar: Profile = {
         },
       },
       {
-        slug: "skup-aut-lipno",
-        city: "Lipno",
+        slug: "skup-aut-byton",
+        city: "Bytoń",
         enabled: true,
         indexable: true,
-        priority: 12,
+        priority: 8,
         showInLocalAreaLinks: true,
         showInFooter: true,
-        relatedLocations: ["skup-aut-wloclawek", "skup-aut-lubraniec"],
+        relatedLocations: ["skup-aut-topolka", "skup-aut-radziejow"],
         seo: {
-          title: "Skup aut Lipno | D-CAR — skup samochodów za gotówkę",
-          metaDescription: "D-CAR skupuje samochody za gotówkę w Lipnie i powiecie lipnowskim. Sprawdź darmową wycenę i bezpłatny odbiór pojazdu.",
-          h1: "Skup aut w Lipnie — D-CAR",
+          title: "Skup aut Bytoń | D-CAR - skup samochodów za gotówkę",
+          metaDescription: "Skup aut w Bytoniu k. Radziejowa. D-CAR kupuje samochody za gotówkę. Szybka wycena i bezpłatny odbiór pojazdu.",
+          h1: "Skup aut w Bytoniu - D-CAR",
         },
         content: {
-          intro: "Sprzedaj auto w Lipnie bez zbędnych formalności. D-CAR oferuje mobilny skup aut z darmowym odbiorem w Lipnie i okolicach.",
-          serviceDescription: "Zapewniamy wsparcie przy wyrejestrowaniu i umowę kupna-sprzedaży na miejscu.",
-          locationNote: "D-CAR sprawnie obsługuje klientów z miasta Lipno i całego powiatu lipnowskiego.",
+          intro: "Oferujemy profesjonalny skup aut w gminie Bytoń. Płacimy gotówką od ręki i odbieramy auto własną lawetą.",
+          serviceDescription: "Obsługujemy gminę Bytoń oraz sąsiednie miejscowości. Załatwiamy formalności na miejscu.",
+          locationNote: "Gmina Bytoń sąsiaduje z gminą Topólka. Zapewniamy dojazd w kilkanaście minut.",
           faq: [
-            { q: "Czy odbiór z Lipna jest darmowy?", a: "Tak, nie pobieramy żadnych opłat za dojazd i odbiór auta z Lipna." },
+            { q: "Czy dojazd do Bytonia jest darmowy?", a: "Tak, dojeżdżamy i odbieramy auta bezpłatnie." },
           ],
         },
       },
@@ -502,7 +503,7 @@ export const seedCars: Car[] = [
     transmission: "Automatyczna (CVT)",
     color: "Szary Metalik",
     description:
-      "Toyota Corolla Hybrid — niezawodny i ekonomiczny samochód. Średnie spalanie w mieście poniżej 5l/100km.",
+      "Toyota Corolla Hybrid - niezawodny i ekonomiczny samochód. Średnie spalanie w mieście poniżej 5l/100km.",
     images: [
       "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800&h=600&fit=crop",
       "https://images.unsplash.com/photo-1583267746897-2cf415887172?w=800&h=600&fit=crop",
@@ -561,7 +562,7 @@ export const seedCars: Car[] = [
 ];
 
 // ============================================================
-// Data fetching functions — use seed data or Supabase
+// Data fetching functions - use seed data or Supabase
 // ============================================================
 
 const USE_SEED =

@@ -35,11 +35,11 @@ export function ServicesSection({ tenant }: Props) {
         <div className="services__grid">
           {cards.map((card, i) => {
             const Icon = icons[i] || FileText;
-            return <div key={`${card.title}-${i}`} className={`service-card ${i === 0 ? "service-card--featured" : ""}`}>
+            return <div key={`${card.title}-${i}`} className="service-card">
               <Icon className="service-card__icon" strokeWidth={1.7} />
               <h3 className="service-card__title">{card.title}</h3>
               <p className="service-card__text">{card.text}</p>
-              <a className={`vd-button ${i === 0 ? "vd-button--primary" : "vd-button--outline"} service-card__button`} href={card.href} onClick={() => trackEvent("service_clicked", { dealer_id: tenant.id, service: card.title })}>{card.label}</a>
+              <a className="vd-button vd-button--outline service-card__button" href={card.href} onClick={() => trackEvent("service_clicked", { dealer_id: tenant.id, service: card.title })}>{card.label}</a>
             </div>;
           })}
         </div>

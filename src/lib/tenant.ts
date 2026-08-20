@@ -1,6 +1,6 @@
 import { Profile } from "@/types/database";
 import { DealerTenant } from "@/types/landing";
-import { getProfile, getAllProfiles } from "@/lib/data";
+import { getProfile, getAllProfiles, seedProfileDCar } from "@/lib/data";
 import {
   mergeBranding,
   mergeServices,
@@ -28,7 +28,10 @@ export function profileToTenant(profile: Profile): DealerTenant {
   );
 
   // Build local SEO config
-  const localSeo = mergeLocalSeo(profile.local_seo as Record<string, unknown> | undefined);
+  const localSeo =
+    profile.slug === "d-car" && seedProfileDCar.local_seo
+      ? mergeLocalSeo(seedProfileDCar.local_seo as Record<string, unknown>)
+      : mergeLocalSeo(profile.local_seo as Record<string, unknown> | undefined);
 
   // Build business rules
   const businessRules = mergeBusinessRules(profile.business_rules as Record<string, unknown> | undefined);
@@ -44,6 +47,10 @@ export function profileToTenant(profile: Profile): DealerTenant {
       phone: profile.contact_phone || null,
       whatsapp: profile.whatsapp_number || null,
       email: (brandingRaw?.contactEmail as string) || null,
+      facebook: (profile as unknown as Record<string, unknown>).facebook_url as string || (brandingRaw?.facebook as string) || ((seedProfileDCar.branding as Record<string, unknown>)?.facebook as string) || null,
+      instagram: (profile as unknown as Record<string, unknown>).instagram_url as string || (brandingRaw?.instagram as string) || ((seedProfileDCar.branding as Record<string, unknown>)?.instagram as string) || null,
+      tiktok: (profile as unknown as Record<string, unknown>).tiktok_url as string || (brandingRaw?.tiktok as string) || ((seedProfileDCar.branding as Record<string, unknown>)?.tiktok as string) || null,
+      youtube: (profile as unknown as Record<string, unknown>).youtube_url as string || (brandingRaw?.youtube as string) || ((seedProfileDCar.branding as Record<string, unknown>)?.youtube as string) || null,
     },
     location: {
       address: profile.address || null,
@@ -59,7 +66,7 @@ export function profileToTenant(profile: Profile): DealerTenant {
       pixelId: profile.pixel_id || null,
     },
     seo: (profile.seo as unknown as DealerTenant["seo"]) || {
-      metaTitle: `${profile.business_name} — Samochody i skup aut`,
+      metaTitle: `${profile.business_name} - Samochody i skup aut`,
       metaDescription: profile.business_description || undefined,
     },
     localSeo,

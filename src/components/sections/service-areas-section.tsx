@@ -86,7 +86,7 @@ export function ServiceAreasSection({ tenant, config }: Props) {
                   width: "40px",
                   height: "40px",
                   borderRadius: "10px",
-                  background: "var(--color-surface)",
+                  background: "rgba(22, 134, 224, 0.1)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -96,11 +96,13 @@ export function ServiceAreasSection({ tenant, config }: Props) {
               >
                 <MapPin size={20} />
               </div>
-              <div style={{ flex: 1 }}>
-                <div>Skup aut {lp.city}</div>
-                <div style={{ fontSize: "12px", color: "var(--color-text-faint)", fontWeight: 500, marginTop: "2px" }}>
-                  Dojazd & wycena ➔
-                </div>
+              <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ fontSize: "15px", fontWeight: 700, color: "var(--color-foreground)" }}>
+                  Skup aut {lp.city}
+                </span>
+                <span style={{ fontSize: "14px", color: primaryColor, fontWeight: 800 }}>
+                  ➔
+                </span>
               </div>
             </Link>
           ))}

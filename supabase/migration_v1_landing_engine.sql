@@ -1,5 +1,5 @@
 -- ============================================================
--- VroomDealer.pl — Migration: Landing Engine & Local SEO v1.1
+-- VroomDealer.pl - Migration: Landing Engine & Local SEO v1.1
 -- Run this SQL in Supabase Dashboard > SQL Editor
 -- Adds new columns to profiles and creates leads table
 -- ============================================================
@@ -154,6 +154,7 @@ INSERT INTO profiles (
   'Paniewo 3A',
   'Topólka',
   '{
+    "facebook": "https://www.facebook.com/profile.php?id=100068379260209",
     "logoUrl": "/images/dcar-logo.png",
     "colors": {
       "primary": "#1686E0",
@@ -177,7 +178,7 @@ INSERT INTO profiles (
       "type": "car_buying",
       "enabled": true,
       "title": "Skup Samochodów Za Gotówkę",
-      "description": "Kupujemy auta w każdym stanie — bezpłatny dojazd, wycena w 15 minut i gotówka od ręki.",
+      "description": "Kupujemy auta w każdym stanie - bezpłatny dojazd, wycena w 15 minut i gotówka od ręki.",
       "ctaLabel": "Wyceń swoje auto",
       "ctaType": "lead_form"
     },
@@ -250,9 +251,9 @@ INSERT INTO profiles (
         "showInFooter": true,
         "relatedLocations": ["skup-aut-radziejow", "skup-aut-lubraniec", "skup-aut-izbica-kujawska"],
         "seo": {
-          "title": "Skup aut Topólka | D-CAR — skup samochodów za gotówkę",
+          "title": "Skup aut Topólka | D-CAR - skup samochodów za gotówkę",
           "metaDescription": "D-CAR oferuje skup aut w Topólce i okolicach. Bezpłatna wycena, natychmiastowa wypłata gotówki i darmowy odbiór pojazdu. Sprawdź naszą ofertę skupu samochodów.",
-          "h1": "Skup aut w Topólce — D-CAR"
+          "h1": "Skup aut w Topólce - D-CAR"
         },
         "content": {
           "intro": "Szukasz rzetelnego skupu aut w Topólce lub okolicach Paniewa? D-CAR to lokalny skup samochodów za gotówkę. Kupujemy auta w każdym stanie technicznym, oferując bezpłatną wycenę i szybką realizację transakcji.",
@@ -275,9 +276,9 @@ INSERT INTO profiles (
         "showInFooter": true,
         "relatedLocations": ["skup-aut-topolka", "skup-aut-lubraniec"],
         "seo": {
-          "title": "Skup aut Radziejów | D-CAR — szybki skup samochodów za gotówkę",
+          "title": "Skup aut Radziejów | D-CAR - szybki skup samochodów za gotówkę",
           "metaDescription": "Szukasz skupu samochodów w Radziejowie? D-CAR zapewnia szybki skup aut za gotówkę z dojazdem do Radziejowa. Bezpłatna wycena w 15 minut.",
-          "h1": "Skup aut w Radziejowie — D-CAR"
+          "h1": "Skup aut w Radziejowie - D-CAR"
         },
         "content": {
           "intro": "Planujesz sprzedać samochód w Radziejowie? D-CAR oferuje ekspresowy skup samochodów z bezpłatnym dojazdem do klienta w Radziejowie i okolicach.",
@@ -285,7 +286,7 @@ INSERT INTO profiles (
           "locationNote": "D-CAR posiada plac w pobliskim Paniewie (gmina Topólka, ok. 15 km od Radziejowa). Oferujemy jednak pełną obsługę mobilną na terenie Radziejowa.",
           "faq": [
             { "q": "Czy D-CAR dojeżdża po auto do Radziejowa?", "a": "Tak, dojeżdżamy do Radziejowa bezpłatnie i wyceniamy auto na miejscu u klienta." },
-            { "q": "Jak szybko można sprzedać auto z Radziejowa?", "a": "Zazwyczaj realizujemy transakcję tego samego dnia — wycena i wypłata gotówki trwają około 15–30 minut." }
+            { "q": "Jak szybko można sprzedać auto z Radziejowa?", "a": "Zazwyczaj realizujemy transakcję tego samego dnia - wycena i wypłata gotówki trwają około 15–30 minut." }
           ]
         }
       },
@@ -299,9 +300,9 @@ INSERT INTO profiles (
         "showInFooter": true,
         "relatedLocations": ["skup-aut-topolka", "skup-aut-izbica-kujawska"],
         "seo": {
-          "title": "Skup aut Lubraniec | D-CAR — skup samochodów za gotówkę",
+          "title": "Skup aut Lubraniec | D-CAR - skup samochodów za gotówkę",
           "metaDescription": "D-CAR skupuje samochody osobowe i dostawcze w Lubrańcu. Bezpłatna wycena, darmowa laweta i natychmiastowa wypłata gotówki. Zadzwoń!",
-          "h1": "Skup aut w Lubrańcu — D-CAR"
+          "h1": "Skup aut w Lubrańcu - D-CAR"
         },
         "content": {
           "intro": "Potrzebujesz szybko sprzedać auto w Lubrańcu? D-CAR kupuje samochody za gotówkę od mieszkańców Lubrańca i okolicznych miejscowości.",
@@ -322,9 +323,9 @@ INSERT INTO profiles (
         "showInFooter": true,
         "relatedLocations": ["skup-aut-topolka", "skup-aut-lubraniec"],
         "seo": {
-          "title": "Skup aut Izbica Kujawska | D-CAR — bezpieczna sprzedaż auta",
+          "title": "Skup aut Izbica Kujawska | D-CAR - bezpieczna sprzedaż auta",
           "metaDescription": "Skup samochodów za gotówkę w Izbicy Kujawskiej. D-CAR gwarantuje bezpłatną wycenę, umowę na miejscu i szybki dojazd lawetą.",
-          "h1": "Skup aut w Izbicy Kujawskiej — D-CAR"
+          "h1": "Skup aut w Izbicy Kujawskiej - D-CAR"
         },
         "content": {
           "intro": "Oferujemy profesjonalny skup aut dla mieszkańców Izbicy Kujawskiej i sąsiednich miejscowości. Gwarantujemy uczciwe ceny i natychmiastową płatność.",
@@ -345,13 +346,13 @@ INSERT INTO profiles (
         "showInFooter": true,
         "relatedLocations": ["skup-aut-lubraniec", "skup-aut-wloclawek"],
         "seo": {
-          "title": "Skup aut Brześć Kujawski | D-CAR — skup samochodów za gotówkę",
+          "title": "Skup aut Brześć Kujawski | D-CAR - skup samochodów za gotówkę",
           "metaDescription": "D-CAR oferuje szybki skup aut za gotówkę w Brześciu Kujawskim. Bezpłatna wycena, natychmiastowa płatność i darmowy odbiór pojazdu lawetą.",
-          "h1": "Skup aut w Brześciu Kujawskim — D-CAR"
+          "h1": "Skup aut w Brześciu Kujawskim - D-CAR"
         },
         "content": {
           "intro": "Chcesz sprzedać samochód w Brześciu Kujawskim? D-CAR kupuje auta za gotówkę od mieszkańców Brześcia Kujawskiego i okolic. Gwarantujemy uczciwą wycenę i odbiór własną lawetą.",
-          "serviceDescription": "Kupujemy samochody w każdym stanie technicznym — sprawne, uszkodzone i powypadkowe z dojazdem do Brześcia Kujawskiego.",
+          "serviceDescription": "Kupujemy samochody w każdym stanie technicznym - sprawne, uszkodzone i powypadkowe z dojazdem do Brześcia Kujawskiego.",
           "locationNote": "Siedziba D-CAR znajduje się w pobliskim Paniewie k. Topólki. Oferujemy bezpłatny dojazd do Brześcia Kujawskiego.",
           "faq": [
             { "q": "Czy odbiór auta z Brześcia Kujawskiego jest darmowy?", "a": "Tak, zapewniamy bezpłatny odbiór pojazdu własną lawetą z terenu Brześcia Kujawskiego." }
@@ -368,9 +369,9 @@ INSERT INTO profiles (
         "showInFooter": true,
         "relatedLocations": ["skup-aut-topolka", "skup-aut-radziejow"],
         "seo": {
-          "title": "Skup aut Piotrków Kujawski | D-CAR — skup samochodów za gotówkę",
+          "title": "Skup aut Piotrków Kujawski | D-CAR - skup samochodów za gotówkę",
           "metaDescription": "D-CAR kupuje auta w Piotrkowie Kujawskim i okolicach. Gotówka od ręki, bezpłatna wycena i dojazd lawetą.",
-          "h1": "Skup aut w Piotrkowie Kujawskim — D-CAR"
+          "h1": "Skup aut w Piotrkowie Kujawskim - D-CAR"
         },
         "content": {
           "intro": "Oferujemy sprawny i bezpieczny skup samochodów w Piotrkowie Kujawskim. Płacimy gotówką od ręki i załatwiamy formalności na miejscu.",
@@ -391,9 +392,9 @@ INSERT INTO profiles (
         "showInFooter": true,
         "relatedLocations": ["skup-aut-radziejow", "skup-aut-topolka"],
         "seo": {
-          "title": "Skup aut Osięciny | D-CAR — szybki skup samochodów za gotówkę",
+          "title": "Skup aut Osięciny | D-CAR - szybki skup samochodów za gotówkę",
           "metaDescription": "Skup samochodów za gotówkę w Osięcinach i okolicach. D-CAR gwarantuje wycenę w 15 minut, umowę na miejscu i bezpłatny dojazd.",
-          "h1": "Skup aut w Osięcinach — D-CAR"
+          "h1": "Skup aut w Osięcinach - D-CAR"
         },
         "content": {
           "intro": "Planujesz sprzedaż auta w Osięcinach? D-CAR oferuje skup samochodów za gotówkę w Osięcinach z dojazdem do klienta w kilkanaście minut.",
@@ -414,9 +415,9 @@ INSERT INTO profiles (
         "showInFooter": true,
         "relatedLocations": ["skup-aut-brzesc-kujawski", "skup-aut-lubraniec"],
         "seo": {
-          "title": "Skup aut Włocławek | D-CAR — bezpieczna sprzedaż auta za gotówkę",
+          "title": "Skup aut Włocławek | D-CAR - bezpieczna sprzedaż auta za gotówkę",
           "metaDescription": "Skup aut za gotówkę we Włocławku. D-CAR kupuje samochody osobowe i dostawcze z Włocławka. Bezpłatna wycena i darmowy odbiór.",
-          "h1": "Skup aut we Włocławku — D-CAR"
+          "h1": "Skup aut we Włocławku - D-CAR"
         },
         "content": {
           "intro": "Szukasz sprawdzonego skupu aut we Włocławku? D-CAR obsługuje mieszkańców Włocławka, oferując wycenę online i natychmiastową wypłatę gotówki.",
@@ -437,9 +438,9 @@ INSERT INTO profiles (
         "showInFooter": true,
         "relatedLocations": ["skup-aut-radziejow", "skup-aut-inowroclaw"],
         "seo": {
-          "title": "Skup aut Kruszwica | D-CAR — skup samochodów za gotówkę",
+          "title": "Skup aut Kruszwica | D-CAR - skup samochodów za gotówkę",
           "metaDescription": "Szybki skup aut w Kruszwicy. D-CAR gwarantuje darmowy dojazd lawetą, gotówkę od ręki i legalną umowę.",
-          "h1": "Skup aut w Kruszwicy — D-CAR"
+          "h1": "Skup aut w Kruszwicy - D-CAR"
         },
         "content": {
           "intro": "Skupujemy auta osobowe i dostawcze w Kruszwicy i okolicach. Zapewniamy dojazd do klienta oraz płatność w gotówce.",
@@ -460,9 +461,9 @@ INSERT INTO profiles (
         "showInFooter": true,
         "relatedLocations": ["skup-aut-kruszwica", "skup-aut-radziejow"],
         "seo": {
-          "title": "Skup aut Inowrocław | D-CAR — skup samochodów za gotówkę",
+          "title": "Skup aut Inowrocław | D-CAR - skup samochodów za gotówkę",
           "metaDescription": "D-CAR oferuje skup aut w Inowrocławiu. Bezpłatna wycena, natychmiastowa wypłata gotówki i darmowy transport lawetą.",
-          "h1": "Skup aut w Inowrocławiu — D-CAR"
+          "h1": "Skup aut w Inowrocławiu - D-CAR"
         },
         "content": {
           "intro": "Potrzebujesz pilnie sprzedać auto w Inowrocławiu? D-CAR kupuje samochody używane za gotówkę z dojazdem na terenie Inowrocławia.",
@@ -483,9 +484,9 @@ INSERT INTO profiles (
         "showInFooter": true,
         "relatedLocations": ["skup-aut-izbica-kujawska", "skup-aut-piotrkow-kujawski"],
         "seo": {
-          "title": "Skup aut Konin | D-CAR — skup samochodów za gotówkę",
+          "title": "Skup aut Konin | D-CAR - skup samochodów za gotówkę",
           "metaDescription": "Skup samochodów za gotówkę w Koninie. D-CAR oferuje bezpłatną wycenę, płatność na miejscu i bezpieczną transakcję.",
-          "h1": "Skup aut w Koninie — D-CAR"
+          "h1": "Skup aut w Koninie - D-CAR"
         },
         "content": {
           "intro": "Oferujemy profesjonalny skup aut dla mieszkańców Konina. Szybka wycena, dojazd lawetą i płatność w gotówce od ręki.",
@@ -506,9 +507,9 @@ INSERT INTO profiles (
         "showInFooter": true,
         "relatedLocations": ["skup-aut-wloclawek", "skup-aut-lubraniec"],
         "seo": {
-          "title": "Skup aut Lipno | D-CAR — skup samochodów za gotówkę",
+          "title": "Skup aut Lipno | D-CAR - skup samochodów za gotówkę",
           "metaDescription": "D-CAR skupuje samochody za gotówkę w Lipnie i powiecie lipnowskim. Sprawdź darmową wycenę i bezpłatny odbiór pojazdu.",
-          "h1": "Skup aut w Lipnie — D-CAR"
+          "h1": "Skup aut w Lipnie - D-CAR"
         },
         "content": {
           "intro": "Sprzedaj auto w Lipnie bez zbędnych formalności. D-CAR oferuje mobilny skup aut z darmowym odbiorem w Lipnie i okolicach.",
@@ -531,7 +532,7 @@ INSERT INTO profiles (
       "enabled": true,
       "maxAmount": 10000,
       "currency": "PLN",
-      "description": "Skupujemy również samochody budżetowe do 10 000 zł — zapytaj o szybką wycenę."
+      "description": "Skupujemy również samochody budżetowe do 10 000 zł - zapytaj o szybką wycenę."
     }
   }'::jsonb
 )

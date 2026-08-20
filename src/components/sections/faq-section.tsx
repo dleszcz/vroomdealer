@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { DealerTenant, SectionConfig } from "@/types/landing";
 
 interface FAQSectionProps {
@@ -26,19 +27,9 @@ export function FAQSection({ tenant, config }: FAQSectionProps) {
           },
         ]
       : []),
-    ...(tenant.businessRules?.purchasePriceLimit?.enabled
-      ? [
-          {
-            q: `Czy skupujecie auta do ${tenant.businessRules.purchasePriceLimit.maxAmount.toLocaleString("pl-PL")} zł?`,
-            a:
-              tenant.businessRules.purchasePriceLimit.description ||
-              `Tak! Skupujemy auta w tym przedziale cenowym (do ${tenant.businessRules.purchasePriceLimit.maxAmount.toLocaleString("pl-PL")} PLN). Skontaktuj się z nami po bezpłatną wycenę.`,
-          },
-        ]
-      : []),
     {
       q: "Jak szybko otrzymam pieniądze za samochód?",
-      a: "Pieniądze wypłacamy natychmiast przy podpisaniu umowy — gotówką do ręki lub szybkim przelewem ekspresowym, który pojawia się na Twoim koncie w kilka minut.",
+      a: "Pieniądze wypłacamy natychmiast przy podpisaniu umowy: gotówką do ręki lub szybkim przelewem ekspresowym, który pojawia się na Twoim koncie w kilka minut.",
     },
     {
       q: "Czy skupujecie auta niesprawne, uszkodzone lub bez OC?",
@@ -53,7 +44,6 @@ export function FAQSection({ tenant, config }: FAQSectionProps) {
       a: `Przystosowujemy się do Ciebie! Możesz przyjechać na nasz plac${tenant.location?.address || tenant.location?.city ? ` (${[tenant.location?.address, tenant.location?.city].filter(Boolean).join(", ")})` : ""} lub my przyjedziemy bezpłatnie pod Twój dom.`,
     },
   ];
-
 
   const toggle = (idx: number) => {
     setOpenIndex(openIndex === idx ? null : idx);
@@ -102,9 +92,16 @@ export function FAQSection({ tenant, config }: FAQSectionProps) {
                   }}
                 >
                   <span>{faq.q}</span>
-                  <span style={{ color: "var(--color-primary)", fontSize: "1.25rem", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
-                    ▼
-                  </span>
+                  <ChevronDown
+                    size={20}
+                    style={{
+                      color: "var(--color-primary)",
+                      transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                      transition: "transform 0.25s ease",
+                      flexShrink: 0,
+                      marginLeft: "12px",
+                    }}
+                  />
                 </button>
 
                 {isOpen && (

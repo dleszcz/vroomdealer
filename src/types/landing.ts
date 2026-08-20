@@ -168,6 +168,10 @@ export interface DealerTenant {
     phone?: string | null;
     whatsapp?: string | null;
     email?: string | null;
+    facebook?: string | null;
+    instagram?: string | null;
+    tiktok?: string | null;
+    youtube?: string | null;
   };
   location?: {
     address?: string | null;

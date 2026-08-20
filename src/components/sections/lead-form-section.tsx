@@ -14,7 +14,7 @@ export function LeadFormSection({ tenant, config }: LeadFormSectionProps) {
   const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
 
   return (
-    <section id="lead-form" style={{ width: "100%", padding: "5rem 0", background: "var(--color-surface, #0b0f19)" }}>
+    <section id="lead-form" style={{ width: "100%", padding: "5rem 0", background: "#0a0f1d" }}>
       <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
         <div style={{ textAlign: "center", maxWidth: "680px", margin: "0 auto 3rem" }}>
           <span

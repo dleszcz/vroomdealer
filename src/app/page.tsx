@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   if (host && !host.includes("localhost") && !host.includes("vroomdealer.pl") && !host.includes("vercel.app")) {
     const tenant = await resolveTenant({ domain: host });
     if (tenant) {
-      const title = tenant.seo?.metaTitle || `${tenant.businessName} — Skup Aut i Sprzedaż`;
+      const title = tenant.seo?.metaTitle || `${tenant.businessName} - Skup Aut i Sprzedaż`;
       const description = tenant.seo?.metaDescription || tenant.businessDescription || "Twój prywatny system sprzedaży i pozyskiwania aut.";
       return {
         title,
@@ -30,11 +30,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // Default SaaS Landing Page Metadata for VroomDealer.pl (v1.0 Spec)
   return {
-    title: "VroomDealer.pl — Pozyskuj więcej samochodów od osób prywatnych",
-    description: "VroomDealer buduje dla Twojego komisu lokalny kanał pozyskiwania aut — od strony i SEO po kampanie i obsługę leadów. Dołącz do zamkniętych testów.",
+    title: "VroomDealer.pl - Pozyskuj więcej samochodów od osób prywatnych",
+    description: "VroomDealer buduje dla Twojego komisu lokalny kanał pozyskiwania aut: od strony i SEO po kampanie i obsługę leadów. Dołącz do zamkniętych testów.",
     openGraph: {
-      title: "VroomDealer.pl — Pozyskuj więcej samochodów od osób prywatnych",
-      description: "VroomDealer buduje dla Twojego komisu lokalny kanał pozyskiwania aut — od strony i SEO po kampanie i obsługę leadów.",
+      title: "VroomDealer.pl - Pozyskuj więcej samochodów od osób prywatnych",
+      description: "VroomDealer buduje dla Twojego komisu lokalny kanał pozyskiwania aut: od strony i SEO po kampanie i obsługę leadów.",
       url: "https://vroomdealer.pl",
       type: "website",
     },
@@ -108,7 +108,7 @@ export default async function HomePage() {
         </h1>
 
         <p className="cs__subtitle">
-          VroomDealer buduje dla Twojego komisu lokalny kanał pozyskiwania aut — od dedykowanej strony i lokalnego SEO po kampanie i obsługę zgłoszeń.
+          VroomDealer buduje dla Twojego komisu lokalny kanał pozyskiwania aut: od dedykowanej strony i lokalnego SEO po kampanie i obsługę zgłoszeń.
         </p>
 
         {/* Hero Actions */}
@@ -256,7 +256,7 @@ export default async function HomePage() {
 
       {/* Footer */}
       <footer className="cs__footer">
-        <p>© {new Date().getFullYear()} VroomDealer.pl — Wszelkie prawa zastrzeżone.</p>
+        <p>© {new Date().getFullYear()} VroomDealer.pl - Wszelkie prawa zastrzeżone.</p>
       </footer>
     </main>
   );

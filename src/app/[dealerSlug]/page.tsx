@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!tenant) return {};
 
-  const title = tenant.seo?.metaTitle || `${tenant.businessName} — Samochody i skup aut${tenant.location?.city ? ` | ${tenant.location.city}` : ""}`;
+  const title = tenant.seo?.metaTitle || `${tenant.businessName} - Samochody i skup aut${tenant.location?.city ? ` | ${tenant.location.city}` : ""}`;
   const description =
     tenant.seo?.metaDescription ||
     tenant.businessDescription ||

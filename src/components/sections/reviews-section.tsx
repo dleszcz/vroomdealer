@@ -93,7 +93,7 @@ export function ReviewsSection({ tenant, config }: ReviewsSectionProps) {
             </p>
 
             <div style={{ fontWeight: 800, color: "#090B0B", fontSize: "1rem", marginBottom: "1.75rem" }}>
-              — Michał, Toruń
+              - Michał, Toruń
             </div>
 
             {/* Slider Dots */}
