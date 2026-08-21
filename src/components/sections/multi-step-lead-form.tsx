@@ -99,18 +99,30 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
     setErrorMsg("");
 
     try {
+      const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+      const attribution = {
+        utm_source: searchParams.get("utm_source") || null,
+        utm_medium: searchParams.get("utm_medium") || null,
+        utm_campaign: searchParams.get("utm_campaign") || null,
+        utm_content: searchParams.get("utm_content") || null,
+        gclid: searchParams.get("gclid") || null,
+        fbclid: searchParams.get("fbclid") || null,
+        referrer: typeof document !== "undefined" ? document.referrer || null : null,
+      };
+
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           dealerId: tenant.slug,
           source: localCity ? "local_seo_multi_step_form" : "multi_step_lead_form",
-          landingPath: window.location.pathname,
+          landingPath: typeof window !== "undefined" ? window.location.pathname : "/",
           customerName: name || "Klient skupu",
           customerPhone: phone,
           customerEmail: email || null,
           localSeoCity: localCity,
           photos: photoPreviews,
+          attribution,
           vehicleDetails: {
             brand,
             model,

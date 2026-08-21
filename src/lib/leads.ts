@@ -10,28 +10,59 @@ async function sendLeadNotificationEmail(leadData: Lead) {
   }
 
   const isSaasApp = leadData.source === "vroomdealer_saas_test_application" || leadData.dealerId === "vroomdealer_saas";
-  if (!isSaasApp) {
-    // Leady poszczególnych komisów trafiają do ich własnych kanałów/bazy danych Supabase
-    return;
-  }
+  
   const subject = isSaasApp
-    ? `🚀 Nowe zgłoszenie do testów VroomDealer: ${leadData.customerName}`
-    : `📩 Nowy lead dla komisu (${leadData.dealerId}): ${leadData.customerName || leadData.customerPhone}`;
+    ? `🚀 Nowe zgłoszenie do testów VroomDealer: ${leadData.customerName || leadData.customerPhone}`
+    : `🚗 NOWY LEAD dla komisu [${leadData.dealerId}]: ${leadData.customerName || leadData.customerPhone}`;
 
-  const detailsHtml = leadData.vehicleDetails
-    ? `<div style="background:#f4f4f5;padding:12px;border-radius:8px;margin-top:12px;"><pre style="margin:0;font-family:sans-serif;">${JSON.stringify(leadData.vehicleDetails, null, 2)}</pre></div>`
+  const vehicleObj = leadData.vehicleDetails as Record<string, unknown> | undefined;
+  const vehicleHtml = vehicleObj
+    ? `
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin:16px 0;">
+        <h4 style="margin:0 0 10px;color:#0f172a;font-size:15px;">🚗 Dane pojazdu:</h4>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;color:#334155;">
+          ${vehicleObj.brand ? `<tr><td style="padding:4px 0;font-weight:bold;width:40%;">Marka i Model:</td><td>${vehicleObj.brand} ${vehicleObj.model || ""}</td></tr>` : ""}
+          ${vehicleObj.year ? `<tr><td style="padding:4px 0;font-weight:bold;">Rok produkcji:</td><td>${vehicleObj.year}</td></tr>` : ""}
+          ${vehicleObj.mileage ? `<tr><td style="padding:4px 0;font-weight:bold;">Przebieg:</td><td>${vehicleObj.mileage} km</td></tr>` : ""}
+          ${vehicleObj.fuelType ? `<tr><td style="padding:4px 0;font-weight:bold;">Paliwo / Skrzynia:</td><td>${vehicleObj.fuelType} ${vehicleObj.transmission ? `(${vehicleObj.transmission})` : ""}</td></tr>` : ""}
+          ${vehicleObj.condition ? `<tr><td style="padding:4px 0;font-weight:bold;">Stan auta:</td><td>${vehicleObj.condition}</td></tr>` : ""}
+          ${vehicleObj.expectedPrice ? `<tr><td style="padding:4px 0;font-weight:bold;">Oczekiwana cena:</td><td><strong style="color:#059669;">${vehicleObj.expectedPrice} zł</strong></td></tr>` : ""}
+          ${vehicleObj.city ? `<tr><td style="padding:4px 0;font-weight:bold;">Lokalizacja:</td><td>${vehicleObj.city}</td></tr>` : ""}
+        </table>
+      </div>
+    `
+    : "";
+
+  const attributionObj = leadData.attribution as Record<string, unknown> | undefined;
+  const attributionHtml = attributionObj
+    ? `
+      <div style="background:#f1f5f9;padding:12px;border-radius:8px;margin:12px 0;font-size:13px;color:#475569;">
+        <strong>📊 Źródło ruchu (Attribution):</strong><br/>
+        UTM Source: <code>${attributionObj.utm_source || "Brak (Organic/Direct)"}</code> | 
+        Campaign: <code>${attributionObj.utm_campaign || "Brak"}</code> | 
+        Referrer: <code>${attributionObj.referrer || "Bezpośrednie wejście"}</code>
+      </div>
+    `
     : "";
 
   const html = `
-    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;border:1px solid #e4e4e7;border-radius:12px;">
-      <h2 style="color:#10B981;margin-top:0;">${isSaasApp ? "🚀 Nowe zgłoszenie do zamkniętych testów VroomDealer.pl" : "📩 Nowy Lead Zgłoszeniowy"}</h2>
-      <p><strong>Imię / Nazwisko / Komis:</strong> ${leadData.customerName || "Brak danych"}</p>
-      <p><strong>Telefon kontaktowy:</strong> <a href="tel:${leadData.customerPhone}">${leadData.customerPhone}</a></p>
-      <p><strong>Źródło:</strong> <code>${leadData.source}</code></p>
-      <p><strong>Identyfikator dealera:</strong> <code>${leadData.dealerId}</code></p>
-      ${detailsHtml}
-      <hr style="border:none;border-top:1px solid #e4e4e7;margin:20px 0;" />
-      <p style="font-size:12px;color:#71717a;margin:0;">Wysłane automatycznie przez system VroomDealer.pl</p>
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;padding:24px;border:1px solid #cbd5e1;border-radius:16px;background:#ffffff;">
+      <div style="background:#0f172a;padding:16px 20px;border-radius:12px;margin-bottom:20px;">
+        <h2 style="color:#10b981;margin:0;font-size:20px;">${isSaasApp ? "🚀 Nowe zgłoszenie do testów VroomDealer.pl" : "⚡ NOWY LEAD ZGŁOSZENIOWY SKUPU"}</h2>
+        <p style="color:#94a3b8;margin:4px 0 0;font-size:13px;">Komis: <strong>${leadData.dealerId}</strong> | Ścieżka: <code>${leadData.landingPath}</code></p>
+      </div>
+
+      <div style="font-size:16px;color:#1e293b;line-height:1.6;">
+        <p style="margin:8px 0;"><strong>👤 Imię i nazwisko:</strong> ${leadData.customerName || "Brak danych"}</p>
+        <p style="margin:8px 0;font-size:18px;"><strong>📞 Telefon kontaktowy:</strong> <a href="tel:${leadData.customerPhone}" style="color:#2563eb;font-weight:bold;text-decoration:none;">${leadData.customerPhone}</a></p>
+        ${leadData.customerEmail ? `<p style="margin:8px 0;"><strong>✉️ Email:</strong> ${leadData.customerEmail}</p>` : ""}
+      </div>
+
+      ${vehicleHtml}
+      ${attributionHtml}
+
+      <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0 16px;" />
+      <p style="font-size:12px;color:#94a3b8;margin:0;text-align:center;">Wysłane automatycznie przez system VroomDealer.pl Engine</p>
     </div>
   `;
 

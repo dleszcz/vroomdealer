@@ -8,6 +8,8 @@ import { CheckCircle2, ChevronDown, MapPin, Phone, ShieldCheck, Truck, Wallet } 
 import { trackEvent } from "@/lib/analytics";
 import { StickyMobileCta } from "@/components/sticky-mobile-cta";
 
+import { getTenantUrl } from "@/lib/urls";
+
 interface LocalSeoPageProps {
   tenant: DealerTenant;
   localPage: LocalPageConfig;
@@ -60,8 +62,8 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
   const canonicalUrl = `${baseUrl}/${localPage.slug}`;
 
   const breadcrumbs = [
-    { label: tenant.businessName, href: `/${tenant.slug}` },
-    { label: "Skup aut", href: `/${tenant.slug}#lead-form` },
+    { label: tenant.businessName, href: getTenantUrl(tenant.slug, "/", tenant.customDomain) },
+    { label: "Skup aut", href: getTenantUrl(tenant.slug, "/#lead-form", tenant.customDomain) },
     { label: localPage.city },
   ];
 
@@ -81,6 +83,17 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
     trackEvent("lead_form_started", { localSeoCity: localPage.city });
 
     try {
+      const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+      const attribution = {
+        utm_source: searchParams.get("utm_source") || null,
+        utm_medium: searchParams.get("utm_medium") || null,
+        utm_campaign: searchParams.get("utm_campaign") || null,
+        utm_content: searchParams.get("utm_content") || null,
+        gclid: searchParams.get("gclid") || null,
+        fbclid: searchParams.get("fbclid") || null,
+        referrer: typeof document !== "undefined" ? document.referrer || null : null,
+      };
+
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -90,6 +103,8 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
           landingPath: `/${tenant.slug}/${localPage.slug}`,
           customerName,
           customerPhone,
+          attribution,
+          localSeoCity: localPage.city,
           vehicleDetails: { description: vehicleDetails },
         }),
       });
@@ -666,7 +681,7 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
                   }}
                 >
                   <a
-                    href={`/${tenant.slug}`}
+                    href={getTenantUrl(tenant.slug, "/", tenant.customDomain)}
                     style={{
                       padding: "8px 16px",
                       borderRadius: "8px",
@@ -683,7 +698,7 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
                   {otherLocalPages.map((other) => (
                     <a
                       key={other.slug}
-                      href={`/${tenant.slug}/${other.slug}`}
+                      href={getTenantUrl(tenant.slug, `/${other.slug}`, tenant.customDomain)}
                       style={{
                         padding: "8px 16px",
                         borderRadius: "8px",
@@ -699,7 +714,7 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
                     </a>
                   ))}
                   <a
-                    href={`/${tenant.slug}#vehicles`}
+                    href={getTenantUrl(tenant.slug, "/#vehicles", tenant.customDomain)}
                     style={{
                       padding: "8px 16px",
                       borderRadius: "8px",
