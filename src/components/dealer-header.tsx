@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Menu, Phone, X } from "lucide-react";
 import { DealerTenant } from "@/types/landing";
 
+import { getTenantUrl } from "@/lib/urls";
+
 interface DealerHeaderProps { tenant: DealerTenant; }
 
 export function DealerHeader({ tenant }: DealerHeaderProps) {
@@ -11,13 +13,14 @@ export function DealerHeader({ tenant }: DealerHeaderProps) {
   const phone = tenant.contact.phone || "";
   const logo = tenant.logoUrl || tenant.branding.logoUrl;
   const primaryHref = tenant.contact.whatsapp ? `https://wa.me/${tenant.contact.whatsapp.replace(/\D/g, "")}` : phone ? `tel:${phone.replace(/\s/g, "")}` : "#hero";
+  
   const links = [
-    ["Strona główna", `/${tenant.slug}`],
-    ["Skup aut", `/${tenant.slug}/skup-aut`],
-    ["Samochody", `/${tenant.slug}#vehicles`],
-    ["Usługi", `/${tenant.slug}#services`],
-    ["O nas", `/${tenant.slug}#about`],
-    ["Kontakt", `/${tenant.slug}#footer`],
+    ["Strona główna", getTenantUrl(tenant.slug, "/", tenant.customDomain)],
+    ["Skup aut", getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain)],
+    ["Samochody", getTenantUrl(tenant.slug, "/#vehicles", tenant.customDomain)],
+    ["Usługi", getTenantUrl(tenant.slug, "/#services", tenant.customDomain)],
+    ["O nas", getTenantUrl(tenant.slug, "/#about", tenant.customDomain)],
+    ["Kontakt", getTenantUrl(tenant.slug, "/#footer", tenant.customDomain)],
   ];
 
   const headerBg = tenant.branding?.colors?.headerBg || "#080808";
@@ -25,7 +28,7 @@ export function DealerHeader({ tenant }: DealerHeaderProps) {
   return (
     <header className="dealer-header" style={{ background: headerBg }}>
       <div className="dealer-header__inner">
-        <a href={`/${tenant.slug}`} aria-label={tenant.businessName}>
+        <a href={getTenantUrl(tenant.slug, "/", tenant.customDomain)} aria-label={tenant.businessName}>
 
           {logo ? (
             <img className="dealer-header__logo" src={logo} alt={tenant.businessName} />

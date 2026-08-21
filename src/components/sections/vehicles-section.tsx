@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { DealerTenant, SectionConfig } from "@/types/landing";
 import { getCars } from "@/lib/data";
 import { CarCard } from "@/components/car-card";
+import { getTenantUrl } from "@/lib/urls";
 
 interface Props { tenant: DealerTenant; config?: SectionConfig; }
 
@@ -23,7 +24,7 @@ export async function VehiclesSection({ tenant }: Props) {
             <h2 className="vd-heading">Samochody na sprzedaż</h2>
           </div>
           {hasMore && (
-            <a className="vehicles__all" href={`/${tenant.slug}/samochody`}>
+            <a className="vehicles__all" href={getTenantUrl(tenant.slug, "/samochody", tenant.customDomain)}>
               <span>Zobacz wszystkie ({allCars.length})</span>
               <ArrowRight size={14} />
             </a>

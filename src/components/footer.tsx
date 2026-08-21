@@ -39,6 +39,7 @@ function YoutubeIcon({ size = 18 }: { size?: number }) {
 }
 
 import { APP_VERSION } from "@/lib/version";
+import { getTenantUrl } from "@/lib/urls";
 
 interface FooterProps { tenant?: DealerTenant | null; }
 
@@ -51,6 +52,9 @@ export function Footer({ tenant }: FooterProps) {
   const logo = tenant?.logoUrl || tenant?.branding?.logoUrl;
 
   const footerBg = tenant?.branding?.colors?.footerBg || "#080808";
+
+  const getUrl = (path: string) =>
+    getTenantUrl(tenant?.slug || "d-car", path, tenant?.customDomain);
 
   // Active service areas for local SEO links
   const activeLocalPages =
@@ -100,14 +104,14 @@ export function Footer({ tenant }: FooterProps) {
           <div>
             <h3 className="dealer-footer__heading">Szybkie linki</h3>
             <div className="dealer-footer__links">
-              <a href={`/${tenant?.slug || ""}`}>Strona główna</a>
-              <a href={`/${tenant?.slug || ""}/skup-aut`}>Skup aut</a>
-              <a href={`/${tenant?.slug || ""}#vehicles`}>Samochody</a>
-              <a href={`/${tenant?.slug || ""}#services`}>Usługi</a>
-              <a href={`/${tenant?.slug || ""}#about`}>O nas</a>
-              <a href={`/${tenant?.slug || ""}#footer`}>Kontakt</a>
-              <a href={`/${tenant?.slug || ""}/polityka-prywatnosci`}>Polityka prywatności</a>
-              <a href={`/${tenant?.slug || ""}/regulamin`}>Regulamin</a>
+              <a href={getUrl("/")}>Strona główna</a>
+              <a href={getUrl("/skup-aut")}>Skup aut</a>
+              <a href={getUrl("/#vehicles")}>Samochody</a>
+              <a href={getUrl("/#services")}>Usługi</a>
+              <a href={getUrl("/#about")}>O nas</a>
+              <a href={getUrl("/#footer")}>Kontakt</a>
+              <a href={getUrl("/polityka-prywatnosci")}>Polityka prywatności</a>
+              <a href={getUrl("/regulamin")}>Regulamin</a>
             </div>
           </div>
           {activeLocalPages.length > 0 ? (
@@ -115,7 +119,7 @@ export function Footer({ tenant }: FooterProps) {
               <h3 className="dealer-footer__heading">Obsługiwane okolice</h3>
               <div className="dealer-footer__links">
                 {activeLocalPages.map((lp) => (
-                  <a key={lp.slug} href={`/${tenant?.slug || ""}/${lp.slug}`}>
+                  <a key={lp.slug} href={getUrl(`/${lp.slug}`)}>
                     Skup aut {lp.city}
                   </a>
                 ))}
@@ -125,11 +129,11 @@ export function Footer({ tenant }: FooterProps) {
             <div>
               <h3 className="dealer-footer__heading">Usługi</h3>
               <div className="dealer-footer__links">
-                <a href={`/${tenant?.slug || ""}#lead-form`}>Skup aut</a>
-                <a href={`/${tenant?.slug || ""}#vehicles`}>Sprzedaż aut</a>
-                <a href={`/${tenant?.slug || ""}#services`}>Pomoc drogowa</a>
-                <a href={`/${tenant?.slug || ""}#services`}>Transport aut</a>
-                <a href={`/${tenant?.slug || ""}#services`}>Inne usługi</a>
+                <a href={getUrl("/#lead-form")}>Skup aut</a>
+                <a href={getUrl("/#vehicles")}>Sprzedaż aut</a>
+                <a href={getUrl("/#services")}>Pomoc drogowa</a>
+                <a href={getUrl("/#services")}>Transport aut</a>
+                <a href={getUrl("/#services")}>Inne usługi</a>
               </div>
             </div>
           )}
@@ -149,8 +153,8 @@ export function Footer({ tenant }: FooterProps) {
         <div className="dealer-footer__bottom">
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
             <span>© {new Date().getFullYear()} {name}</span>
-            <a href={`/${tenant?.slug || ""}/polityka-prywatnosci`} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Polityka prywatności</a>
-            <a href={`/${tenant?.slug || ""}/regulamin`} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Regulamin</a>
+            <a href={getUrl("/polityka-prywatnosci")} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Polityka prywatności</a>
+            <a href={getUrl("/regulamin")} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Regulamin</a>
           </div>
           <span className="dealer-footer__powered">
             Powered by <strong>VroomDealer</strong>{" "}

@@ -3,6 +3,8 @@ import Image from "next/image";
 import { Car } from "@/types/database";
 import { formatPrice, formatMileage } from "@/lib/utils";
 
+import { getTenantUrl } from "@/lib/urls";
+
 interface CarCardProps {
   car: Car;
   dealerSlug: string;
@@ -13,7 +15,7 @@ export function CarCard({ car, dealerSlug }: CarCardProps) {
 
   return (
     <Link
-      href={`/${dealerSlug}/${car.slug}`}
+      href={getTenantUrl(dealerSlug, `/${car.slug}`)}
       id={`car-card-${car.slug}`}
       className="car-card"
     >

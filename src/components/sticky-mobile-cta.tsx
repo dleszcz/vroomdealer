@@ -4,6 +4,8 @@ import React from "react";
 import { Phone, MessageCircle, Car } from "lucide-react";
 import { DealerTenant } from "@/types/landing";
 
+import { getTenantUrl } from "@/lib/urls";
+
 interface StickyMobileCtaProps {
   tenant: DealerTenant;
 }
@@ -20,7 +22,7 @@ export function StickyMobileCta({ tenant }: StickyMobileCtaProps) {
     if (targetEl) {
       targetEl.scrollIntoView({ behavior: "smooth" });
     } else {
-      window.location.href = `/${tenant.slug}/skup-aut`;
+      window.location.href = getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain);
     }
   };
 
@@ -97,7 +99,7 @@ export function StickyMobileCta({ tenant }: StickyMobileCtaProps) {
 
         {/* Sell Car Button */}
         <a
-          href={`/${tenant.slug}/skup-aut`}
+          href={getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain)}
           onClick={handleSellClick}
           style={{
             display: "flex",

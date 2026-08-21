@@ -22,6 +22,7 @@ import { CarGallery } from "@/components/car-gallery";
 import { CarCard } from "@/components/car-card";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { formatPrice, formatMileage } from "@/lib/utils";
+import { getTenantUrl } from "@/lib/urls";
 
 interface SingleCarPageProps {
   tenant: DealerTenant;
@@ -40,7 +41,7 @@ export function SingleCarPage({ tenant, car, relatedCars = [] }: SingleCarPagePr
   const displayRelated = relatedCars.slice(0, 3);
   const hasMoreRelated = relatedCars.length > displayRelated.length;
 
-  const tradeInHref = `/${tenant.slug}#lead-form`;
+  const tradeInHref = getTenantUrl(tenant.slug, "/#lead-form", tenant.customDomain);
 
   return (
     <div style={{ background: "#f8fafc", minHeight: "100vh" }}>
@@ -57,8 +58,8 @@ export function SingleCarPage({ tenant, car, relatedCars = [] }: SingleCarPagePr
           <Breadcrumbs
             variant="dark"
             items={[
-              { label: tenant.businessName, href: `/${tenant.slug}` },
-              { label: "Samochody na sprzedaż", href: `/${tenant.slug}/samochody` },
+              { label: tenant.businessName, href: getTenantUrl(tenant.slug, "/", tenant.customDomain) },
+              { label: "Samochody na sprzedaż", href: getTenantUrl(tenant.slug, "/samochody", tenant.customDomain) },
               { label: `${car.make} ${car.model}` },
             ]}
           />
@@ -86,7 +87,7 @@ export function SingleCarPage({ tenant, car, relatedCars = [] }: SingleCarPagePr
             </div>
 
             <Link
-              href={`/${tenant.slug}/samochody`}
+              href={getTenantUrl(tenant.slug, "/samochody", tenant.customDomain)}
               style={{
                 display: "inline-flex",
                 alignItems: "center",

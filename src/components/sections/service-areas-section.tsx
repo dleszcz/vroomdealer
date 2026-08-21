@@ -2,8 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { MapPin, Navigation } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { DealerTenant, SectionConfig } from "@/types/landing";
+import { getTenantUrl } from "@/lib/urls";
 
 interface Props {
   tenant: DealerTenant;
@@ -63,7 +64,7 @@ export function ServiceAreasSection({ tenant, config }: Props) {
           {activeLocalPages.map((lp) => (
             <Link
               key={lp.slug}
-              href={`/${tenant.slug}/${lp.slug}`}
+              href={getTenantUrl(tenant.slug, `/${lp.slug}`, tenant.customDomain)}
               style={{
 
                 padding: "20px",
