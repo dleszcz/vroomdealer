@@ -196,7 +196,7 @@ export function InventoryPage({ tenant, cars }: InventoryPageProps) {
           {sortedCars.length > 0 ? (
             <div className="vehicles__grid">
               {sortedCars.map((car) => (
-                <CarCard key={car.id} car={car} dealerSlug={tenant.slug} />
+                <CarCard key={car.id} car={car} dealerSlug={tenant.slug} customDomain={tenant.customDomain} />
               ))}
             </div>
           ) : (

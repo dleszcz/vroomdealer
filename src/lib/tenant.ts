@@ -28,10 +28,7 @@ export function profileToTenant(profile: Profile): DealerTenant {
   );
 
   // Build local SEO config
-  const localSeo =
-    profile.slug === "d-car" && seedProfileDCar.local_seo
-      ? mergeLocalSeo(seedProfileDCar.local_seo as Record<string, unknown>)
-      : mergeLocalSeo(profile.local_seo as Record<string, unknown> | undefined);
+  const localSeo = mergeLocalSeo(profile.local_seo as Record<string, unknown> | undefined);
 
   // Build business rules
   const businessRules = mergeBusinessRules(profile.business_rules as Record<string, unknown> | undefined);

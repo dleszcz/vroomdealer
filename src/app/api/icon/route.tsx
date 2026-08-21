@@ -43,8 +43,7 @@ export async function GET(req: NextRequest) {
 
   const tenant = await resolveTenant({ slug: tenantSlug });
 
-  const primaryColor =
-    tenant?.branding?.colors?.primary || (tenantSlug === "d-car" ? "#1686E0" : "#1686E0");
+  const primaryColor = tenant?.branding?.colors?.primary || "#1686E0";
   
   const letter = (
     tenant?.businessName

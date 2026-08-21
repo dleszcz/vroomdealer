@@ -31,7 +31,7 @@ export async function VehiclesSection({ tenant }: Props) {
           )}
         </div>
         <div className="vehicles__grid">
-          {carsToDisplay.map(car => <CarCard key={car.id} car={car} dealerSlug={tenant.slug} />)}
+          {carsToDisplay.map(car => <CarCard key={car.id} car={car} dealerSlug={tenant.slug} customDomain={tenant.customDomain} />)}
         </div>
       </div>
     </section>

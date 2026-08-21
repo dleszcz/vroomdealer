@@ -1,9 +1,58 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { allSeedProfiles } from "@/lib/data";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
-export function middleware(req: NextRequest) {
+async function resolveTenantSlugByHost(host: string): Promise<string | null> {
+  const cleanHost = host.toLowerCase().replace(/^www\./, "");
+
+  // 1. Subdomain matching (e.g. [tenantSlug].vroomdealer.pl)
+  if (cleanHost.endsWith(".vroomdealer.pl") && cleanHost !== "vroomdealer.pl") {
+    const subdomain = cleanHost.replace(".vroomdealer.pl", "");
+    if (subdomain) return subdomain;
+  }
+
+  // 2. Supabase dynamic custom domain resolution
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (supabaseUrl && !supabaseUrl.includes("placeholder") && supabaseAnonKey) {
+    try {
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+      const { data } = await supabase
+        .from("profiles")
+        .select("slug")
+        .eq("custom_domain", cleanHost)
+        .maybeSingle();
+
+      if (data?.slug) {
+        return data.slug;
+      }
+    } catch (e) {
+      console.error("Middleware Supabase domain resolution error:", e);
+    }
+  }
+
+  // 3. Generic match against dataset seed profiles
+  const seedMatch = allSeedProfiles.find(
+    (p) => p.custom_domain && p.custom_domain.toLowerCase().replace(/^www\./, "") === cleanHost
+  );
+  if (seedMatch) {
+    return seedMatch.slug;
+  }
+
+  // 4. Generic fallback: domain name before TLD extension (e.g. auto-handel.pl -> auto-handel)
+  const domainParts = cleanHost.split(".");
+  if (domainParts.length >= 2) {
+    return domainParts[0];
+  }
+
+  return null;
+}
+
+export async function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
   const { pathname } = url;
   const hostname = req.headers.get("host") || "";
@@ -11,27 +60,28 @@ export function middleware(req: NextRequest) {
   // Normalize host (strip port and www)
   const host = hostname.split(":")[0].replace(/^www\./, "");
 
-  // Platform domains where tenant subpaths /dealerSlug are used
+  // Platform root domains where main SaaS landing page & subpaths /[dealerSlug] live
   const isPlatformDomain =
     host === "vroomdealer.pl" ||
     host === "localhost" ||
     host.endsWith(".vercel.app");
 
-  // Determine if host is a tenant custom domain
+  // Dynamically resolve tenant slug for custom domain or tenant subdomain
   let tenantSlug: string | null = null;
   if (!isPlatformDomain) {
-    if (host === "d-car.com.pl" || host.includes("d-car")) {
-      tenantSlug = "d-car";
-    }
+    tenantSlug = await resolveTenantSlugByHost(host);
   }
 
-  // Handle requests on custom tenant domain
+  // Handle requests on custom tenant domain / subdomain
   if (tenantSlug) {
+    req.headers.set("x-tenant-slug", tenantSlug);
+    req.headers.set("x-is-custom-domain", "true");
+
     // 1. Rewrite favicon & icon endpoints to tenant icon route
     if (pathname === "/icon" || pathname === "/favicon.ico") {
       url.pathname = "/api/icon";
       url.searchParams.set("tenant", tenantSlug);
-      const res = NextResponse.rewrite(url);
+      const res = NextResponse.rewrite(url, { request: { headers: req.headers } });
       res.headers.set("x-tenant-slug", tenantSlug);
       res.headers.set("x-is-custom-domain", "true");
       return res;
@@ -45,18 +95,15 @@ export function middleware(req: NextRequest) {
       pathname.startsWith("/images") ||
       pathname.startsWith(`/${tenantSlug}`)
     ) {
-      const res = NextResponse.next();
+      const res = NextResponse.next({ request: { headers: req.headers } });
       res.headers.set("x-tenant-slug", tenantSlug);
       res.headers.set("x-is-custom-domain", "true");
       return res;
     }
 
     // 3. Rewrite root & subpaths internally to /[dealerSlug] routes
-    // e.g. "/" -> "/d-car"
-    // e.g. "/skup-aut" -> "/d-car/skup-aut"
-    // e.g. "/samochody" -> "/d-car/samochody"
     url.pathname = `/${tenantSlug}${pathname === "/" ? "" : pathname}`;
-    const res = NextResponse.rewrite(url);
+    const res = NextResponse.rewrite(url, { request: { headers: req.headers } });
     res.headers.set("x-tenant-slug", tenantSlug);
     res.headers.set("x-is-custom-domain", "true");
     return res;

@@ -12,15 +12,15 @@ interface CustomNotFoundProps {
 
 export function CustomNotFound({
   tenantSlug,
-  businessName = tenantSlug ? "komisie D-CAR" : "VroomDealer.pl",
-  phone = "+48 530 826 501",
+  businessName = "naszym serwisie",
+  phone,
 }: CustomNotFoundProps) {
   const isTenant = Boolean(tenantSlug);
   const homeHref = isTenant ? `/${tenantSlug}` : "/";
   const valuationHref = isTenant ? `/${tenantSlug}/skup-aut` : "/#lead-form";
 
   const primaryBtnLabel = isTenant
-    ? `Wróć do strony komisu (${tenantSlug})`
+    ? "Wróć do strony głównej komisu"
     : "Wróć na stronę główną VroomDealer";
 
   const secondaryBtnLabel = isTenant
