@@ -4,16 +4,18 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
+import { getFullVersion } from "@/lib/version";
+
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_BASE_URL || "https://vroomdealer.pl"
   ),
   title: {
-    default: "VroomDealer — Platforma sprzedażowa dla komisów samochodowych",
+    default: "VroomDealer - Platforma sprzedażowa dla komisów samochodowych",
     template: "%s | VroomDealer",
   },
   description:
-    "VroomDealer.pl — ultra-szybkie strony sprzedażowe dla komisów samochodowych. Zwiększ sprzedaż dzięki profesjonalnym ogłoszeniom z retargetingiem i integracją WhatsApp.",
+    "VroomDealer.pl - ultra-szybkie strony sprzedażowe dla komisów samochodowych. Zwiększ sprzedaż dzięki profesjonalnym ogłoszeniom z retargetingiem i integracją WhatsApp.",
   openGraph: {
     type: "website",
     locale: "pl_PL",
@@ -22,6 +24,9 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+  },
+  other: {
+    generator: getFullVersion(),
   },
 };
 

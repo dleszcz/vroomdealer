@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { LocalSeoSchema } from "@/components/local-seo-schema";
 import { CheckCircle2, ChevronDown, MapPin, Phone, ShieldCheck, Truck, Wallet } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { StickyMobileCta } from "@/components/sticky-mobile-cta";
 
 interface LocalSeoPageProps {
   tenant: DealerTenant;
@@ -13,7 +14,37 @@ interface LocalSeoPageProps {
   baseUrl: string;
 }
 
+function getCityInflection(city: string) {
+  const map: Record<string, { locative: string; genitive: string }> = {
+    "Topólka": { locative: "Topólce", genitive: "Topólki" },
+    "Radziejów": { locative: "Radziejowie", genitive: "Radziejowa" },
+    "Lubraniec": { locative: "Lubrańcu", genitive: "Lubrańca" },
+    "Izbica Kujawska": { locative: "Izbicy Kujawskiej", genitive: "Izbicy Kujawskiej" },
+    "Brześć Kujawski": { locative: "Brześciu Kujawskim", genitive: "Brześcia Kujawskiego" },
+    "Piotrków Kujawski": { locative: "Piotrkowie Kujawskim", genitive: "Piotrkowa Kujawskiego" },
+    "Osięciny": { locative: "Osięcinach", genitive: "Osięcin" },
+    "Włocławek": { locative: "Włocławku", genitive: "Włocławka" },
+    "Kruszwica": { locative: "Kruszwicy", genitive: "Kruszwicy" },
+    "Inowrocław": { locative: "Inowrocławiu", genitive: "Inowrocławia" },
+    "Konin": { locative: "Koninie", genitive: "Konina" },
+    "Lipno": { locative: "Lipnie", genitive: "Lipna" },
+    "Bytoń": { locative: "Bytoniu", genitive: "Bytonia" },
+    "Choceń": { locative: "Choceniu", genitive: "Chocenia" },
+    "Kowal": { locative: "Kowalu", genitive: "Kowala" },
+    "Chodecz": { locative: "Chodczu", genitive: "Chodcza" },
+    "Sompolno": { locative: "Sompolnie", genitive: "Sompolna" },
+    "Babiak": { locative: "Babiaku", genitive: "Babiaka" },
+  };
+
+  const entry = map[city];
+  return {
+    locative: entry?.locative || city,
+    genitive: entry?.genitive || city,
+  };
+}
+
 export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) {
+  const cityInfo = getCityInflection(localPage.city);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [leadFormSubmitted, setLeadFormSubmitted] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -106,11 +137,11 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
               Szybka wycena & Bezpłatny odbior • {localPage.city}
             </span>
             <h1 className="vd-heading" style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#fff", marginBottom: "16px" }}>
-              {localPage.seo?.h1 || `Skup aut w ${localPage.city} — ${tenant.businessName}`}
+              {(localPage.seo?.h1 || `Skup aut w ${cityInfo.locative} - ${tenant.businessName}`).replace(/—|–/g, "-")}
             </h1>
             <p className="vd-copy" style={{ color: "rgba(255,255,255,0.85)", fontSize: "18px", maxWidth: "680px", marginBottom: "32px" }}>
-              {localPage.content?.intro ||
-                `Oferujemy bezpieczny skup aut za gotówkę w ${localPage.city} i okolicach. Bezpłatna wycena, szybki dojazd i umowa na miejscu.`}
+              {(localPage.content?.intro ||
+                `Oferujemy bezpieczny skup aut za gotówkę w ${cityInfo.locative} i okolicach. Bezpłatna wycena, szybki dojazd i umowa na miejscu.`).replace(/—|–/g, "-")}
             </p>
             <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
               {phone && (
@@ -137,87 +168,221 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
               <div>
                 <span className="vd-eyebrow">Obsługa {localPage.city} i okolic</span>
                 <h2 className="vd-heading" style={{ marginBottom: "16px" }}>
-                  Skupujemy samochody w {localPage.city} za gotówkę
+                  Skupujemy samochody w {cityInfo.locative} za gotówkę
                 </h2>
                 <p className="vd-copy" style={{ marginBottom: "16px" }}>
-                  {localPage.content?.serviceDescription ||
-                    `Zapewniamy profesjonalny skup pojazdów od mieszkańców ${localPage.city}. Kupujemy auta osobowe, dostawcze oraz w każdym stanie technicznym.`}
+                  {(localPage.content?.serviceDescription ||
+                    `Zapewniamy profesjonalny skup pojazdów od mieszkańców ${cityInfo.locative}. Kupujemy auta osobowe, dostawcze oraz w każdym stanie technicznym.`).replace(/—|–/g, "-")}
                 </p>
                 {localPage.content?.locationNote && (
                   <div
                     style={{
-                      padding: "16px",
-                      borderRadius: "10px",
-                      background: "var(--color-surface)",
-                      borderLeft: `4px solid ${primaryColor}`,
+                      marginTop: "24px",
+                      padding: "16px 20px",
+                      borderRadius: "14px",
+                      background: `${primaryColor}0d`,
+                      border: `1px solid ${primaryColor}30`,
                       display: "flex",
-                      gap: "12px",
+                      alignItems: "flex-start",
+                      gap: "14px",
                     }}
                   >
-                    <MapPin size={20} style={{ color: primaryColor, flexShrink: 0, marginTop: "2px" }} />
-                    <p style={{ margin: 0, fontSize: "14px", color: "var(--color-foreground)" }}>
-                      {localPage.content.locationNote}
-                    </p>
+                    <div
+                      style={{
+                        width: "36px",
+                        height: "36px",
+                        borderRadius: "10px",
+                        background: `${primaryColor}1a`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <MapPin size={18} style={{ color: primaryColor }} />
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "12px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: primaryColor, display: "block", marginBottom: "4px" }}>
+                        Lokalna obsługa • {localPage.city}
+                      </span>
+                      <p style={{ margin: 0, fontSize: "14px", lineHeight: 1.5, color: "var(--color-foreground)", fontWeight: 500 }}>
+                        {localPage.content.locationNote.replace(/—|–/g, "-")}
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Value Cards */}
+              {/* Value Cards Grid */}
               <div style={{ display: "grid", gap: "16px" }}>
                 {tenant.businessRules?.purchasePriceLimit?.enabled && (
-
-                  <div style={{ padding: "20px", borderRadius: "12px", background: "var(--color-surface)", display: "flex", gap: "16px", borderLeft: `4px solid ${primaryColor}` }}>
-                    <Wallet size={28} style={{ color: primaryColor, flexShrink: 0 }} />
+                  <div
+                    style={{
+                      padding: "20px",
+                      borderRadius: "14px",
+                      background: "#ffffff",
+                      border: "1px solid var(--color-border)",
+                      display: "flex",
+                      gap: "16px",
+                      boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "44px",
+                        height: "44px",
+                        borderRadius: "12px",
+                        background: `${primaryColor}12`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Wallet size={22} style={{ color: primaryColor }} />
+                    </div>
                     <div>
                       <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700 }}>
                         Skup aut do {tenant.businessRules.purchasePriceLimit.maxAmount.toLocaleString("pl-PL")} {tenant.businessRules.purchasePriceLimit.currency}
                       </h3>
-                      <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)" }}>
-                        {tenant.businessRules.purchasePriceLimit.description || `Skupujemy auta osobowe i budżetowe do ${tenant.businessRules.purchasePriceLimit.maxAmount.toLocaleString("pl-PL")} PLN. Szybka wycena!` }
+                      <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)", lineHeight: 1.5 }}>
+                        {(tenant.businessRules.purchasePriceLimit.description || `Skupujemy auta osobowe i budżetowe do ${tenant.businessRules.purchasePriceLimit.maxAmount.toLocaleString("pl-PL")} PLN. Szybka wycena!`).replace(/—|–/g, "-") }
                       </p>
                     </div>
                   </div>
                 )}
 
                 {tenant.businessRules?.tradeIn?.enabled && (
-                  <div style={{ padding: "20px", borderRadius: "12px", background: "var(--color-surface)", display: "flex", gap: "16px", borderLeft: `4px solid ${primaryColor}` }}>
-                    <ShieldCheck size={28} style={{ color: primaryColor, flexShrink: 0 }} />
+                  <div
+                    style={{
+                      padding: "20px",
+                      borderRadius: "14px",
+                      background: "#ffffff",
+                      border: "1px solid var(--color-border)",
+                      display: "flex",
+                      gap: "16px",
+                      boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "44px",
+                        height: "44px",
+                        borderRadius: "12px",
+                        background: `${primaryColor}12`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <ShieldCheck size={22} style={{ color: primaryColor }} />
+                    </div>
                     <div>
                       <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700 }}>
                         {tenant.businessRules.tradeIn.title || "Auto w rozliczeniu"}
                       </h3>
-                      <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)" }}>
+                      <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)", lineHeight: 1.5 }}>
                         {tenant.businessRules.tradeIn.description || "Zostaw swoje obecne auto w rozliczeniu przy zakupie innego pojazdu."}
                       </p>
                     </div>
                   </div>
                 )}
 
-                <div style={{ padding: "20px", borderRadius: "12px", background: "var(--color-surface)", display: "flex", gap: "16px" }}>
-                  <Wallet size={28} style={{ color: primaryColor, flexShrink: 0 }} />
+                <div
+                  style={{
+                    padding: "20px",
+                    borderRadius: "14px",
+                    background: "#ffffff",
+                    border: "1px solid var(--color-border)",
+                    display: "flex",
+                    gap: "16px",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "44px",
+                      height: "44px",
+                      borderRadius: "12px",
+                      background: `${primaryColor}12`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Wallet size={22} style={{ color: primaryColor }} />
+                  </div>
                   <div>
                     <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700 }}>Płatność gotówką od ręki</h3>
-                    <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)" }}>
-                      Pieniądze wypłacamy natychmiast przy podpisaniu umowy — gotówką lub przelewem ekspresowym.
+                    <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)", lineHeight: 1.5 }}>
+                      Pieniądze wypłacamy natychmiast przy podpisaniu umowy: gotówką lub przelewem ekspresowym.
                     </p>
                   </div>
                 </div>
 
-                <div style={{ padding: "20px", borderRadius: "12px", background: "var(--color-surface)", display: "flex", gap: "16px" }}>
-                  <Truck size={28} style={{ color: primaryColor, flexShrink: 0 }} />
+                <div
+                  style={{
+                    padding: "20px",
+                    borderRadius: "14px",
+                    background: "#ffffff",
+                    border: "1px solid var(--color-border)",
+                    display: "flex",
+                    gap: "16px",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "44px",
+                      height: "44px",
+                      borderRadius: "12px",
+                      background: `${primaryColor}12`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Truck size={22} style={{ color: primaryColor }} />
+                  </div>
                   <div>
                     <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700 }}>Bezpłatny transport lawetą</h3>
-                    <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)" }}>
-                      Odbieramy uszkodzone i niesprawne samochody bezpośrednio spod domu w {localPage.city}.
+                    <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)", lineHeight: 1.5 }}>
+                      Odbieramy uszkodzone i niesprawne samochody bezpośrednio spod domu w {cityInfo.locative}.
                     </p>
                   </div>
                 </div>
 
-                <div style={{ padding: "20px", borderRadius: "12px", background: "var(--color-surface)", display: "flex", gap: "16px" }}>
-                  <ShieldCheck size={28} style={{ color: primaryColor, flexShrink: 0 }} />
+                <div
+                  style={{
+                    padding: "20px",
+                    borderRadius: "14px",
+                    background: "#ffffff",
+                    border: "1px solid var(--color-border)",
+                    display: "flex",
+                    gap: "16px",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "44px",
+                      height: "44px",
+                      borderRadius: "12px",
+                      background: `${primaryColor}12`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <ShieldCheck size={22} style={{ color: primaryColor }} />
+                  </div>
                   <div>
                     <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700 }}>Formalności po naszej stronie</h3>
-                    <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)" }}>
+                    <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)", lineHeight: 1.5 }}>
                       Przygotowujemy legalną umowę kupna-sprzedaży i przekazujemy komplet dokumentów do wyrejestrowania i OC.
                     </p>
                   </div>
@@ -233,7 +398,7 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
           <div className="vd-container">
             <div style={{ textAlign: "center", maxWidth: "600px", margin: "0 auto 40px" }}>
               <span className="vd-eyebrow">Prosty proces</span>
-              <h2 className="vd-heading">Jak sprzedać auto z {localPage.city}?</h2>
+              <h2 className="vd-heading">Jak sprzedać auto z {cityInfo.genitive}?</h2>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "24px" }}>
@@ -310,7 +475,7 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
                           fontSize: "15px",
                         }}
                       >
-                        <span>{item.q}</span>
+                        <span>{item.q.replace(/—|–/g, "-")}</span>
                         <ChevronDown
                           size={18}
                           style={{
@@ -322,7 +487,7 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
                       </button>
                       {isOpen && (
                         <div style={{ padding: "0 20px 18px", color: "var(--color-text-soft)", fontSize: "14px", lineHeight: 1.6 }}>
-                          {item.a}
+                          {item.a.replace(/—|–/g, "-")}
                         </div>
                       )}
                     </div>
@@ -534,6 +699,7 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
             </section>
           );
         })()}
+        <StickyMobileCta tenant={tenant} />
       </div>
     </>
   );

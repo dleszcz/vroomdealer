@@ -9,20 +9,23 @@ export interface BreadcrumbItem {
 
 interface BreadcrumbsProps {
   items: BreadcrumbItem[];
+  variant?: "default" | "dark" | "transparent";
 }
 
-export function Breadcrumbs({ items }: BreadcrumbsProps) {
+export function Breadcrumbs({ items, variant = "default" }: BreadcrumbsProps) {
+  const isDark = variant === "dark" || variant === "transparent";
+
   return (
     <nav
       aria-label="Breadcrumb"
-      className="vd-breadcrumbs"
+      className={`vd-breadcrumbs ${isDark ? "vd-breadcrumbs--dark" : ""}`}
       style={{
-        padding: "12px 0",
-        background: "var(--color-surface)",
-        borderBottom: "1px solid var(--color-border)",
+        padding: isDark ? "0" : "12px 0",
+        background: isDark ? "transparent" : "var(--color-surface)",
+        borderBottom: isDark ? "none" : "1px solid var(--color-border)",
       }}
     >
-      <div className="vd-container">
+      <div className={isDark ? "" : "vd-container"}>
         <ol
           className="vd-breadcrumbs__list"
           style={{
@@ -46,15 +49,15 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "8px",
-                  fontSize: "14px",
-                  color: "var(--color-text-soft)",
+                  fontSize: "13px",
+                  color: isDark ? "rgba(255,255,255,0.7)" : "var(--color-text-soft)",
                 }}
               >
                 {index > 0 && (
                   <ChevronRight
                     className="vd-breadcrumbs__separator"
                     size={14}
-                    style={{ color: "var(--color-text-faint)", flexShrink: 0 }}
+                    style={{ color: isDark ? "rgba(255,255,255,0.4)" : "var(--color-text-faint)", flexShrink: 0 }}
                   />
                 )}
                 {isLast || !item.href ? (
@@ -66,7 +69,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
                       alignItems: "center",
                       gap: "6px",
                       fontWeight: 600,
-                      color: "var(--color-foreground)",
+                      color: isDark ? "#ffffff" : "var(--color-foreground)",
                     }}
                   >
                     {index === 0 && <Home size={14} className="vd-breadcrumbs__icon" />}
@@ -80,7 +83,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
                       display: "inline-flex",
                       alignItems: "center",
                       gap: "6px",
-                      color: "var(--color-text-soft)",
+                      color: isDark ? "#94a3b8" : "var(--color-text-soft)",
                       textDecoration: "none",
                       transition: "color 0.2s ease",
                     }}

@@ -86,6 +86,9 @@ export async function createLead(leadData: Lead): Promise<{ success: boolean; id
             customer_phone: leadData.customerPhone,
             customer_email: leadData.customerEmail || null,
             vehicle_details: leadData.vehicleDetails || null,
+            attribution: leadData.attribution || null,
+            local_seo_city: leadData.localSeoCity || null,
+            photos: leadData.photos || null,
             status: leadData.status || "new",
           })
           .select("id")

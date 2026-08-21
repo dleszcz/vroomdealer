@@ -16,12 +16,14 @@ export function HeroSection({ tenant, config }: HeroSectionProps) {
   const benefits = data.benefits?.length ? data.benefits : [
     { label: "Gotówka od ręki", icon: "cash" },
     { label: "Bezpłatna wycena", icon: "check" },
+    { label: "Auto w rozliczeniu", icon: "check" },
+    { label: "Skup aut do 10 000 zł", icon: "cash" },
     { label: "Odbieramy auto", icon: "truck" },
     { label: "Formalności po naszej stronie", icon: "scale" },
   ];
 
-  const primaryHref = data.primaryCta?.href || (tenant.contact.whatsapp ? `https://wa.me/${tenant.contact.whatsapp.replace(/\D/g, "")}` : tenant.contact.phone ? `tel:${tenant.contact.phone.replace(/\s/g, "")}` : "#about");
-  const secondaryHref = data.secondaryCta?.href || "#vehicles";
+  const primaryHref = data.primaryCta?.href || `/${tenant.slug}/skup-aut`;
+  const secondaryHref = data.secondaryCta?.href || `/${tenant.slug}#vehicles`;
 
   return (
     <section id="hero" className="dealer-hero">

@@ -13,11 +13,21 @@ import { ContactSection } from "./contact-section";
 import { ServiceAreasSection } from "./service-areas-section";
 
 
-interface SectionRendererProps { tenant: DealerTenant; }
+import { StickyMobileCta } from "../sticky-mobile-cta";
 
-export function SectionRenderer({ tenant }: SectionRendererProps) {
+interface SectionRendererProps {
+  tenant: DealerTenant;
+  mode?: "all" | "skup-aut";
+}
+
+export function SectionRenderer({ tenant, mode = "all" }: SectionRendererProps) {
   const sections = tenant.pageConfig?.sections || [];
-  const enabled = sections.filter((section) => section.enabled !== false);
+  let enabled = sections.filter((section) => section.enabled !== false);
+
+  if (mode === "skup-aut") {
+    // Filter out car sales listings section to focus 100% on car buying
+    enabled = enabled.filter((section) => section.type !== "vehicles");
+  }
 
   const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
   const accentColor = tenant.branding?.colors?.accent || primaryColor;
@@ -71,6 +81,8 @@ export function SectionRenderer({ tenant }: SectionRendererProps) {
             return null;
         }
       })}
+
+      <StickyMobileCta tenant={tenant} />
     </div>
   );
 }

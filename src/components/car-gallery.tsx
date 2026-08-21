@@ -26,10 +26,22 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
   return (
     <div className="gallery" id="car-gallery">
       {/* Main image */}
-      <div className="gallery__main" style={{ borderRadius: 'var(--radius-lg)' }}>
+      <div
+        className="gallery__main"
+        style={{
+          position: "relative",
+          width: "100%",
+          aspectRatio: "16 / 10",
+          minHeight: "280px",
+          maxHeight: "520px",
+          borderRadius: "12px",
+          overflow: "hidden",
+          background: "#0f172a",
+        }}
+      >
         <Image
           src={images[activeIndex]}
-          alt={`${alt} — zdjęcie ${activeIndex + 1}`}
+          alt={`${alt} - zdjęcie ${activeIndex + 1}`}
           fill
           priority
           sizes="(max-width: 768px) 100vw, 60vw"
@@ -69,18 +81,18 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="gallery__thumbs" style={{ gap: '0.75rem', marginTop: '1rem', scrollSnapType: 'x mandatory' }}>
+        <div className="gallery__thumbs" style={{ display: 'flex', overflowX: 'auto', gap: '0.75rem', marginTop: '1rem', scrollSnapType: 'x mandatory', paddingBottom: '4px' }}>
           {images.map((src, i) => (
             <button
               key={i}
               className={`gallery__thumb ${i === activeIndex ? "gallery__thumb--active" : ""}`}
-              style={{ width: '80px', height: '60px', scrollSnapAlign: 'start', borderRadius: 'var(--radius-sm)' }}
+              style={{ position: "relative", overflow: "hidden", width: '80px', height: '60px', flexShrink: 0, scrollSnapAlign: 'start', borderRadius: 'var(--radius-sm)', border: i === activeIndex ? "2px solid var(--color-primary, #1686E0)" : "1px solid #cbd5e1" }}
               onClick={() => setActiveIndex(i)}
               aria-label={`Zdjęcie ${i + 1}`}
             >
               <Image
                 src={src}
-                alt={`${alt} — miniatura ${i + 1}`}
+                alt={`${alt} - miniatura ${i + 1}`}
                 fill
                 sizes="80px"
                 style={{ objectFit: "cover", opacity: i === activeIndex ? 1 : 0.6 }}

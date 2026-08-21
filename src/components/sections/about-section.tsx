@@ -7,12 +7,13 @@ interface Props {
 }
 
 export function AboutSection({ tenant, config }: Props) {
-  const title = config?.title || `O nas — ${tenant.businessName}`;
+  const rawTitle = config?.title;
+  const title = !rawTitle || rawTitle.toLowerCase().includes("o nas") ? "Komis i skup aut" : rawTitle;
   const subtitle = config?.subtitle;
   const description =
     (config?.data?.description as string) ||
     tenant.businessDescription ||
-    `Jesteśmy lokalnym komisem samochodowym i skupem aut. Zapewniamy profesjonalne podejście, uczciwe wyceny i natychmiastową płatność.`;
+    `Jesteśmy lokalnym komisem samochodowym i skupem aut z wieloletnim doświadczeniem. Zapewniamy profesjonalne podejście, uczciwe rynkowe wyceny i natychmiastową wypłatę gotówki.`;
   const image = (config?.data?.imageUrl as string) || tenant.branding.media?.heroImageUrl;
 
   return (

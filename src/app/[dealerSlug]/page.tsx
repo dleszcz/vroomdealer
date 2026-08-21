@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { resolveTenant } from "@/lib/tenant";
 import { DealerSchema } from "@/components/vehicle-schema";
-import { ContactBar } from "@/components/contact-bar";
 import { SectionRenderer } from "@/components/sections/section-renderer";
 
 type Props = {
@@ -15,13 +14,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!tenant) return {};
 
-  const title = tenant.seo?.metaTitle || `${tenant.businessName} — Samochody i skup aut${tenant.location?.city ? ` | ${tenant.location.city}` : ""}`;
-  const description =
+  const title = (
+    tenant.seo?.metaTitle ||
+    `${tenant.businessName} - Skup aut za gotówkę i sprzedaż samochodów${
+      tenant.location?.city ? ` | ${tenant.location.city}` : ""
+    }`
+  ).replace(/—|–/g, "-");
+
+  const description = (
     tenant.seo?.metaDescription ||
     tenant.businessDescription ||
-    `Sprawdź ofertę samochodów w ${tenant.businessName}. Uczciwy komis samochodowy i skup aut.`;
+    `Profesjonalny skup aut za gotówkę oraz sprawdzone samochody używane z gwarancją w ${tenant.businessName}. Bezpłatna wycena i dojazd.`
+  ).replace(/—|–/g, "-");
 
-  const baseUrl = tenant.customDomain ? `https://${tenant.customDomain}` : `https://vroomdealer.pl/${dealerSlug}`;
+  const baseUrl = tenant.customDomain
+    ? `https://${tenant.customDomain}`
+    : `https://vroomdealer.pl/${dealerSlug}`;
+
+  const heroImage = tenant.branding.media?.heroImageUrl;
+  const ogImageUrl = heroImage
+    ? heroImage.startsWith("http")
+      ? heroImage
+      : `${baseUrl}${heroImage}`
+    : undefined;
+
+  const themeColor =
+    tenant.branding.colors.headerBg || tenant.branding.colors.primary || "#080808";
 
   return {
     title,
@@ -33,7 +51,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url: baseUrl,
+      siteName: tenant.businessName,
+      locale: "pl_PL",
       type: "website",
+      images: ogImageUrl
+        ? [
+            {
+              url: ogImageUrl,
+              width: 1200,
+              height: 630,
+              alt: title,
+            },
+          ]
+        : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ogImageUrl ? [ogImageUrl] : [],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+    other: {
+      "theme-color": themeColor,
     },
   };
 }
@@ -46,22 +89,9 @@ export default async function DealerPage({ params }: Props) {
     notFound();
   }
 
-  const baseUrl = tenant.customDomain ? `https://${tenant.customDomain}` : `https://vroomdealer.pl/${tenant.slug}`;
-
-  // Build profile shim for ContactBar & DealerSchema compatibility
-  const profileShim = {
-    id: tenant.id,
-    slug: tenant.slug,
-    business_name: tenant.businessName,
-    business_description: tenant.businessDescription || null,
-    logo_url: tenant.logoUrl || null,
-    pixel_id: tenant.analytics?.pixelId || null,
-    whatsapp_number: tenant.contact.whatsapp || null,
-    contact_phone: tenant.contact.phone || null,
-    address: tenant.location?.address || null,
-    city: tenant.location?.city || null,
-    created_at: new Date().toISOString(),
-  };
+  const baseUrl = tenant.customDomain
+    ? `https://${tenant.customDomain}`
+    : `https://vroomdealer.pl/${tenant.slug}`;
 
   return (
     <>

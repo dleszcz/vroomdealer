@@ -168,6 +168,10 @@ export interface DealerTenant {
     phone?: string | null;
     whatsapp?: string | null;
     email?: string | null;
+    facebook?: string | null;
+    instagram?: string | null;
+    tiktok?: string | null;
+    youtube?: string | null;
   };
   location?: {
     address?: string | null;
@@ -194,6 +198,42 @@ export interface DealerTenant {
 
 
 
+export type LeadStatus =
+  | "new"
+  | "contacted"
+  | "qualified"
+  | "offer_made"
+  | "purchased"
+  | "rejected"
+  | "lost";
+
+export interface LeadVehicleData {
+  brand?: string;
+  make?: string;
+  model?: string;
+  year?: number | string;
+  mileage?: number | string;
+  fuelType?: string;
+  transmission?: string;
+  condition?: string;
+  expectedPrice?: number | string;
+  description?: string;
+  dealerName?: string;
+  city?: string;
+  note?: string;
+}
+
+export interface LeadAttribution {
+  source?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  gclid?: string;
+  fbclid?: string;
+  referrer?: string;
+  localSeoCity?: string;
+}
+
 export interface Lead {
   id?: string;
   dealerId: string;
@@ -203,13 +243,10 @@ export interface Lead {
   customerName?: string;
   customerPhone: string;
   customerEmail?: string;
-  vehicleDetails?: {
-    make?: string;
-    model?: string;
-    year?: number;
-    expectedPrice?: number;
-    description?: string;
-  };
-  status: "new" | "contacted" | "qualified" | "offer_made" | "purchased" | "rejected";
+  vehicleDetails?: LeadVehicleData;
+  attribution?: LeadAttribution;
+  localSeoCity?: string;
+  photos?: string[];
+  status: LeadStatus;
   createdAt?: string;
 }
