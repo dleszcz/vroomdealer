@@ -596,6 +596,26 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
                   />
                 </div>
 
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginTop: "4px" }}>
+                  <input
+                    type="checkbox"
+                    id="localRodoConsent"
+                    required
+                    defaultChecked
+                    style={{ marginTop: "3px", width: "16px", height: "16px", accentColor: primaryColor, cursor: "pointer" }}
+                  />
+                  <label htmlFor="localRodoConsent" style={{ fontSize: "12px", color: "var(--color-text-soft)", lineHeight: 1.5, cursor: "pointer" }}>
+                    Wyrażam zgodę na kontakt w celu wyceny oraz akceptuję{" "}
+                    <a href={`/${tenant.slug}/polityka-prywatnosci`} target="_blank" rel="noopener noreferrer" style={{ color: primaryColor, textDecoration: "underline" }}>
+                      Politykę Prywatności
+                    </a>{" "}
+                    i{" "}
+                    <a href={`/${tenant.slug}/regulamin`} target="_blank" rel="noopener noreferrer" style={{ color: primaryColor, textDecoration: "underline" }}>
+                      Regulamin
+                    </a>.
+                  </label>
+                </div>
+
                 <button
                   type="submit"
                   disabled={isSubmitting}

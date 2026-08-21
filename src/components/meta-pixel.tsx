@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
+import { useHasConsent } from "./cookie-consent";
 
 declare global {
   interface Window {
@@ -14,6 +15,7 @@ declare global {
 export function MetaPixel({ pixelId }: { pixelId: string }) {
   const pathname = usePathname();
   const firstRender = useRef(true);
+  const hasConsent = useHasConsent();
 
   useEffect(() => {
     // Skip tracking on initial render because it's handled by the <Script> tag below
@@ -22,10 +24,13 @@ export function MetaPixel({ pixelId }: { pixelId: string }) {
       return;
     }
 
-    if (typeof window !== "undefined" && window.fbq) {
+    if (hasConsent && typeof window !== "undefined" && window.fbq) {
       window.fbq("track", "PageView");
     }
-  }, [pathname]);
+  }, [pathname, hasConsent]);
+
+  // Don't render Meta Pixel until consent is given
+  if (!hasConsent) return null;
 
   return (
     <Script

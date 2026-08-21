@@ -4,7 +4,11 @@ import { profileToTenant } from "@/lib/tenant";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://vroomdealer.pl";
-  const profiles = await getAllProfiles();
+  const rawProfiles = await getAllProfiles();
+  // Filter out internal test tenants from sitemap
+  const profiles = rawProfiles.filter(
+    (p) => p.slug === "d-car" || (p as unknown as { is_published?: boolean }).is_published
+  );
 
   const staticPages: MetadataRoute.Sitemap = [
     {

@@ -106,6 +106,8 @@ export function Footer({ tenant }: FooterProps) {
               <a href={`/${tenant?.slug || ""}#services`}>Usługi</a>
               <a href={`/${tenant?.slug || ""}#about`}>O nas</a>
               <a href={`/${tenant?.slug || ""}#footer`}>Kontakt</a>
+              <a href={`/${tenant?.slug || ""}/polityka-prywatnosci`}>Polityka prywatności</a>
+              <a href={`/${tenant?.slug || ""}/regulamin`}>Regulamin</a>
             </div>
           </div>
           {activeLocalPages.length > 0 ? (
@@ -145,7 +147,11 @@ export function Footer({ tenant }: FooterProps) {
         </div>
 
         <div className="dealer-footer__bottom">
-          <span>© {new Date().getFullYear()} {name}</span>
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
+            <span>© {new Date().getFullYear()} {name}</span>
+            <a href={`/${tenant?.slug || ""}/polityka-prywatnosci`} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Polityka prywatności</a>
+            <a href={`/${tenant?.slug || ""}/regulamin`} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Regulamin</a>
+          </div>
           <span className="dealer-footer__powered">
             Powered by <strong>VroomDealer</strong>{" "}
             <span style={{ opacity: 0.5, fontSize: "11px", fontWeight: 400, marginLeft: "4px" }}>

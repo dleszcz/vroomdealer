@@ -17,7 +17,7 @@ export function ValuePropsSection({ tenant, config }: Props) {
   const data = (config?.data || {}) as { items?: { title: string; text: string; icon?: number }[] };
   const items = data.items?.length ? data.items : defaults.map(([title, text], i) => ({ title, text, icon: i }));
   return (
-    <section className="vd-section vd-section--bordered" id="trust">
+    <section className="vd-section vd-section--bordered" id="value-props">
 
       <div className="vd-container value-props__layout">
         <div className="value-props__intro">

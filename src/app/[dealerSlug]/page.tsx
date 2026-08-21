@@ -27,9 +27,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `Profesjonalny skup aut za gotówkę oraz sprawdzone samochody używane z gwarancją w ${tenant.businessName}. Bezpłatna wycena i dojazd.`
   ).replace(/—|–/g, "-");
 
-  const baseUrl = tenant.customDomain
-    ? `https://${tenant.customDomain}`
-    : `https://vroomdealer.pl/${dealerSlug}`;
+  // TODO: Switch to custom_domain once d-car.com.pl DNS is configured and verified
+  // For now, always use vroomdealer.pl to avoid canonical pointing to a parked domain
+  const baseUrl = `https://vroomdealer.pl/${dealerSlug}`;
 
   const heroImage = tenant.branding.media?.heroImageUrl;
   const ogImageUrl = heroImage
@@ -38,12 +38,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : `${baseUrl}${heroImage}`
     : undefined;
 
-  const themeColor =
-    tenant.branding.colors.headerBg || tenant.branding.colors.primary || "#080808";
-
   return {
     title,
     description,
+    icons: {
+      icon: tenant.branding.faviconUrl && tenant.branding.faviconUrl !== "/icon" ? tenant.branding.faviconUrl : `/api/icon?tenant=${dealerSlug}`,
+      shortcut: tenant.branding.faviconUrl && tenant.branding.faviconUrl !== "/icon" ? tenant.branding.faviconUrl : `/api/icon?tenant=${dealerSlug}`,
+      apple: tenant.branding.faviconUrl && tenant.branding.faviconUrl !== "/icon" ? tenant.branding.faviconUrl : `/api/icon?tenant=${dealerSlug}`,
+    },
     alternates: {
       canonical: baseUrl,
     },
@@ -75,9 +77,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       index: true,
       follow: true,
     },
-    other: {
-      "theme-color": themeColor,
-    },
+  };
+}
+
+export async function generateViewport({ params }: Props): Promise<import("next").Viewport> {
+  const { dealerSlug } = await params;
+  const tenant = await resolveTenant({ slug: dealerSlug });
+  return {
+    themeColor: tenant?.branding?.colors?.headerBg || tenant?.branding?.colors?.primary || "#080808",
   };
 }
 

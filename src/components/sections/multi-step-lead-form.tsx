@@ -652,11 +652,24 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
                 />
               </div>
 
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginTop: "4px" }}>
-                <ShieldCheck size={18} style={{ color: primaryColor, flexShrink: 0, marginTop: "2px" }} />
-                <span style={{ fontSize: "12px", color: "var(--color-text-soft)", lineHeight: 1.4 }}>
-                  Wysyłając zgłoszenie zgadzasz się na kontakt telefoniczny w celu przedstawienia darmowej wyceny samochodu.
-                </span>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginTop: "8px" }}>
+                <input
+                  type="checkbox"
+                  id="rodoConsent"
+                  required
+                  defaultChecked
+                  style={{ marginTop: "3px", width: "16px", height: "16px", accentColor: primaryColor, cursor: "pointer" }}
+                />
+                <label htmlFor="rodoConsent" style={{ fontSize: "12px", color: "rgba(255,255,255,0.75)", lineHeight: 1.5, cursor: "pointer" }}>
+                  Wyrażam zgodę na kontakt telefoniczny w celu bezpłatnej wyceny oraz akceptuję{" "}
+                  <a href={`/${tenant.slug}/polityka-prywatnosci`} target="_blank" rel="noopener noreferrer" style={{ color: primaryColor, textDecoration: "underline" }}>
+                    Politykę Prywatności
+                  </a>{" "}
+                  i{" "}
+                  <a href={`/${tenant.slug}/regulamin`} target="_blank" rel="noopener noreferrer" style={{ color: primaryColor, textDecoration: "underline" }}>
+                    Regulamin
+                  </a>.
+                </label>
               </div>
             </div>
           </div>
