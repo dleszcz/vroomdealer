@@ -51,7 +51,7 @@ export function SectionRenderer({ tenant, mode = "all" }: SectionRendererProps) 
       {enabled.map((config: SectionConfig) => {
         switch (config.type) {
           case "hero":
-            return <HeroSection key={config.id} tenant={tenant} config={config} />;
+            return <HeroSection key={config.id} tenant={tenant} config={config} mode={mode} />;
           case "trust":
             return <ValuePropsSection key={config.id} tenant={tenant} config={config} />;
           case "process":
