@@ -10,7 +10,7 @@ export async function VehiclesSection({ tenant }: Props) {
   const allCars = (await getCars(tenant.id)).filter(car => !car.is_sold);
   if (!allCars.length) return null;
 
-  const displayLimit = 4;
+  const displayLimit = 5;
   const carsToDisplay = allCars.slice(0, displayLimit);
   const hasMore = allCars.length > displayLimit;
 

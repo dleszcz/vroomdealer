@@ -13,6 +13,7 @@ import { LocalSeoPage } from "@/components/local-seo-page";
 import { SectionRenderer } from "@/components/sections/section-renderer";
 import { SingleCarPage } from "@/components/single-car-page";
 import { InventoryPage } from "@/components/inventory-page";
+import { LegalPage } from "@/components/legal-page";
 
 type Props = {
   params: Promise<{ dealerSlug: string; slug: string }>;
@@ -48,6 +49,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title,
       description,
+      icons: {
+        icon: tenant.branding.faviconUrl && tenant.branding.faviconUrl !== "/icon" ? tenant.branding.faviconUrl : `/api/icon?tenant=${dealerSlug}`,
+        shortcut: tenant.branding.faviconUrl && tenant.branding.faviconUrl !== "/icon" ? tenant.branding.faviconUrl : `/api/icon?tenant=${dealerSlug}`,
+        apple: tenant.branding.faviconUrl && tenant.branding.faviconUrl !== "/icon" ? tenant.branding.faviconUrl : `/api/icon?tenant=${dealerSlug}`,
+      },
       alternates: { canonical: canonicalUrl },
       openGraph: {
         title,
@@ -72,7 +78,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
       other: {
         "fb:app_id": process.env.NEXT_PUBLIC_FB_APP_ID || "",
-        "theme-color": themeColor,
       },
     };
   };
@@ -122,6 +127,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const title = `O nas | ${tenant.businessName}`;
     const description = `Poznaj ${tenant.businessName} - lokalny skup aut i komis samochodowy z wieloletnim doświadczeniem w uczciwym skupie pojazdów.`;
     return buildMetadata(title, description);
+  }
+
+  // 2b. Legal pages
+  if (slug === "polityka-prywatnosci") {
+    const title = `Polityka prywatności | ${tenant.businessName}`;
+    const description = `Polityka prywatności serwisu ${tenant.businessName}. Informacje o przetwarzaniu danych osobowych zgodnie z RODO.`;
+    return buildMetadata(title, description, undefined, false);
+  }
+
+  if (slug === "regulamin") {
+    const title = `Regulamin | ${tenant.businessName}`;
+    const description = `Regulamin korzystania z serwisu internetowego ${tenant.businessName}.`;
+    return buildMetadata(title, description, undefined, false);
   }
 
   // 3. Check if slug matches a car listing
@@ -183,6 +201,15 @@ export default async function DynamicSlugPage({ params }: Props) {
 
   if (["kontakt", "o-nas"].includes(slug)) {
     return <SectionRenderer tenant={tenant} mode="all" />;
+  }
+
+  // 2b. Legal pages
+  if (slug === "polityka-prywatnosci") {
+    return <LegalPage tenant={tenant} type="privacy" />;
+  }
+
+  if (slug === "regulamin") {
+    return <LegalPage tenant={tenant} type="terms" />;
   }
 
   // 3. Check if slug is a Car Listing

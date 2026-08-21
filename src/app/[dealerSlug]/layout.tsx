@@ -4,6 +4,7 @@ import { BrandProvider } from "@/components/brand-provider";
 import { DealerHeader } from "@/components/dealer-header";
 import { Footer } from "@/components/footer";
 import { MetaPixel } from "@/components/meta-pixel";
+import { CookieConsent } from "@/components/cookie-consent";
 
 export default async function DealerLayout({
   children,
@@ -27,6 +28,10 @@ export default async function DealerLayout({
         <main className="dealer-main">{children}</main>
         <Footer tenant={tenant} />
       </div>
+      <CookieConsent
+        primaryColor={tenant.branding.colors.primary}
+        privacyPolicyUrl={`/${tenant.slug}/polityka-prywatnosci`}
+      />
     </BrandProvider>
   );
 }
