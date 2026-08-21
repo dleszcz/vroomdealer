@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { allSeedProfiles } from "@/lib/data";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
 async function resolveTenantSlugByHost(host: string): Promise<string | null> {
   const cleanHost = host.toLowerCase().replace(/^www\./, "");
 
-  // 1. Subdomain matching (e.g. d-car.vroomdealer.pl -> d-car)
+  // 1. Subdomain matching (e.g. [tenantSlug].vroomdealer.pl)
   if (cleanHost.endsWith(".vroomdealer.pl") && cleanHost !== "vroomdealer.pl") {
     const subdomain = cleanHost.replace(".vroomdealer.pl", "");
     if (subdomain) return subdomain;
@@ -34,11 +35,15 @@ async function resolveTenantSlugByHost(host: string): Promise<string | null> {
     }
   }
 
-  // 3. Known seed tenant domains & automatic domain slug extraction
-  if (cleanHost.includes("d-car")) return "d-car";
-  if (cleanHost.includes("komis-maciek")) return "komis-maciek";
+  // 3. Generic match against dataset seed profiles
+  const seedMatch = allSeedProfiles.find(
+    (p) => p.custom_domain && p.custom_domain.toLowerCase().replace(/^www\./, "") === cleanHost
+  );
+  if (seedMatch) {
+    return seedMatch.slug;
+  }
 
-  // Generic fallback: domain name before extension (e.g. auto-handel.pl -> auto-handel)
+  // 4. Generic fallback: domain name before TLD extension (e.g. auto-handel.pl -> auto-handel)
   const domainParts = cleanHost.split(".");
   if (domainParts.length >= 2) {
     return domainParts[0];
@@ -94,8 +99,6 @@ export async function middleware(req: NextRequest) {
     }
 
     // 3. Rewrite root & subpaths internally to /[dealerSlug] routes
-    // e.g. "d-car.com.pl/" -> "/d-car"
-    // e.g. "komis-maciek.pl/skup-aut" -> "/komis-maciek/skup-aut"
     url.pathname = `/${tenantSlug}${pathname === "/" ? "" : pathname}`;
     const res = NextResponse.rewrite(url);
     res.headers.set("x-tenant-slug", tenantSlug);

@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const reqHeaders = await headers();
   const host = reqHeaders.get("host") || undefined;
 
-  // Check if host resolves to a specific tenant custom domain (e.g. d-car.com.pl)
+  // Check if host resolves to a specific tenant custom domain
   if (host && !host.includes("localhost") && !host.includes("vroomdealer.pl") && !host.includes("vercel.app")) {
     const tenant = await resolveTenant({ domain: host });
     if (tenant) {
@@ -45,7 +45,7 @@ export default async function HomePage() {
   const reqHeaders = await headers();
   const host = reqHeaders.get("host") || undefined;
 
-  // If request comes from a custom domain (e.g. d-car.com.pl), render that tenant
+  // If request comes from a custom domain, render that tenant
   if (host && !host.includes("localhost") && !host.includes("vroomdealer.pl") && !host.includes("vercel.app")) {
     const tenant = await resolveTenant({ domain: host });
     if (tenant) {

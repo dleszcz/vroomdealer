@@ -54,7 +54,7 @@ export function Footer({ tenant }: FooterProps) {
   const footerBg = tenant?.branding?.colors?.footerBg || "#080808";
 
   const getUrl = (path: string) =>
-    getTenantUrl(tenant?.slug || "d-car", path, tenant?.customDomain);
+    getTenantUrl(tenant?.slug || "", path, tenant?.customDomain);
 
   // Active service areas for local SEO links
   const activeLocalPages =

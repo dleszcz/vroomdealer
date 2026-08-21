@@ -27,9 +27,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `Profesjonalny skup aut za gotówkę oraz sprawdzone samochody używane z gwarancją w ${tenant.businessName}. Bezpłatna wycena i dojazd.`
   ).replace(/—|–/g, "-");
 
-  // TODO: Switch to custom_domain once d-car.com.pl DNS is configured and verified
-  // For now, always use vroomdealer.pl to avoid canonical pointing to a parked domain
-  const baseUrl = `https://vroomdealer.pl/${dealerSlug}`;
+  const baseUrl = tenant.customDomain
+    ? `https://${tenant.customDomain}`
+    : `https://vroomdealer.pl/${dealerSlug}`;
 
   const heroImage = tenant.branding.media?.heroImageUrl;
   const ogImageUrl = heroImage
