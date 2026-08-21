@@ -74,11 +74,14 @@ export async function middleware(req: NextRequest) {
 
   // Handle requests on custom tenant domain / subdomain
   if (tenantSlug) {
+    req.headers.set("x-tenant-slug", tenantSlug);
+    req.headers.set("x-is-custom-domain", "true");
+
     // 1. Rewrite favicon & icon endpoints to tenant icon route
     if (pathname === "/icon" || pathname === "/favicon.ico") {
       url.pathname = "/api/icon";
       url.searchParams.set("tenant", tenantSlug);
-      const res = NextResponse.rewrite(url);
+      const res = NextResponse.rewrite(url, { request: { headers: req.headers } });
       res.headers.set("x-tenant-slug", tenantSlug);
       res.headers.set("x-is-custom-domain", "true");
       return res;
@@ -92,7 +95,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith("/images") ||
       pathname.startsWith(`/${tenantSlug}`)
     ) {
-      const res = NextResponse.next();
+      const res = NextResponse.next({ request: { headers: req.headers } });
       res.headers.set("x-tenant-slug", tenantSlug);
       res.headers.set("x-is-custom-domain", "true");
       return res;
@@ -100,7 +103,7 @@ export async function middleware(req: NextRequest) {
 
     // 3. Rewrite root & subpaths internally to /[dealerSlug] routes
     url.pathname = `/${tenantSlug}${pathname === "/" ? "" : pathname}`;
-    const res = NextResponse.rewrite(url);
+    const res = NextResponse.rewrite(url, { request: { headers: req.headers } });
     res.headers.set("x-tenant-slug", tenantSlug);
     res.headers.set("x-is-custom-domain", "true");
     return res;

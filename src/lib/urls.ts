@@ -12,6 +12,12 @@ export function getTenantUrl(
   let cleanPath = path.startsWith("/") ? path : `/${path}`;
 
   let customDomainActive = isCustomDomainProp;
+
+  // If customDomain is provided (e.g. "d-car.com.pl"), default to true unless explicitly false or in platform mode
+  if (customDomainActive === undefined && customDomain) {
+    customDomainActive = true;
+  }
+
   if (customDomainActive === undefined && typeof window !== "undefined") {
     const host = window.location.hostname.replace(/^www\./, "");
     const isPlatform =

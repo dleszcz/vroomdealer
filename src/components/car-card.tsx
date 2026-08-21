@@ -8,14 +8,16 @@ import { getTenantUrl } from "@/lib/urls";
 interface CarCardProps {
   car: Car;
   dealerSlug: string;
+  customDomain?: string | null;
+  isCustomDomain?: boolean;
 }
 
-export function CarCard({ car, dealerSlug }: CarCardProps) {
+export function CarCard({ car, dealerSlug, customDomain, isCustomDomain }: CarCardProps) {
   const mainImage = car.images?.[0];
 
   return (
     <Link
-      href={getTenantUrl(dealerSlug, `/${car.slug}`)}
+      href={getTenantUrl(dealerSlug, `/${car.slug}`, customDomain, isCustomDomain)}
       id={`car-card-${car.slug}`}
       className="car-card"
     >

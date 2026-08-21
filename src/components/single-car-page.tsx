@@ -401,7 +401,7 @@ export function SingleCarPage({ tenant, car, relatedCars = [] }: SingleCarPagePr
 
             <div className="vehicles__grid">
               {displayRelated.map((relatedCar) => (
-                <CarCard key={relatedCar.id} car={relatedCar} dealerSlug={tenant.slug} />
+                <CarCard key={relatedCar.id} car={relatedCar} dealerSlug={tenant.slug} customDomain={tenant.customDomain} />
               ))}
             </div>
           </div>
