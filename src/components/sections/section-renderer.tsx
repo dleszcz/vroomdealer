@@ -18,9 +18,10 @@ import { StickyMobileCta } from "../sticky-mobile-cta";
 interface SectionRendererProps {
   tenant: DealerTenant;
   mode?: "all" | "skup-aut";
+  isCustomDomain?: boolean;
 }
 
-export function SectionRenderer({ tenant, mode = "all" }: SectionRendererProps) {
+export function SectionRenderer({ tenant, mode = "all", isCustomDomain }: SectionRendererProps) {
   const isSkupMode = mode === "skup-aut";
   const sections = tenant.pageConfig?.sections || [];
   let enabled = sections.filter((section) => section.enabled !== false);
@@ -70,7 +71,7 @@ export function SectionRenderer({ tenant, mode = "all" }: SectionRendererProps) 
             <Breadcrumbs
               variant="dark"
               items={[
-                { label: tenant.businessName, href: getTenantUrl(tenant.slug, "/", tenant.customDomain) },
+                { label: tenant.businessName, href: getTenantUrl(tenant.slug, "/", tenant.customDomain, isCustomDomain) },
                 { label: "Skup aut za gotówkę" },
               ]}
             />
@@ -81,7 +82,7 @@ export function SectionRenderer({ tenant, mode = "all" }: SectionRendererProps) 
       {enabled.map((config: SectionConfig) => {
         switch (config.type) {
           case "hero":
-            return <HeroSection key={config.id} tenant={tenant} config={config} />;
+            return <HeroSection key={config.id} tenant={tenant} config={config} isCustomDomain={isCustomDomain} />;
           case "trust":
             return <ValuePropsSection key={config.id} tenant={tenant} config={config} />;
           case "process":
@@ -91,16 +92,16 @@ export function SectionRenderer({ tenant, mode = "all" }: SectionRendererProps) 
           case "reviews":
             return <TrustSection key={config.id} tenant={tenant} config={config} />;
           case "vehicles":
-            return <VehiclesSection key={config.id} tenant={tenant} config={config} />;
+            return <VehiclesSection key={config.id} tenant={tenant} config={config} isCustomDomain={isCustomDomain} />;
           case "about":
             return <AboutSection key={config.id} tenant={tenant} config={config} />;
           case "service_areas":
-            return <ServiceAreasSection key={config.id} tenant={tenant} config={config} />;
+            return <ServiceAreasSection key={config.id} tenant={tenant} config={config} isCustomDomain={isCustomDomain} />;
           case "lead_form":
             return (
               <React.Fragment key={config.id}>
                 <LeadFormSection tenant={tenant} config={config} />
-                {!hasServiceAreasSection && hasLocalPages && <ServiceAreasSection tenant={tenant} />}
+                {!hasServiceAreasSection && hasLocalPages && <ServiceAreasSection tenant={tenant} isCustomDomain={isCustomDomain} />}
               </React.Fragment>
             );
           case "faq":
@@ -112,7 +113,7 @@ export function SectionRenderer({ tenant, mode = "all" }: SectionRendererProps) 
         }
       })}
 
-      <StickyMobileCta tenant={tenant} />
+      <StickyMobileCta tenant={tenant} isCustomDomain={isCustomDomain} />
     </div>
   );
 }

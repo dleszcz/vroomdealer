@@ -41,9 +41,12 @@ function YoutubeIcon({ size = 18 }: { size?: number }) {
 import { APP_VERSION } from "@/lib/version";
 import { getTenantUrl } from "@/lib/urls";
 
-interface FooterProps { tenant?: DealerTenant | null; }
+interface FooterProps {
+  tenant?: DealerTenant | null;
+  isCustomDomain?: boolean;
+}
 
-export function Footer({ tenant }: FooterProps) {
+export function Footer({ tenant, isCustomDomain }: FooterProps) {
   const name = tenant?.businessName || "";
   const phone = tenant?.contact?.phone || "";
   const email = tenant?.contact?.email || "";
@@ -54,7 +57,7 @@ export function Footer({ tenant }: FooterProps) {
   const footerBg = tenant?.branding?.colors?.footerBg || "#080808";
 
   const getUrl = (path: string) =>
-    getTenantUrl(tenant?.slug || "", path, tenant?.customDomain);
+    getTenantUrl(tenant?.slug || "", path, tenant?.customDomain, isCustomDomain);
 
   // Active service areas for local SEO links
   const activeLocalPages =

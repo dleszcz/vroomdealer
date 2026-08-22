@@ -28,9 +28,10 @@ interface SingleCarPageProps {
   tenant: DealerTenant;
   car: Car;
   relatedCars?: Car[];
+  isCustomDomain?: boolean;
 }
 
-export function SingleCarPage({ tenant, car, relatedCars = [] }: SingleCarPageProps) {
+export function SingleCarPage({ tenant, car, relatedCars = [], isCustomDomain }: SingleCarPageProps) {
   const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
   const phone = tenant.contact?.phone || "";
   const cleanPhone = phone.replace(/\s+/g, "");

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProfile, getCar, getCars } from "@/lib/data";
@@ -176,6 +177,14 @@ export default async function DynamicSlugPage({ params }: Props) {
     notFound();
   }
 
+  const reqHeaders = await headers();
+  const host = (reqHeaders.get("host") || "").split(":")[0].toLowerCase().replace(/^www\./, "");
+  const isCustomDomain =
+    host !== "vroomdealer.pl" &&
+    host !== "localhost" &&
+    host !== "127.0.0.1" &&
+    !host.endsWith(".vercel.app");
+
   const baseUrl = tenant.customDomain
     ? `https://${tenant.customDomain}`
     : `https://vroomdealer.pl/${tenant.slug}`;
@@ -186,21 +195,21 @@ export default async function DynamicSlugPage({ params }: Props) {
     if (!localPage.enabled) {
       notFound();
     }
-    return <LocalSeoPage tenant={tenant} localPage={localPage} baseUrl={baseUrl} />;
+    return <LocalSeoPage tenant={tenant} localPage={localPage} baseUrl={baseUrl} isCustomDomain={isCustomDomain} />;
   }
 
   // 2. Subpages handling
   if (slug === "skup-aut") {
-    return <SectionRenderer tenant={tenant} mode="skup-aut" />;
+    return <SectionRenderer tenant={tenant} mode="skup-aut" isCustomDomain={isCustomDomain} />;
   }
 
   if (slug === "samochody") {
     const allCars = await getCars(tenant.id);
-    return <InventoryPage tenant={tenant} cars={allCars} />;
+    return <InventoryPage tenant={tenant} cars={allCars} isCustomDomain={isCustomDomain} />;
   }
 
   if (["kontakt", "o-nas"].includes(slug)) {
-    return <SectionRenderer tenant={tenant} mode="all" />;
+    return <SectionRenderer tenant={tenant} mode="all" isCustomDomain={isCustomDomain} />;
   }
 
   // 2b. Legal pages
@@ -235,7 +244,7 @@ export default async function DynamicSlugPage({ params }: Props) {
         dealerName={profile.business_name}
         url={pageUrl}
       />
-      <SingleCarPage tenant={tenant} car={car} relatedCars={relatedCars} />
+      <SingleCarPage tenant={tenant} car={car} relatedCars={relatedCars} isCustomDomain={isCustomDomain} />
       <TrackVehicleView car={car} />
     </>
   );

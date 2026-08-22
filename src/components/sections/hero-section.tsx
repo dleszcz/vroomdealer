@@ -10,11 +10,12 @@ import { getTenantUrl } from "@/lib/urls";
 interface HeroSectionProps {
   tenant: DealerTenant;
   config?: SectionConfig;
+  isCustomDomain?: boolean;
 }
 
 const iconMap = { cash: Banknote, check: ClipboardCheck, truck: Truck, scale: Scale };
 
-export function HeroSection({ tenant, config }: HeroSectionProps) {
+export function HeroSection({ tenant, config, isCustomDomain }: HeroSectionProps) {
   const data = (config?.data || {}) as HeroConfig;
   const heroImage = data.image || tenant.branding.media?.heroImageUrl || "";
   const benefits = data.benefits?.length ? data.benefits : [
@@ -26,8 +27,8 @@ export function HeroSection({ tenant, config }: HeroSectionProps) {
     { label: "Formalności po naszej stronie", icon: "scale" },
   ];
 
-  const primaryHref = data.primaryCta?.href || getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain);
-  const secondaryHref = data.secondaryCta?.href || getTenantUrl(tenant.slug, "/#vehicles", tenant.customDomain);
+  const primaryHref = data.primaryCta?.href || getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain, isCustomDomain);
+  const secondaryHref = data.secondaryCta?.href || getTenantUrl(tenant.slug, "/#vehicles", tenant.customDomain, isCustomDomain);
 
   return (
     <section id="hero" className="dealer-hero">

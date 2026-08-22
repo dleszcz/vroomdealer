@@ -8,9 +8,10 @@ import { getTenantUrl } from "@/lib/urls";
 
 interface StickyMobileCtaProps {
   tenant: DealerTenant;
+  isCustomDomain?: boolean;
 }
 
-export function StickyMobileCta({ tenant }: StickyMobileCtaProps) {
+export function StickyMobileCta({ tenant, isCustomDomain }: StickyMobileCtaProps) {
   const phone = tenant.contact.phone || "+48530826501";
   const rawWhatsapp = tenant.contact.whatsapp || "48530826501";
   const cleanWhatsapp = rawWhatsapp.replace(/\D/g, "");
@@ -22,7 +23,7 @@ export function StickyMobileCta({ tenant }: StickyMobileCtaProps) {
     if (targetEl) {
       targetEl.scrollIntoView({ behavior: "smooth" });
     } else {
-      window.location.href = getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain);
+      window.location.href = getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain, isCustomDomain);
     }
   };
 
@@ -99,7 +100,7 @@ export function StickyMobileCta({ tenant }: StickyMobileCtaProps) {
 
         {/* Sell Car Button */}
         <a
-          href={getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain)}
+          href={getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain, isCustomDomain)}
           onClick={handleSellClick}
           style={{
             display: "flex",

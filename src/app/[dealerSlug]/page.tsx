@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { resolveTenant } from "@/lib/tenant";
-import { DealerSchema } from "@/components/vehicle-schema";
 import { SectionRenderer } from "@/components/sections/section-renderer";
+import { DealerSchema } from "@/components/vehicle-schema";
 
 type Props = {
   params: Promise<{ dealerSlug: string }>;
@@ -16,11 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = (
     tenant.seo?.metaTitle ||
-    `${tenant.businessName} - Skup aut za gotówkę i sprzedaż samochodów${
-      tenant.location?.city ? ` | ${tenant.location.city}` : ""
-    }`
+    `${tenant.businessName} - Skup Aut i Sprzedaż Samochodów`
   ).replace(/—|–/g, "-");
-
   const description = (
     tenant.seo?.metaDescription ||
     tenant.businessDescription ||
@@ -46,9 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       shortcut: tenant.branding.faviconUrl && tenant.branding.faviconUrl !== "/icon" ? tenant.branding.faviconUrl : `/api/icon?tenant=${dealerSlug}`,
       apple: tenant.branding.faviconUrl && tenant.branding.faviconUrl !== "/icon" ? tenant.branding.faviconUrl : `/api/icon?tenant=${dealerSlug}`,
     },
-    alternates: {
-      canonical: baseUrl,
-    },
+    alternates: { canonical: baseUrl },
     openGraph: {
       title,
       description,
@@ -56,16 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: tenant.businessName,
       locale: "pl_PL",
       type: "website",
-      images: ogImageUrl
-        ? [
-            {
-              url: ogImageUrl,
-              width: 1200,
-              height: 630,
-              alt: title,
-            },
-          ]
-        : [],
+      images: ogImageUrl ? [{ url: ogImageUrl, width: 1200, height: 630, alt: title }] : [],
     },
     twitter: {
       card: "summary_large_image",
@@ -73,9 +60,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       images: ogImageUrl ? [ogImageUrl] : [],
     },
-    robots: {
-      index: true,
-      follow: true,
+    other: {
+      "fb:app_id": process.env.NEXT_PUBLIC_FB_APP_ID || "",
     },
   };
 }
@@ -96,6 +82,14 @@ export default async function DealerPage({ params }: Props) {
     notFound();
   }
 
+  const reqHeaders = await headers();
+  const host = (reqHeaders.get("host") || "").split(":")[0].toLowerCase().replace(/^www\./, "");
+  const isCustomDomain =
+    host !== "vroomdealer.pl" &&
+    host !== "localhost" &&
+    host !== "127.0.0.1" &&
+    !host.endsWith(".vercel.app");
+
   const baseUrl = tenant.customDomain
     ? `https://${tenant.customDomain}`
     : `https://vroomdealer.pl/${tenant.slug}`;
@@ -111,7 +105,7 @@ export default async function DealerPage({ params }: Props) {
         url={baseUrl}
       />
 
-      <SectionRenderer tenant={tenant} />
+      <SectionRenderer tenant={tenant} isCustomDomain={isCustomDomain} />
     </>
   );
 }

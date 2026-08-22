@@ -9,9 +9,10 @@ import { getTenantUrl } from "@/lib/urls";
 interface Props {
   tenant: DealerTenant;
   config?: SectionConfig;
+  isCustomDomain?: boolean;
 }
 
-export function ServiceAreasSection({ tenant, config }: Props) {
+export function ServiceAreasSection({ tenant, config, isCustomDomain }: Props) {
   const primaryCity = tenant.localSeo?.primaryLocation?.city || tenant.location?.city || "";
   const locality = tenant.localSeo?.primaryLocation?.locality;
   const county = tenant.localSeo?.primaryLocation?.county || tenant.location?.county;
@@ -64,7 +65,7 @@ export function ServiceAreasSection({ tenant, config }: Props) {
           {activeLocalPages.map((lp) => (
             <Link
               key={lp.slug}
-              href={getTenantUrl(tenant.slug, `/${lp.slug}`, tenant.customDomain)}
+              href={getTenantUrl(tenant.slug, `/${lp.slug}`, tenant.customDomain, isCustomDomain)}
               style={{
 
                 padding: "20px",
