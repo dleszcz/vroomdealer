@@ -11,8 +11,8 @@ import { LeadFormSection } from "./lead-form-section";
 import { FAQSection } from "./faq-section";
 import { ContactSection } from "./contact-section";
 import { ServiceAreasSection } from "./service-areas-section";
-
-
+import { Breadcrumbs } from "@/components/breadcrumbs";
+import { getTenantUrl } from "@/lib/urls";
 import { StickyMobileCta } from "../sticky-mobile-cta";
 
 interface SectionRendererProps {
@@ -21,12 +21,27 @@ interface SectionRendererProps {
 }
 
 export function SectionRenderer({ tenant, mode = "all" }: SectionRendererProps) {
+  const isSkupMode = mode === "skup-aut";
   const sections = tenant.pageConfig?.sections || [];
   let enabled = sections.filter((section) => section.enabled !== false);
 
-  if (mode === "skup-aut") {
-    // Filter out car sales listings section to focus 100% on car buying
-    enabled = enabled.filter((section) => section.type !== "vehicles");
+  if (isSkupMode) {
+    // For dedicated /skup-aut landing page:
+    // Filter out: vehicles (cars for sale), about (O nas), faq (FAQ), and general hero
+    enabled = enabled.filter(
+      (section) =>
+        section.type !== "vehicles" &&
+        section.type !== "about" &&
+        section.type !== "faq" &&
+        section.type !== "hero"
+    );
+
+    // Ensure lead_form is rendered first
+    const leadFormIndex = enabled.findIndex((s) => s.type === "lead_form");
+    if (leadFormIndex > 0) {
+      const [leadFormSec] = enabled.splice(leadFormIndex, 1);
+      enabled.unshift(leadFormSec);
+    }
   }
 
   const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
@@ -48,10 +63,25 @@ export function SectionRenderer({ tenant, mode = "all" }: SectionRendererProps) 
         ["--color-footer-bg" as string]: footerBg,
       }}
     >
+      {/* Top Header for Skup Aut dedicated page */}
+      {isSkupMode && (
+        <section style={{ background: "linear-gradient(135deg, #0a0f1d 0%, #060810 100%)", padding: "24px 0 0" }}>
+          <div className="vd-container">
+            <Breadcrumbs
+              variant="dark"
+              items={[
+                { label: tenant.businessName, href: getTenantUrl(tenant.slug, "/", tenant.customDomain) },
+                { label: "Skup aut za gotówkę" },
+              ]}
+            />
+          </div>
+        </section>
+      )}
+
       {enabled.map((config: SectionConfig) => {
         switch (config.type) {
           case "hero":
-            return <HeroSection key={config.id} tenant={tenant} config={config} mode={mode} />;
+            return <HeroSection key={config.id} tenant={tenant} config={config} />;
           case "trust":
             return <ValuePropsSection key={config.id} tenant={tenant} config={config} />;
           case "process":
@@ -69,8 +99,8 @@ export function SectionRenderer({ tenant, mode = "all" }: SectionRendererProps) 
           case "lead_form":
             return (
               <React.Fragment key={config.id}>
-                {!hasServiceAreasSection && hasLocalPages && <ServiceAreasSection tenant={tenant} />}
                 <LeadFormSection tenant={tenant} config={config} />
+                {!hasServiceAreasSection && hasLocalPages && <ServiceAreasSection tenant={tenant} />}
               </React.Fragment>
             );
           case "faq":
@@ -86,4 +116,3 @@ export function SectionRenderer({ tenant, mode = "all" }: SectionRendererProps) 
     </div>
   );
 }
-
