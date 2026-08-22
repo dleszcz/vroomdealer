@@ -67,12 +67,12 @@ export default async function HomePage() {
         <BrandProvider branding={tenant.branding}>
           {tenant.analytics?.pixelId && <MetaPixel pixelId={tenant.analytics.pixelId} />}
           <div className="dealer-layout">
-            <DealerHeader tenant={tenant} />
+            <DealerHeader tenant={tenant} isCustomDomain={true} />
             <main className="dealer-main">
               <SectionRenderer tenant={tenant} />
             </main>
             <ContactBar profile={profileShim} />
-            <Footer tenant={tenant} />
+            <Footer tenant={tenant} isCustomDomain={true} />
           </div>
         </BrandProvider>
       );

@@ -11,9 +11,10 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 interface InventoryPageProps {
   tenant: DealerTenant;
   cars: Car[];
+  isCustomDomain?: boolean;
 }
 
-export function InventoryPage({ tenant, cars }: InventoryPageProps) {
+export function InventoryPage({ tenant, cars, isCustomDomain }: InventoryPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFuel, setSelectedFuel] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"newest" | "price_asc" | "price_desc">("newest");

@@ -14,6 +14,7 @@ interface LocalSeoPageProps {
   tenant: DealerTenant;
   localPage: LocalPageConfig;
   baseUrl: string;
+  isCustomDomain?: boolean;
 }
 
 function getCityInflection(city: string) {
