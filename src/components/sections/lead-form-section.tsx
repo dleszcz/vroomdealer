@@ -51,7 +51,7 @@ export function LeadFormSection({ tenant, config }: LeadFormSectionProps) {
               margin: 0,
             }}
           >
-            Wypełnij krótki formularz wyceny w 6 krokach. Przyjedziemy po Twoje auto i zapłacimy gotówką od ręki!
+            Wypełnij krótki formularz wyceny w 4 krokach. Przyjedziemy po Twoje auto i zapłacimy gotówką od ręki!
           </p>
 
           <div
