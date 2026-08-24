@@ -53,6 +53,7 @@ export function SectionRenderer({ tenant, mode = "all", isCustomDomain }: Sectio
 
   const hasServiceAreasSection = enabled.some((s) => s.type === "service_areas");
   const hasLocalPages = (tenant.localSeo?.localPages?.filter((lp) => lp.enabled && lp.indexable) || []).length > 0;
+  const isRecentlyBoughtCarsSectionEnabled = false; // To integrate with backend/db
 
   return (
     <div
@@ -62,7 +63,7 @@ export function SectionRenderer({ tenant, mode = "all", isCustomDomain }: Sectio
         ["--color-accent" as string]: accentColor,
         ["--color-brand" as string]: primaryColor,
         ["--color-header-bg" as string]: headerBg,
-        ["--color-footer-bg" as string]: footerBg,
+        ["--color-footer-bg" as string]: footerBg
       }}
     >
       {/* Top Header for Skup Aut dedicated page */}
@@ -102,7 +103,7 @@ export function SectionRenderer({ tenant, mode = "all", isCustomDomain }: Sectio
             return (
               <React.Fragment key={config.id}>
                 <LeadFormSection tenant={tenant} config={config} />
-                <RecentlyBoughtCarsSection tenant={tenant} />
+                {isRecentlyBoughtCarsSectionEnabled && <RecentlyBoughtCarsSection tenant={tenant} />}
                 {!hasServiceAreasSection && hasLocalPages && <ServiceAreasSection tenant={tenant} isCustomDomain={isCustomDomain} />}
               </React.Fragment>
             );
