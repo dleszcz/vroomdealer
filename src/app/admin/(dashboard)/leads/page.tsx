@@ -13,11 +13,13 @@ export default async function AdminLeadsPage() {
 
   const supabase = await createClient();
 
+  const dealerIds = [profile.id, profile.slug].filter(Boolean);
+
   // Fetch leads for this dealer (RLS ensures only own leads)
   const { data: leads, error } = await supabase
     .from("leads")
     .select("*")
-    .or(`dealer_id.eq.${profile.id},dealer_id.eq.${profile.slug}`)
+    .in("dealer_id", dealerIds)
     .order("created_at", { ascending: false })
     .limit(200);
 
