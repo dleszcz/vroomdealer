@@ -36,7 +36,30 @@ export async function updateProfile(formData: FormData) {
     redirect("/admin/login");
   }
 
+  // Fetch current profile to merge JSONB objects properly
+  const { data: currentProfile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
+  const currentBranding = (currentProfile?.branding as Record<string, unknown>) || {};
+  const currentAnalytics = (currentProfile?.analytics as Record<string, unknown>) || {};
+  const currentSeo = (currentProfile?.seo as Record<string, unknown>) || {};
+  const currentBusinessRules = (currentProfile?.business_rules as Record<string, unknown>) || {};
+  const currentOpeningHours = (currentProfile?.opening_hours as Record<string, unknown>) || {};
+
   const updates: Record<string, unknown> = {};
+
+  // Basic info
+  const businessName = formData.get("business_name");
+  if (businessName !== null) updates.business_name = businessName;
+
+  const businessDescription = formData.get("business_description");
+  if (businessDescription !== null) updates.business_description = businessDescription;
+
+  const customDomain = formData.get("custom_domain");
+  if (customDomain !== null) updates.custom_domain = customDomain || null;
 
   const notificationEmail = formData.get("notification_email");
   if (notificationEmail !== null) updates.notification_email = notificationEmail;
@@ -44,20 +67,84 @@ export async function updateProfile(formData: FormData) {
   const googleSheetsWebhook = formData.get("google_sheets_webhook_url");
   if (googleSheetsWebhook !== null) updates.google_sheets_webhook_url = googleSheetsWebhook;
 
+  // Contact & Address
   const contactPhone = formData.get("contact_phone");
   if (contactPhone !== null) updates.contact_phone = contactPhone;
 
   const whatsappNumber = formData.get("whatsapp_number");
   if (whatsappNumber !== null) updates.whatsapp_number = whatsappNumber;
 
+  const address = formData.get("address");
+  if (address !== null) updates.address = address;
+
+  const city = formData.get("city");
+  if (city !== null) updates.city = city;
+
+  const postalCode = formData.get("postal_code");
+  if (postalCode !== null) updates.postal_code = postalCode;
+
+  const county = formData.get("county");
+  if (county !== null) updates.county = county;
+
+  const region = formData.get("region");
+  if (region !== null) updates.region = region;
+
+  // Branding JSONB
+  const primaryColor = formData.get("branding_primary_color");
+  const accentColor = formData.get("branding_accent_color");
+  const logoUrl = formData.get("branding_logo_url");
+  const heroTitle = formData.get("branding_hero_title");
+  const heroSubtitle = formData.get("branding_hero_subtitle");
+
+  updates.branding = {
+    ...currentBranding,
+    primaryColor: primaryColor || currentBranding.primaryColor || "#10b981",
+    accentColor: accentColor || currentBranding.accentColor || "#f59e0b",
+    logoUrl: logoUrl || currentBranding.logoUrl || null,
+    heroTitle: heroTitle || currentBranding.heroTitle || null,
+    heroSubtitle: heroSubtitle || currentBranding.heroSubtitle || null,
+  };
+
+  // Analytics JSONB
   const pixelId = formData.get("pixel_id");
   const googleAnalyticsId = formData.get("google_analytics_id");
-  if (pixelId !== null || googleAnalyticsId !== null) {
-    updates.analytics = {
-      pixelId: pixelId || null,
-      googleAnalyticsId: googleAnalyticsId || null,
-    };
-  }
+  updates.analytics = {
+    ...currentAnalytics,
+    pixelId: pixelId || null,
+    googleAnalyticsId: googleAnalyticsId || null,
+  };
+  if (pixelId !== null) updates.pixel_id = pixelId; // also top-level column compatibility
+
+  // Opening Hours JSONB
+  const hoursWeekdays = formData.get("hours_weekdays");
+  const hoursSaturday = formData.get("hours_saturday");
+  const hoursSunday = formData.get("hours_sunday");
+  updates.opening_hours = {
+    ...currentOpeningHours,
+    weekdays: hoursWeekdays || "08:00 - 18:00",
+    saturday: hoursSaturday || "09:00 - 14:00",
+    sunday: hoursSunday || "Zamknięte",
+  };
+
+  // Business Rules JSONB
+  const minPurchasePrice = formData.get("min_purchase_price");
+  const maxPurchasePrice = formData.get("max_purchase_price");
+  const guaranteeText = formData.get("guarantee_text");
+  updates.business_rules = {
+    ...currentBusinessRules,
+    minPurchasePrice: minPurchasePrice ? Number(minPurchasePrice) : 500,
+    maxPurchasePrice: maxPurchasePrice ? Number(maxPurchasePrice) : 150000,
+    guaranteeText: guaranteeText || null,
+  };
+
+  // SEO JSONB
+  const metaTitle = formData.get("meta_title");
+  const metaDescription = formData.get("meta_description");
+  updates.seo = {
+    ...currentSeo,
+    metaTitle: metaTitle || null,
+    metaDescription: metaDescription || null,
+  };
 
   const { error } = await supabase
     .from("profiles")
@@ -81,7 +168,6 @@ export async function updateLeadStatus(leadId: string, status: string, notes?: s
     throw new Error("Nie jesteś zalogowany");
   }
 
-  // Verify ownership via RLS
   const updateData: Record<string, unknown> = {
     status,
     updated_at: new Date().toISOString(),
