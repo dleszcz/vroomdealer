@@ -147,8 +147,8 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
               {phone && <a className="dealer-footer__contact" href={`tel:${phone.replace(/\s/g, "")}`}><Phone size={12} /> {phone}</a>}
               {email && <a className="dealer-footer__contact" href={`mailto:${email}`}>✉ {email}</a>}
               {(address || city) && <span className="dealer-footer__contact"><MapPin size={12} /> {address}{address && city ? ", " : ""}{city}</span>}
-              <span className="dealer-footer__contact"><Clock3 size={12} /> Pn–Pt: 8:00–18:00</span>
-              <span className="dealer-footer__contact">Sob: 9:00–14:00</span>
+              <span className="dealer-footer__contact"><Clock3 size={12} /> Pn–Pt: 8:00–20:00</span>
+              <span className="dealer-footer__contact">Sob–Nd: 10:00–18:00</span>
             </div>
           </div>
         </div>

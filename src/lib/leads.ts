@@ -2,22 +2,59 @@ import { Lead } from "@/types/landing";
 
 async function sendLeadNotificationEmail(leadData: Lead) {
   const apiKey = process.env.RESEND_API_KEY;
-  const toEmail = process.env.NOTIFICATION_EMAIL || "danielxleszczynski@gmail.com";
 
   if (!apiKey) {
     console.log("ℹ️ [Lead Engine] RESEND_API_KEY nie jest skonfigurowany. Powiadomienie e-mail pominięte.");
     return;
   }
 
-  const isSaasApp = leadData.source === "vroomdealer_saas_test_application" || leadData.dealerId === "vroomdealer_saas";
-  
+  // Detect environment (Development / Preview vs Production)
+  const isProduction =
+    process.env.NODE_ENV === "production" &&
+    process.env.VERCEL_ENV === "production";
+
+  const devTargetEmail =
+    process.env.DEV_NOTIFICATION_EMAIL || "danielxleszczynski@gmail.com";
+
+  let toEmail: string;
+  let ccEmail: string | undefined;
+
+  if (!isProduction) {
+    // Non-production (local dev or preview): send all emails to private email
+    toEmail = devTargetEmail;
+    ccEmail = undefined;
+    console.log(`📧 [Lead Engine - DEV/PREVIEW] Email skierowany na prywatny adres: ${toEmail}`);
+  } else {
+    // Production: send to tenant's email / NOTIFICATION_EMAIL and CC private email
+    toEmail =
+      leadData.tenantEmail ||
+      process.env.NOTIFICATION_EMAIL ||
+      "kontakt@d-car.com.pl";
+    ccEmail =
+      process.env.CC_NOTIFICATION_EMAIL || "danielxleszczynski@gmail.com";
+  }
+
+  const isSaasApp =
+    leadData.source === "vroomdealer_saas_test_application" ||
+    leadData.dealerId === "vroomdealer_saas";
+
   const subject = isSaasApp
     ? `🚀 Nowe zgłoszenie do testów VroomDealer: ${leadData.customerName || leadData.customerPhone}`
     : `🚗 NOWY LEAD dla komisu [${leadData.dealerId}]: ${leadData.customerName || leadData.customerPhone}`;
 
-  const vehicleObj = leadData.vehicleDetails as Record<string, unknown> | undefined;
-  const vehicleHtml = vehicleObj
-    ? `
+  const rawDetails = leadData.vehicleDetails as string | Record<string, unknown> | undefined;
+  let vehicleHtml = "";
+
+  if (typeof rawDetails === "string" && rawDetails.trim()) {
+    vehicleHtml = `
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin:16px 0;">
+        <h4 style="margin:0 0 8px;color:#0f172a;font-size:15px;">🚗 Szczegóły pojazdu:</h4>
+        <p style="margin:0;font-size:14px;color:#334155;line-height:1.5;">${rawDetails}</p>
+      </div>
+    `;
+  } else if (rawDetails && typeof rawDetails === "object") {
+    const vehicleObj = rawDetails as Record<string, unknown>;
+    vehicleHtml = `
       <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin:16px 0;">
         <h4 style="margin:0 0 10px;color:#0f172a;font-size:15px;">🚗 Dane pojazdu:</h4>
         <table style="width:100%;border-collapse:collapse;font-size:14px;color:#334155;">
@@ -30,8 +67,30 @@ async function sendLeadNotificationEmail(leadData: Lead) {
           ${vehicleObj.city ? `<tr><td style="padding:4px 0;font-weight:bold;">Lokalizacja:</td><td>${vehicleObj.city}</td></tr>` : ""}
         </table>
       </div>
-    `
-    : "";
+    `;
+  }
+
+  // Photos rendering in HTML + attachments for Resend API
+  const photos = Array.isArray(leadData.photos) ? (leadData.photos as string[]) : [];
+  let photosHtml = "";
+  const attachments: Array<{ filename: string; content: string }> = [];
+
+  if (photos.length > 0) {
+    photosHtml = `
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin:16px 0;">
+        <h4 style="margin:0 0 6px;color:#0f172a;font-size:15px;">📷 Załączone zdjęcia (${photos.length}):</h4>
+        <p style="margin:0;font-size:13px;color:#475569;">Do niniejszej wiadomości załączono <strong>${photos.length} zdjęć pojazdu</strong> (zobacz załączniki poniżej).</p>
+      </div>
+    `;
+
+    photos.forEach((dataUrl, idx) => {
+      const base64Content = dataUrl.includes(",") ? dataUrl.split(",")[1] : dataUrl;
+      attachments.push({
+        filename: `zdjecie-${idx + 1}.jpg`,
+        content: base64Content,
+      });
+    });
+  }
 
   const attributionObj = leadData.attribution as Record<string, unknown> | undefined;
   const attributionHtml = attributionObj
@@ -59,6 +118,7 @@ async function sendLeadNotificationEmail(leadData: Lead) {
       </div>
 
       ${vehicleHtml}
+      ${photosHtml}
       ${attributionHtml}
 
       <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0 16px;" />
@@ -67,22 +127,36 @@ async function sendLeadNotificationEmail(leadData: Lead) {
   `;
 
   try {
+    const resendBody: Record<string, unknown> = {
+      from: "VroomDealer <onboarding@resend.dev>",
+      to: [toEmail],
+      subject,
+      html,
+    };
+
+    if (ccEmail && ccEmail !== toEmail) {
+      resendBody.cc = [ccEmail];
+    }
+
+    if (attachments.length > 0) {
+      resendBody.attachments = attachments;
+    }
+
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        from: "VroomDealer <onboarding@resend.dev>",
-        to: [toEmail],
-        subject,
-        html,
-      }),
+      body: JSON.stringify(resendBody),
     });
 
     if (res.ok) {
-      console.log("📧 [Lead Engine] Powiadomienie e-mail zostało wysłane na adres:", toEmail);
+      console.log(
+        `📧 [Lead Engine] Powiadomienie e-mail wysłane do: ${toEmail}${
+          ccEmail ? ` (CC: ${ccEmail})` : ""
+        }`
+      );
     } else {
       const errData = await res.json();
       console.error("❌ Błąd wysyłania maila przez Resend API:", errData);
@@ -119,7 +193,7 @@ export async function createLead(leadData: Lead): Promise<{ success: boolean; id
             vehicle_details: leadData.vehicleDetails || null,
             attribution: leadData.attribution || null,
             local_seo_city: leadData.localSeoCity || null,
-            photos: leadData.photos || null,
+            photos: Array.isArray(leadData.photos) ? leadData.photos.length : null,
             status: leadData.status || "new",
           })
           .select("id")
@@ -145,4 +219,3 @@ export async function createLead(leadData: Lead): Promise<{ success: boolean; id
     return { success: false, error: err instanceof Error ? err.message : "Unspecified error" };
   }
 }
-

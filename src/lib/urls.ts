@@ -1,6 +1,6 @@
 /**
  * Returns a clean relative URL path for a tenant route.
- * On custom domain (e.g. d-car.com.pl): returns clean path like "/", "/skup-aut", "/samochody", "/polityka-prywatnosci"
+ * On custom domain (e.g. custom tenant domain): returns clean path like "/", "/skup-aut", "/samochody", "/polityka-prywatnosci"
  * On platform domain (e.g. vroomdealer.pl, vroomdealer.vercel.app, localhost): returns "/[dealerSlug]", "/[dealerSlug]/skup-aut", "/[dealerSlug]/samochody"
  */
 export function getTenantUrl(

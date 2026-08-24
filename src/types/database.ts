@@ -20,8 +20,14 @@ export interface Profile {
   local_seo?: Record<string, unknown>;
   business_rules?: Record<string, unknown>;
   analytics?: Record<string, unknown>;
+  user_id?: string | null;
+  notification_email?: string | null;
+  google_sheets_webhook_url?: string | null;
+  opening_hours?: Record<string, unknown>;
+  is_super_admin?: boolean;
   created_at: string;
 }
+
 
 export interface Car {
   id: string;

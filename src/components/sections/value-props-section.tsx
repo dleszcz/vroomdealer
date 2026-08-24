@@ -6,11 +6,11 @@ interface Props { tenant: DealerTenant; config?: SectionConfig; }
 
 const icons = [BadgeCheck, Clock3, Truck, FileCheck2, ShieldCheck];
 const defaults = [
-  ["Najlepsze ceny", "Płacimy uczciwie i od ręki."],
-  ["Szybka decyzja", "Wycena nawet w 15 minut."],
-  ["Odbiór auta", "Przyjedziemy po auto do Ciebie."],
-  ["Minimum formalności", "Wszystko załatwimy za Ciebie."],
-  ["Bezpieczeństwo", "Pewna i legalna transakcja."],
+  ["Auta w każdym stanie", "Skupujemy pojazdy sprawne, uszkodzone, powypadkowe oraz bez OC/przeglądu."],
+  ["Najlepsze ceny", "Płacimy uczciwie i od ręki w gotówce."],
+  ["Szybka decyzja", "Wycena online/tel nawet w 15 minut."],
+  ["Darmowa laweta", "Przyjedziemy własnym transportem w dogodne miejsce."],
+  ["Minimum formalności", "Wszystkie formalności i umowa na miejscu."],
 ];
 
 export function ValuePropsSection({ tenant, config }: Props) {

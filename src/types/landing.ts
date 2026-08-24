@@ -247,6 +247,7 @@ export interface Lead {
   attribution?: LeadAttribution;
   localSeoCity?: string;
   photos?: string[];
+  tenantEmail?: string;
   status: LeadStatus;
   createdAt?: string;
 }

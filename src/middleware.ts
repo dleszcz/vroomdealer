@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { allSeedProfiles } from "@/lib/data";
+import { updateSession } from "@/lib/supabase/middleware";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
@@ -59,6 +60,31 @@ export async function middleware(req: NextRequest) {
 
   // Normalize host (strip port and www)
   const host = hostname.split(":")[0].replace(/^www\./, "");
+
+  // ── Admin Panel Auth Protection ──
+  if (pathname.startsWith("/admin")) {
+    // /admin/login is public
+    if (pathname === "/admin/login") {
+      const { supabaseResponse } = await updateSession(req);
+      return supabaseResponse;
+    }
+
+    // All other /admin/* routes require authentication
+    const allCookieNames = req.cookies.getAll().map((c) => c.name);
+    const sbCookie = req.cookies.get("sb-xfagkubntiqvrvbmoira-auth-token");
+    console.log("[MW-DEBUG]", pathname, "cookies:", allCookieNames, "sb-cookie-present:", !!sbCookie, "sb-cookie-len:", sbCookie?.value?.length);
+    
+    const { supabaseResponse, user } = await updateSession(req);
+    console.log("[MW-DEBUG]", pathname, "user-after-updateSession:", user?.email || "NULL");
+    
+    if (!user) {
+      const loginUrl = new URL("/admin/login", req.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    return supabaseResponse;
+  }
 
   // Platform root domains where main SaaS landing page & subpaths /[dealerSlug] live
   const isPlatformDomain =

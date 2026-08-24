@@ -11,6 +11,7 @@ import { LeadFormSection } from "./lead-form-section";
 import { FAQSection } from "./faq-section";
 import { ContactSection } from "./contact-section";
 import { ServiceAreasSection } from "./service-areas-section";
+import { RecentlyBoughtCarsSection } from "./recently-bought-cars-section";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { getTenantUrl } from "@/lib/urls";
 import { StickyMobileCta } from "../sticky-mobile-cta";
@@ -101,6 +102,7 @@ export function SectionRenderer({ tenant, mode = "all", isCustomDomain }: Sectio
             return (
               <React.Fragment key={config.id}>
                 <LeadFormSection tenant={tenant} config={config} />
+                <RecentlyBoughtCarsSection tenant={tenant} />
                 {!hasServiceAreasSection && hasLocalPages && <ServiceAreasSection tenant={tenant} isCustomDomain={isCustomDomain} />}
               </React.Fragment>
             );

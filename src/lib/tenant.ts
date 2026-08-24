@@ -1,6 +1,6 @@
 import { Profile } from "@/types/database";
 import { DealerTenant } from "@/types/landing";
-import { getProfile, getAllProfiles, seedProfileDCar } from "@/lib/data";
+import { getProfile, getAllProfiles, allSeedProfiles } from "@/lib/data";
 import {
   mergeBranding,
   mergeServices,
@@ -10,6 +10,11 @@ import {
 } from "@/lib/defaults";
 
 export function profileToTenant(profile: Profile): DealerTenant {
+  const seedMatch = allSeedProfiles.find(
+    (p) => p.slug === profile.slug || p.id === profile.id
+  );
+  const seedBrandingRaw = seedMatch?.branding as Record<string, unknown> | undefined;
+
   const brandingRaw = profile.branding as Record<string, unknown> | undefined;
 
   // Build services: merge tenant config with validated defaults
@@ -27,8 +32,11 @@ export function profileToTenant(profile: Profile): DealerTenant {
     profile.page_config as Record<string, unknown> | undefined
   );
 
-  // Build local SEO config
-  const localSeo = mergeLocalSeo(profile.local_seo as Record<string, unknown> | undefined);
+  // Build local SEO config: fallback dynamically to dataset seed profile if database local_seo is empty
+  const localSeo = mergeLocalSeo(
+    (profile.local_seo as Record<string, unknown> | undefined) ||
+    (seedMatch?.local_seo as Record<string, unknown> | undefined)
+  );
 
   // Build business rules
   const businessRules = mergeBusinessRules(profile.business_rules as Record<string, unknown> | undefined);
@@ -44,10 +52,10 @@ export function profileToTenant(profile: Profile): DealerTenant {
       phone: profile.contact_phone || null,
       whatsapp: profile.whatsapp_number || null,
       email: (brandingRaw?.contactEmail as string) || null,
-      facebook: (profile as unknown as Record<string, unknown>).facebook_url as string || (brandingRaw?.facebook as string) || ((seedProfileDCar.branding as Record<string, unknown>)?.facebook as string) || null,
-      instagram: (profile as unknown as Record<string, unknown>).instagram_url as string || (brandingRaw?.instagram as string) || ((seedProfileDCar.branding as Record<string, unknown>)?.instagram as string) || null,
-      tiktok: (profile as unknown as Record<string, unknown>).tiktok_url as string || (brandingRaw?.tiktok as string) || ((seedProfileDCar.branding as Record<string, unknown>)?.tiktok as string) || null,
-      youtube: (profile as unknown as Record<string, unknown>).youtube_url as string || (brandingRaw?.youtube as string) || ((seedProfileDCar.branding as Record<string, unknown>)?.youtube as string) || null,
+      facebook: (profile as unknown as Record<string, unknown>).facebook_url as string || (brandingRaw?.facebook as string) || (seedBrandingRaw?.facebook as string) || null,
+      instagram: (profile as unknown as Record<string, unknown>).instagram_url as string || (brandingRaw?.instagram as string) || (seedBrandingRaw?.instagram as string) || null,
+      tiktok: (profile as unknown as Record<string, unknown>).tiktok_url as string || (brandingRaw?.tiktok as string) || (seedBrandingRaw?.tiktok as string) || null,
+      youtube: (profile as unknown as Record<string, unknown>).youtube_url as string || (brandingRaw?.youtube as string) || (seedBrandingRaw?.youtube as string) || null,
     },
     location: {
       address: profile.address || null,
@@ -70,8 +78,6 @@ export function profileToTenant(profile: Profile): DealerTenant {
     businessRules,
   };
 }
-
-
 
 export async function resolveTenant(identifier: {
   slug?: string;
