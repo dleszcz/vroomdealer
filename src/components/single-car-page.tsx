@@ -373,7 +373,7 @@ export function SingleCarPage({ tenant, car, relatedCars = [], isCustomDomain }:
                   )}
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "var(--color-text-soft)" }}>
                     <Clock3 size={15} style={{ color: primaryColor, flexShrink: 0 }} />
-                    <span>Pn–Pt: 8:00–18:00, Sob: 9:00–14:00</span>
+                    <span>Pn–Pt: 8:00–20:00, Sob–Nd: 10:00–18:00</span>
                   </div>
                 </div>
 

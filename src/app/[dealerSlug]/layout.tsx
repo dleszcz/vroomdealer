@@ -5,6 +5,7 @@ import { BrandProvider } from "@/components/brand-provider";
 import { DealerHeader } from "@/components/dealer-header";
 import { Footer } from "@/components/footer";
 import { MetaPixel } from "@/components/meta-pixel";
+import { AnalyticsScripts } from "@/components/analytics-scripts";
 import { CookieConsent } from "@/components/cookie-consent";
 import { getTenantUrl } from "@/lib/urls";
 
@@ -34,6 +35,7 @@ export default async function DealerLayout({
 
   return (
     <BrandProvider branding={tenant.branding}>
+      <AnalyticsScripts tenant={tenant} />
       {tenant.analytics?.pixelId && <MetaPixel pixelId={tenant.analytics.pixelId} />}
       <div className="dealer-layout">
         <DealerHeader tenant={tenant} isCustomDomain={isCustomDomain} />
