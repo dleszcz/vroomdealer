@@ -22,7 +22,10 @@ export default async function AdminLeadsPage() {
     .limit(200);
 
   if (error) {
-    console.error("Error fetching leads:", error);
+    console.error(
+      "Error fetching leads details:",
+      JSON.stringify(error, Object.getOwnPropertyNames(error))
+    );
   }
 
   return (
