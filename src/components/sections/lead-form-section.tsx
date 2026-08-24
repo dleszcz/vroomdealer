@@ -53,6 +53,38 @@ export function LeadFormSection({ tenant, config }: LeadFormSectionProps) {
           >
             Wypełnij krótki formularz wyceny w 6 krokach. Przyjedziemy po Twoje auto i zapłacimy gotówką od ręki!
           </p>
+
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: "8px",
+              marginTop: "1.25rem",
+            }}
+          >
+            {[
+              "Skup aut w każdym stanie",
+              "Sprawne & Uszkodzone",
+              "Powypadkowe",
+              "Bez OC / Przeglądu",
+            ].map((badge, idx) => (
+              <span
+                key={idx}
+                style={{
+                  padding: "4px 12px",
+                  borderRadius: "999px",
+                  background: "rgba(22, 134, 224, 0.15)",
+                  border: "1px solid rgba(22, 134, 224, 0.35)",
+                  color: "#ffffff",
+                  fontSize: "0.8rem",
+                  fontWeight: 600,
+                }}
+              >
+                ✓ {badge}
+              </span>
+            ))}
+          </div>
         </div>
 
         <MultiStepLeadForm tenant={tenant} />

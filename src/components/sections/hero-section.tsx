@@ -20,10 +20,10 @@ export function HeroSection({ tenant, config, isCustomDomain }: HeroSectionProps
   const heroImage = data.image || tenant.branding.media?.heroImageUrl || "";
   const benefits = data.benefits?.length ? data.benefits : [
     { label: "Gotówka od ręki", icon: "cash" },
+    { label: "Auta w każdym stanie (sprawne / powypadkowe)", icon: "check" },
     { label: "Bezpłatna wycena", icon: "check" },
-    { label: "Auto w rozliczeniu", icon: "check" },
-    { label: "Skup aut do 10 000 zł", icon: "cash" },
-    { label: "Odbieramy auto", icon: "truck" },
+    { label: "Auto w rozliczeniu", icon: "cash" },
+    { label: "Darmowa laweta & odbiór", icon: "truck" },
     { label: "Formalności po naszej stronie", icon: "scale" },
   ];
 
