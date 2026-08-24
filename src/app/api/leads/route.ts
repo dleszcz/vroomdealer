@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createLead } from "@/lib/leads";
 import { Lead } from "@/types/landing";
+import { createClient } from "@supabase/supabase-js";
 
 export async function POST(request: Request) {
   try {
@@ -30,8 +31,45 @@ export async function POST(request: Request) {
       );
     }
 
+    // ── Resolve tenant settings from DB first, then env fallback ──
+    let tenantEmail = body.tenantEmail || "";
+    let googleSheetsWebhookUrl = "";
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (supabaseUrl && !supabaseUrl.includes("placeholder") && supabaseKey) {
+      try {
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        const { data: tenantProfile } = await supabase
+          .from("profiles")
+          .select("notification_email, google_sheets_webhook_url")
+          .or(`id.eq.${dealerId},slug.eq.${dealerSlug}`)
+          .maybeSingle();
+
+        if (tenantProfile?.notification_email) {
+          tenantEmail = tenantProfile.notification_email;
+        }
+        if (tenantProfile?.google_sheets_webhook_url) {
+          googleSheetsWebhookUrl = tenantProfile.google_sheets_webhook_url;
+        }
+      } catch (dbErr) {
+        console.error("[API /api/leads] Error fetching tenant profile:", dbErr);
+      }
+    }
+
+    // Env fallbacks
     const envPrefix = `TENANT_${dealerSlug.toUpperCase().replace(/-/g, "_")}`;
-    const tenantEmail = process.env[`${envPrefix}_EMAIL`] || body.tenantEmail;
+    if (!tenantEmail) {
+      tenantEmail = process.env[`${envPrefix}_EMAIL`] || "";
+    }
+    if (!googleSheetsWebhookUrl) {
+      googleSheetsWebhookUrl =
+        process.env[`${envPrefix}_GOOGLE_SHEETS_WEBHOOK`] ||
+        process.env.GOOGLE_SHEETS_WEBHOOK_URL ||
+        process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL ||
+        "";
+    }
 
     const leadData: Lead = {
       dealerId,
@@ -55,11 +93,6 @@ export async function POST(request: Request) {
     }
 
     // 2. Forward lead to Google Sheets via Apps Script Webhook
-    const googleSheetsWebhookUrl =
-      process.env[`${envPrefix}_GOOGLE_SHEETS_WEBHOOK`] ||
-      process.env.GOOGLE_SHEETS_WEBHOOK_URL ||
-      process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL;
-
     if (googleSheetsWebhookUrl) {
       try {
         const sheetsPayload = {
@@ -95,7 +128,7 @@ export async function POST(request: Request) {
         console.error("[API /api/leads] Error forwarding lead to Google Sheets Webhook:", sheetsErr);
       }
     } else {
-      console.log("[API /api/leads] GOOGLE_SHEETS_WEBHOOK_URL not configured in env. Local lead saved.");
+      console.log("[API /api/leads] GOOGLE_SHEETS_WEBHOOK_URL not configured. Local lead saved.");
     }
 
     return NextResponse.json({ success: true, id: result.id || "local-lead-id" });
@@ -107,3 +140,4 @@ export async function POST(request: Request) {
     );
   }
 }
+
