@@ -3,15 +3,18 @@
 -- Uruchom w Supabase Dashboard > SQL Editor
 -- ============================================================
 
--- 1. Zapewnienie, że dealer_id w leads jest typu TEXT (nie UUID)
-DO $$
-BEGIN
-  ALTER TABLE leads ALTER COLUMN dealer_id TYPE text USING dealer_id::text;
-EXCEPTION
-  WHEN OTHERS THEN NULL;
-END $$;
+-- 1. Usuwamy polityki RLS zależne od kolumny dealer_id
+DROP POLICY IF EXISTS "Authenticated users can read own leads" ON leads;
+DROP POLICY IF EXISTS "Authenticated users can update own leads" ON leads;
+DROP POLICY IF EXISTS "Leads can be created publicly" ON leads;
 
--- 2. Zapewnienie wymaganych kolumn w profiles
+-- 2. Usuwamy ograniczenie Foreign Key, jeśli istniało (ponieważ dealer_id przechowuje slug tekstowy, np. 'd-car')
+ALTER TABLE leads DROP CONSTRAINT IF EXISTS leads_dealer_id_fkey;
+
+-- 3. Konwertujemy kolumnę dealer_id na TEXT
+ALTER TABLE leads ALTER COLUMN dealer_id TYPE text USING dealer_id::text;
+
+-- 4. Zapewnienie wymaganych kolumn w profiles
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'user_id') THEN
@@ -32,7 +35,7 @@ BEGIN
   END IF;
 END $$;
 
--- 3. Czyste polityki RLS bez konfliktów typów Postgres
+-- 5. Utworzenie nowych polityk RLS dla authenticated users
 
 -- Profiles
 DROP POLICY IF EXISTS "Authenticated users can read own profile" ON profiles;
@@ -47,18 +50,15 @@ CREATE POLICY "Authenticated users can update own profile" ON profiles
   WITH CHECK (user_id::text = auth.uid()::text);
 
 -- Leads
-DROP POLICY IF EXISTS "Authenticated users can read own leads" ON leads;
 CREATE POLICY "Authenticated users can read own leads" ON leads
   FOR SELECT TO authenticated
   USING (true);
 
-DROP POLICY IF EXISTS "Authenticated users can update own leads" ON leads;
 CREATE POLICY "Authenticated users can update own leads" ON leads
   FOR UPDATE TO authenticated
   USING (true)
   WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Leads can be created publicly" ON leads;
 CREATE POLICY "Leads can be created publicly" ON leads
   FOR INSERT TO anon
   WITH CHECK (true);

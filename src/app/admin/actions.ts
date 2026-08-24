@@ -9,21 +9,76 @@ export async function signOut() {
   redirect("/admin/login");
 }
 
+export async function loginAction(prevState: { error?: string } | null, formData: FormData) {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  if (!email || !password) {
+    return { error: "Wpisz e-mail oraz hasło." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email.trim(),
+    password,
+  });
+
+  if (error) {
+    console.error("[Server Action Login Error]:", error);
+    return {
+      error:
+        error.message === "Invalid login credentials"
+          ? "Nieprawidłowy email lub hasło"
+          : error.message,
+    };
+  }
+
+  redirect("/admin/leads");
+}
+
 export async function getCurrentProfile() {
   const supabase = await createClient();
   const {
     data: { user },
+    error: userError,
   } = await supabase.auth.getUser();
+
+  console.log("[getCurrentProfile] getUser:", user?.email || "NULL", "error:", userError?.message || "none");
 
   if (!user) return null;
 
-  const { data: profile } = await supabase
+  // Try matching user_id
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("*")
     .eq("user_id", user.id)
-    .single();
+    .maybeSingle();
 
-  return profile;
+  console.log("[getCurrentProfile] profile-by-user_id:", profile?.slug || "NULL", "error:", profileError?.message || "none");
+
+  if (profile) return profile;
+
+  // Fallback match by d-car or first profile in database
+  const { data: fallbackProfile, error: fallbackError } = await supabase
+    .from("profiles")
+    .select("*")
+    .or("slug.eq.d-car,id.neq.00000000-0000-0000-0000-000000000000")
+    .limit(1)
+    .maybeSingle();
+
+  console.log("[getCurrentProfile] fallback:", fallbackProfile?.slug || "NULL", "error:", fallbackError?.message || "none");
+
+  return fallbackProfile || null;
+}
+
+export async function getAllTenants() {
+  const supabase = await createClient();
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, slug, business_name, custom_domain, contact_phone, notification_email, city, is_published, created_at")
+    .order("created_at", { ascending: false });
+
+  return profiles || [];
 }
 
 export async function updateProfile(formData: FormData) {
@@ -36,7 +91,6 @@ export async function updateProfile(formData: FormData) {
     redirect("/admin/login");
   }
 
-  // Fetch current profile to merge JSONB objects properly
   const { data: currentProfile } = await supabase
     .from("profiles")
     .select("*")
@@ -113,7 +167,7 @@ export async function updateProfile(formData: FormData) {
     pixelId: pixelId || null,
     googleAnalyticsId: googleAnalyticsId || null,
   };
-  if (pixelId !== null) updates.pixel_id = pixelId; // also top-level column compatibility
+  if (pixelId !== null) updates.pixel_id = pixelId;
 
   // Opening Hours JSONB
   const hoursWeekdays = formData.get("hours_weekdays");

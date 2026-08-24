@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentProfile } from "@/app/admin/actions";
+import { getCurrentProfile, getAllTenants } from "@/app/admin/actions";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 
 export const metadata = {
@@ -18,11 +18,20 @@ export default async function AdminLayout({
     redirect("/admin/login");
   }
 
+  const isSuperAdmin = Boolean(profile.is_super_admin);
+  const allTenants = isSuperAdmin ? await getAllTenants() : [];
+
   return (
     <div style={layoutStyles.wrapper}>
       <AdminSidebar
         businessName={profile.business_name}
         slug={profile.slug}
+        isSuperAdmin={isSuperAdmin}
+        allTenants={allTenants.map((t) => ({
+          slug: t.slug,
+          businessName: t.business_name,
+          customDomain: t.custom_domain,
+        }))}
       />
       <main style={layoutStyles.main}>
         <div style={layoutStyles.content}>{children}</div>

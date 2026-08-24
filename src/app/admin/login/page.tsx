@@ -1,42 +1,50 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
 
-    const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (authError) {
-      setError(
-        authError.message === "Invalid login credentials"
-          ? "Nieprawidłowy email lub hasło"
-          : authError.message
-      );
-      setLoading(false);
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !password) {
+      setError("Wpisz e-mail oraz hasło.");
       return;
     }
 
-    // Redirect to admin dashboard
-    const params = new URLSearchParams(window.location.search);
-    const redirectTo = params.get("redirect") || "/admin/leads";
-    router.push(redirectTo);
-    router.refresh();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: trimmedEmail, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Błąd logowania.");
+        setLoading(false);
+        return;
+      }
+
+      // Cookies are now set by the API route's Set-Cookie headers.
+      // Full page reload ensures middleware reads the fresh cookies.
+      const params = new URLSearchParams(window.location.search);
+      const redirectTo = params.get("redirect") || "/admin/leads";
+      window.location.href = redirectTo;
+    } catch (err: unknown) {
+      console.error("[Login Exception]:", err);
+      setError("Wystąpił nieoczekiwany błąd logowania.");
+      setLoading(false);
+    }
   }
 
   return (
@@ -86,11 +94,7 @@ export default function AdminLoginPage() {
           {error && <div style={styles.error}>{error}</div>}
 
           <button type="submit" disabled={loading} style={styles.button}>
-            {loading ? (
-              <span style={styles.spinner}>⟳</span>
-            ) : (
-              "Zaloguj się"
-            )}
+            {loading ? "⟳ Logowanie..." : "Zaloguj się"}
           </button>
         </form>
 
@@ -111,7 +115,8 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
+    background:
+      "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
     padding: "24px",
     fontFamily:
       '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -127,7 +132,7 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
   },
   logoSection: {
-    textAlign: "center" as const,
+    textAlign: "center",
     marginBottom: "32px",
   },
   logoIcon: {
@@ -148,12 +153,12 @@ const styles: Record<string, React.CSSProperties> = {
   },
   form: {
     display: "flex",
-    flexDirection: "column" as const,
+    flexDirection: "column",
     gap: "20px",
   },
   inputGroup: {
     display: "flex",
-    flexDirection: "column" as const,
+    flexDirection: "column",
     gap: "6px",
   },
   label: {
@@ -178,7 +183,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "10px 14px",
     color: "#fca5a5",
     fontSize: "13px",
-    textAlign: "center" as const,
+    textAlign: "center",
   },
   button: {
     background: "linear-gradient(135deg, #10b981, #059669)",
@@ -192,12 +197,8 @@ const styles: Record<string, React.CSSProperties> = {
     transition: "opacity 0.2s, transform 0.1s",
     marginTop: "4px",
   },
-  spinner: {
-    display: "inline-block",
-    animation: "spin 1s linear infinite",
-  },
   footer: {
-    textAlign: "center" as const,
+    textAlign: "center",
     marginTop: "24px",
     fontSize: "13px",
     color: "#64748b",

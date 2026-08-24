@@ -7,17 +7,26 @@ export const metadata = {
   title: "Leady | Panel Admina",
 };
 
-export default async function AdminLeadsPage() {
+export default async function AdminLeadsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tenant?: string }>;
+}) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/admin/login");
 
-  const supabase = await createClient();
+  const resolvedParams = await searchParams;
+  const isSuperAdmin = Boolean(profile.is_super_admin);
 
-  // Fetch leads for this dealer (RLS ensures only own leads)
-  const { data: leads, error } = await supabase
-    .from("leads")
-    .select("*")
-    .eq("dealer_id", profile.slug)
+  const supabase = await createClient();
+  const targetTenant = (isSuperAdmin && resolvedParams.tenant) ? resolvedParams.tenant : profile.slug;
+
+  let query = supabase.from("leads").select("*");
+  if (targetTenant !== "all") {
+    query = query.eq("dealer_id", targetTenant);
+  }
+
+  const { data: leads, error } = await query
     .order("created_at", { ascending: false })
     .limit(200);
 
@@ -32,9 +41,15 @@ export default async function AdminLeadsPage() {
     <div>
       <div style={headerStyles.wrapper}>
         <div>
-          <h1 style={headerStyles.title}>📋 Zgłoszenia (Leady)</h1>
+          <h1 style={headerStyles.title}>
+            📋 Zgłoszenia (Leady){" "}
+            {isSuperAdmin && targetTenant !== profile.slug && (
+              <span style={headerStyles.tenantTag}>[{targetTenant}]</span>
+            )}
+          </h1>
           <p style={headerStyles.subtitle}>
             Zarządzaj zgłoszeniami wycen od klientów
+            {isSuperAdmin && ` (Wybrany komis: ${targetTenant})`}
           </p>
         </div>
         <div style={headerStyles.badge}>
@@ -59,6 +74,11 @@ const headerStyles: Record<string, React.CSSProperties> = {
     fontSize: "24px",
     fontWeight: "800",
     margin: "0 0 4px",
+  },
+  tenantTag: {
+    color: "#10b981",
+    fontSize: "18px",
+    fontWeight: "600",
   },
   subtitle: {
     color: "#64748b",

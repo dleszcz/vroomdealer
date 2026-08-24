@@ -65,16 +65,18 @@ export async function middleware(req: NextRequest) {
   if (pathname.startsWith("/admin")) {
     // /admin/login is public
     if (pathname === "/admin/login") {
-      const { supabaseResponse, user } = await updateSession(req);
-      // If already logged in, redirect to dashboard
-      if (user) {
-        return NextResponse.redirect(new URL("/admin/leads", req.url));
-      }
+      const { supabaseResponse } = await updateSession(req);
       return supabaseResponse;
     }
 
     // All other /admin/* routes require authentication
+    const allCookieNames = req.cookies.getAll().map((c) => c.name);
+    const sbCookie = req.cookies.get("sb-xfagkubntiqvrvbmoira-auth-token");
+    console.log("[MW-DEBUG]", pathname, "cookies:", allCookieNames, "sb-cookie-present:", !!sbCookie, "sb-cookie-len:", sbCookie?.value?.length);
+    
     const { supabaseResponse, user } = await updateSession(req);
+    console.log("[MW-DEBUG]", pathname, "user-after-updateSession:", user?.email || "NULL");
+    
     if (!user) {
       const loginUrl = new URL("/admin/login", req.url);
       loginUrl.searchParams.set("redirect", pathname);

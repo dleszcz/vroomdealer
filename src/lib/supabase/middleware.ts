@@ -6,6 +6,8 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
+  const isLocal = process.env.NODE_ENV !== "production";
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -22,15 +24,17 @@ export async function updateSession(request: NextRequest) {
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, {
+              ...options,
+              path: "/",
+              secure: isLocal ? false : options?.secure,
+            })
           );
         },
       },
     }
   );
 
-  // IMPORTANT: Do NOT call supabase.auth.getSession() here.
-  // Use getUser() which validates the JWT on the server.
   const {
     data: { user },
   } = await supabase.auth.getUser();
