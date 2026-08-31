@@ -75,6 +75,7 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
 
   const totalSteps = 4;
   const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
+  const accentColor = tenant.branding?.colors?.accent || primaryColor;
 
   const {
     register,
@@ -348,7 +349,7 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
           {/* PROGRESS BAR */}
           <div style={{ marginBottom: "28px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-              <span style={{ fontSize: "12px", fontWeight: 800, color: primaryColor, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              <span style={{ fontSize: "12px", fontWeight: 800, color: accentColor, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                 KROK {step} Z {totalSteps}
               </span>
               <span style={{ fontSize: "13px", fontWeight: 700, color: "#ffffff" }}>
@@ -360,7 +361,7 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
                 style={{
                   width: `${progressPercent}%`,
                   height: "100%",
-                  background: `linear-gradient(90deg, ${primaryColor} 0%, #38bdf8 100%)`,
+                  background: accentColor,
                   borderRadius: "999px",
                   transition: "width 0.4s ease",
                 }}
@@ -850,7 +851,7 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
                     flex: 1,
                     minHeight: "52px",
                     borderRadius: "14px",
-                    background: primaryColor,
+                    background: accentColor,
                     color: "#ffffff",
                     fontWeight: 800,
                     fontSize: "16px",
@@ -860,7 +861,7 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "8px",
-                    boxShadow: `0 8px 20px ${primaryColor}55`,
+                    boxShadow: `0 8px 20px ${accentColor}55`,
                   }}
                 >
                   <span>Dalej</span>

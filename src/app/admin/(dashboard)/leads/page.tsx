@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/app/admin/actions";
+import { getCurrentProfile, getProfileBySlug } from "@/app/admin/actions";
 import { redirect } from "next/navigation";
 import { LeadsTable } from "@/components/admin/leads-table";
 
@@ -19,7 +19,17 @@ export default async function AdminLeadsPage({
   const isSuperAdmin = Boolean(profile.is_super_admin);
 
   const supabase = await createClient();
-  const targetTenant = (isSuperAdmin && resolvedParams.tenant) ? resolvedParams.tenant : profile.slug;
+
+  // For Superadmin, default tenant filter is "all" (not profile.slug which is 'superadmin')
+  const targetTenant = isSuperAdmin
+    ? resolvedParams.tenant || "all"
+    : profile.slug;
+
+  let targetProfile = profile;
+  if (isSuperAdmin && targetTenant !== "all") {
+    const fetched = await getProfileBySlug(targetTenant);
+    if (fetched) targetProfile = fetched;
+  }
 
   let query = supabase.from("leads").select("*");
   if (targetTenant !== "all") {
@@ -37,19 +47,26 @@ export default async function AdminLeadsPage({
     );
   }
 
+  const isAllView = isSuperAdmin && targetTenant === "all";
+
   return (
     <div>
       <div style={headerStyles.wrapper}>
         <div>
           <h1 style={headerStyles.title}>
-            📋 Zgłoszenia (Leady){" "}
-            {isSuperAdmin && targetTenant !== profile.slug && (
-              <span style={headerStyles.tenantTag}>[{targetTenant}]</span>
+            {isAllView ? "📊 Wszystkie Zgłoszenia (SaaS)" : "📋 Zgłoszenia (Leady)"}{" "}
+            {isSuperAdmin && !isAllView && (
+              <span style={headerStyles.tenantTag}>
+                [{targetProfile.business_name || targetTenant}]
+              </span>
             )}
           </h1>
           <p style={headerStyles.subtitle}>
-            Zarządzaj zgłoszeniami wycen od klientów
-            {isSuperAdmin && ` (Wybrany komis: ${targetTenant})`}
+            {isAllView
+              ? "Zbiorczy podgląd zgłoszeń ze wszystkich uruchomionych komisów"
+              : isSuperAdmin && targetTenant !== "all"
+              ? `Zarządzaj zgłoszeniami wycen klientów dla: ${targetProfile.business_name || targetTenant}`
+              : "Zarządzaj zgłoszeniami wycen od klientów"}
           </p>
         </div>
         <div style={headerStyles.badge}>
