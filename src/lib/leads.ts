@@ -128,7 +128,7 @@ async function sendLeadNotificationEmail(leadData: Lead) {
 
   try {
     const resendBody: Record<string, unknown> = {
-      from: "VroomDealer <onboarding@resend.dev>",
+      from: process.env.RESEND_FROM_EMAIL || "VroomDealer <onboarding@resend.dev>",
       to: [toEmail],
       subject,
       html,
