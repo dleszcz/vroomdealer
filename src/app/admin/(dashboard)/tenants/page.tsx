@@ -1,94 +1,130 @@
 import { getCurrentProfile, getAllTenants } from "@/app/admin/actions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { CreateTenantModal } from "@/components/admin/create-tenant-modal";
 
 export const metadata = {
   title: "Zarządzanie Komisami (SaaS) | Panel Admina",
 };
 
-export default async function AdminTenantsPage() {
+export default async function AdminTenantsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ created?: string }>;
+}) {
   const currentProfile = await getCurrentProfile();
   if (!currentProfile) redirect("/admin/login");
 
-  // Check if current user is Superadmin
   if (!currentProfile.is_super_admin) {
     redirect("/admin/leads");
   }
 
+  const { created } = await searchParams;
   const tenants = await getAllTenants();
 
   return (
     <div>
       <div style={styles.header}>
         <div>
-          <h1 style={styles.title}>👑 Zarządzanie Komisami (Superadmin SaaS)</h1>
+          <h1 style={styles.title}>🏢 Lista Komisów Samochodowych (Tenanci)</h1>
           <p style={styles.subtitle}>
-            Przeglądaj wszystkie uruchomione wizytówki komisów na tym środowisku
+            Zarządzaj wszystkimi uruchomionymi komisami na platformie VroomDealer SaaS
           </p>
         </div>
-        <div style={styles.badge}>
-          {tenants.length} aktywne komisy
+        <div style={styles.headerRight}>
+          <div style={styles.badge}>
+            {tenants.length} aktywne komisy
+          </div>
+          <CreateTenantModal />
         </div>
       </div>
 
-      <div style={styles.grid}>
-        {tenants.map((t) => (
-          <div key={t.id} style={styles.card}>
-            <div style={styles.cardTop}>
-              <div style={styles.cardTitle}>{t.business_name || t.slug}</div>
-              <div style={styles.slugBadge}>/{t.slug}</div>
-            </div>
+      {created && (
+        <div style={styles.createdBanner}>
+          🎉 Pomyślnie utworzono nowy komis <strong>/{created}</strong>! Możesz go teraz skonfigurować lub otworzyć jego stronę.
+        </div>
+      )}
 
-            <div style={styles.cardDetails}>
-              {t.custom_domain && (
-                <p style={styles.detailRow}>
-                  <strong>🌐 Domena:</strong>{" "}
-                  <a
-                    href={`https://${t.custom_domain}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ color: "#3b82f6", textDecoration: "none" }}
-                  >
-                    {t.custom_domain} ↗
-                  </a>
-                </p>
-              )}
-              {t.contact_phone && (
-                <p style={styles.detailRow}>
-                  <strong>📞 Telefon:</strong> {t.contact_phone}
-                </p>
-              )}
-              {t.notification_email && (
-                <p style={styles.detailRow}>
-                  <strong>✉️ Email:</strong> {t.notification_email}
-                </p>
-              )}
-              {t.city && (
-                <p style={styles.detailRow}>
-                  <strong>📍 Miasto:</strong> {t.city}
-                </p>
-              )}
-            </div>
+      {tenants.length === 0 ? (
+        <div style={styles.emptyState}>
+          <h3>Brak dodanych komisów</h3>
+          <p>Kliknij przycisk „Dodaj Nowy Komis”, aby utworzyć pierwszy profil komisu samochodowego.</p>
+        </div>
+      ) : (
+        <div style={styles.grid}>
+          {tenants.map((t) => (
+            <div key={t.id} style={styles.card}>
+              <div style={styles.cardHeader}>
+                <div>
+                  <div style={styles.cardTitle}>{t.business_name || t.slug}</div>
+                  <div style={styles.slugBadge}>vroomdealer.pl/{t.slug}</div>
+                </div>
+                <div style={styles.activeDot} title="Aktywny komis" />
+              </div>
 
-            <div style={styles.cardActions}>
-              <a
-                href={`/${t.slug}`}
-                target="_blank"
-                rel="noreferrer"
-                style={styles.viewWebsiteBtn}
-              >
-                🔗 Zobacz landing ↗
-              </a>
-              <Link
-                href={`/admin/leads?tenant=${t.slug}`}
-                style={styles.manageBtn}
-              >
-                📋 Przeglądaj leady
-              </Link>
+              <div style={styles.cardBody}>
+                {t.custom_domain ? (
+                  <p style={styles.detailRow}>
+                    <strong>🌐 Domena podpięta:</strong>{" "}
+                    <a
+                      href={`https://${t.custom_domain}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={styles.domainLink}
+                    >
+                      {t.custom_domain} ↗
+                    </a>
+                  </p>
+                ) : (
+                  <p style={styles.detailRow}>
+                    <strong>🌐 Własna domena:</strong> <span style={{ color: "#64748b" }}>Brak (używa vroomdealer.pl/{t.slug})</span>
+                  </p>
+                )}
+                {t.contact_phone && (
+                  <p style={styles.detailRow}>
+                    <strong>📞 Telefon:</strong> {t.contact_phone}
+                  </p>
+                )}
+                {t.notification_email && (
+                  <p style={styles.detailRow}>
+                    <strong>✉️ Powiadomienia:</strong> {t.notification_email}
+                  </p>
+                )}
+                {t.city && (
+                  <p style={styles.detailRow}>
+                    <strong>📍 Miasto:</strong> {t.city}
+                  </p>
+                )}
+              </div>
+
+              <div style={styles.cardFooter}>
+                <a
+                  href={`/${t.slug}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={styles.viewSiteBtn}
+                >
+                  🔗 Wizytówka Live ↗
+                </a>
+
+                <Link
+                  href={`/admin/leads?tenant=${t.slug}`}
+                  style={styles.leadsBtn}
+                >
+                  📋 Leady
+                </Link>
+
+                <Link
+                  href={`/admin/settings?tenant=${t.slug}`}
+                  style={styles.manageBtn}
+                >
+                  ⚙️ Edytuj
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -99,6 +135,13 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "space-between",
     alignItems: "flex-start",
     marginBottom: "24px",
+    flexWrap: "wrap",
+    gap: "16px",
+  },
+  headerRight: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
   },
   title: {
     color: "#f1f5f9",
@@ -119,43 +162,65 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: "14px",
     fontWeight: "600",
   },
+  createdBanner: {
+    background: "rgba(16, 185, 129, 0.15)",
+    border: "1px solid rgba(16, 185, 129, 0.3)",
+    borderRadius: "12px",
+    padding: "14px 18px",
+    color: "#a7f3d0",
+    fontSize: "14px",
+    marginBottom: "24px",
+  },
+  emptyState: {
+    background: "rgba(30, 41, 59, 0.5)",
+    border: "1px dashed rgba(148, 163, 184, 0.2)",
+    borderRadius: "16px",
+    padding: "48px",
+    textAlign: "center",
+    color: "#94a3b8",
+  },
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-    gap: "16px",
+    gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
+    gap: "20px",
   },
   card: {
     background: "rgba(30, 41, 59, 0.6)",
     border: "1px solid rgba(148, 163, 184, 0.15)",
-    borderRadius: "14px",
-    padding: "20px",
+    borderRadius: "16px",
+    padding: "22px",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
   },
-  cardTop: {
+  cardHeader: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginBottom: "16px",
   },
   cardTitle: {
     color: "#f1f5f9",
-    fontSize: "17px",
+    fontSize: "18px",
     fontWeight: "700",
+    margin: "0 0 4px",
   },
   slugBadge: {
-    background: "rgba(148, 163, 184, 0.1)",
-    color: "#94a3b8",
-    padding: "4px 8px",
-    borderRadius: "6px",
+    color: "#10b981",
     fontSize: "12px",
     fontFamily: "monospace",
   },
-  cardDetails: {
+  activeDot: {
+    width: "10px",
+    height: "10px",
+    borderRadius: "50%",
+    background: "#10b981",
+    boxShadow: "0 0 8px #10b981",
+  },
+  cardBody: {
     display: "flex",
     flexDirection: "column",
-    gap: "6px",
+    gap: "8px",
     marginBottom: "20px",
   },
   detailRow: {
@@ -163,18 +228,35 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: "13px",
     margin: "0",
   },
-  cardActions: {
+  domainLink: {
+    color: "#60a5fa",
+    textDecoration: "none",
+    fontWeight: "600",
+  },
+  cardFooter: {
     display: "flex",
     gap: "8px",
-    paddingTop: "12px",
+    paddingTop: "14px",
     borderTop: "1px solid rgba(148, 163, 184, 0.1)",
   },
-  viewWebsiteBtn: {
+  viewSiteBtn: {
     background: "rgba(59, 130, 246, 0.1)",
     border: "1px solid rgba(59, 130, 246, 0.2)",
     color: "#60a5fa",
     borderRadius: "8px",
-    padding: "8px 12px",
+    padding: "8px 10px",
+    fontSize: "12px",
+    fontWeight: "600",
+    textDecoration: "none",
+    textAlign: "center",
+    flex: 1,
+  },
+  leadsBtn: {
+    background: "rgba(16, 185, 129, 0.1)",
+    border: "1px solid rgba(16, 185, 129, 0.2)",
+    color: "#10b981",
+    borderRadius: "8px",
+    padding: "8px 10px",
     fontSize: "12px",
     fontWeight: "600",
     textDecoration: "none",
@@ -182,11 +264,11 @@ const styles: Record<string, React.CSSProperties> = {
     flex: 1,
   },
   manageBtn: {
-    background: "rgba(16, 185, 129, 0.12)",
-    border: "1px solid rgba(16, 185, 129, 0.2)",
-    color: "#10b981",
+    background: "rgba(245, 158, 11, 0.1)",
+    border: "1px solid rgba(245, 158, 11, 0.2)",
+    color: "#fbbf24",
     borderRadius: "8px",
-    padding: "8px 12px",
+    padding: "8px 10px",
     fontSize: "12px",
     fontWeight: "600",
     textDecoration: "none",

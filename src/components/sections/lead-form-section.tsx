@@ -11,7 +11,9 @@ interface LeadFormSectionProps {
 
 export function LeadFormSection({ tenant, config }: LeadFormSectionProps) {
   const title = config?.title || "Bezpłatna wycena samochodu";
+  const sectionTitle = title;
   const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
+  const accentColor = tenant.branding?.colors?.accent || primaryColor;
 
   return (
     <section id="lead-form-section" style={{ width: "100%", padding: "5rem 0", background: "#0a0f1d" }}>
@@ -20,7 +22,7 @@ export function LeadFormSection({ tenant, config }: LeadFormSectionProps) {
           <span
             style={{
               display: "inline-block",
-              color: primaryColor,
+              color: accentColor,
               fontSize: "0.85rem",
               fontWeight: 800,
               letterSpacing: "0.08em",
@@ -40,7 +42,7 @@ export function LeadFormSection({ tenant, config }: LeadFormSectionProps) {
               lineHeight: 1.15,
             }}
           >
-            {title}
+            {sectionTitle}
           </h2>
 
           <p

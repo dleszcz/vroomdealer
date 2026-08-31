@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "@/app/admin/actions";
 
@@ -24,6 +24,13 @@ export function AdminSidebar({
   allTenants = [],
 }: AdminSidebarProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const activeTenantParam = searchParams.get("tenant");
+
+  // Determine active context
+  const activeTenant = isSuperAdmin && activeTenantParam && activeTenantParam !== "all"
+    ? allTenants.find((t) => t.slug === activeTenantParam) || { slug: activeTenantParam, businessName: activeTenantParam }
+    : null;
 
   return (
     <aside style={styles.sidebar}>
@@ -32,95 +39,143 @@ export function AdminSidebar({
         <div style={styles.brandIcon}>🚗</div>
         <div>
           <div style={styles.brandName}>
-            {businessName}
-            {isSuperAdmin && <span style={styles.crownBadge}>👑</span>}
+            VroomDealer
+            {isSuperAdmin && <span style={styles.crownBadge} title="Konto Superadmina">👑</span>}
           </div>
-          <div style={styles.brandSlug}>/{slug}</div>
+          <div style={styles.brandSub}>
+            {isSuperAdmin ? "Panel Właściciela SaaS" : businessName}
+          </div>
         </div>
       </div>
 
-      {/* Superadmin Tenant Selector */}
+      {/* Superadmin Context Switcher Dropdown */}
       {isSuperAdmin && (
-        <div style={styles.superadminSection}>
-          <div style={styles.superadminLabel}>👑 PRZEŁĄCZ KOMIS (SUPERADMIN)</div>
+        <div style={styles.switcherBox}>
+          <label style={styles.switcherLabel}>🏢 KONTEKST ZARZĄDZANIA</label>
           <select
+            value={activeTenantParam || "all"}
             onChange={(e) => {
-              const selectedSlug = e.target.value;
-              if (selectedSlug === "all") {
+              const val = e.target.value;
+              if (val === "all") {
                 window.location.href = "/admin/tenants";
-              } else if (selectedSlug) {
-                window.location.href = `/admin/leads?tenant=${selectedSlug}`;
+              } else {
+                window.location.href = `/admin/leads?tenant=${val}`;
               }
             }}
-            defaultValue=""
-            style={styles.tenantSelect}
+            style={styles.switcherSelect}
           >
-            <option value="" disabled>
-              -- Wybierz komis --
-            </option>
-            {allTenants.map((t) => (
-              <option key={t.slug} value={t.slug}>
-                {t.businessName} ({t.slug})
-              </option>
-            ))}
-            <option value="all">👑 Wszystkie komisy (/admin/tenants)</option>
+            <option value="all">🌐 Widok SaaS (Wszystkie komisy)</option>
+            <optgroup label="── Poszczególne Komisy ──">
+              {allTenants.map((t) => (
+                <option key={t.slug} value={t.slug}>
+                  🏢 {t.businessName || t.slug}
+                </option>
+              ))}
+            </optgroup>
           </select>
         </div>
       )}
 
-      {/* Navigation */}
+      {/* Navigation Groups */}
       <nav style={styles.nav}>
-        <Link
-          href="/admin/leads"
-          style={{
-            ...styles.navItem,
-            ...(pathname.startsWith("/admin/leads") ? styles.navItemActive : {}),
-          }}
-        >
-          <span style={styles.navIcon}>📋</span>
-          <span>Zgłoszenia (Leady)</span>
-        </Link>
-
-        <Link
-          href="/admin/settings"
-          style={{
-            ...styles.navItem,
-            ...(pathname.startsWith("/admin/settings") ? styles.navItemActive : {}),
-          }}
-        >
-          <span style={styles.navIcon}>⚙️</span>
-          <span>Ustawienia komisu</span>
-        </Link>
-
+        {/* SECTION 1: Superadmin SaaS Navigation */}
         {isSuperAdmin && (
-          <Link
-            href="/admin/tenants"
-            style={{
-              ...styles.navItem,
-              ...(pathname.startsWith("/admin/tenants") ? styles.navItemActive : {}),
-            }}
-          >
-            <span style={styles.navIcon}>🏢</span>
-            <span>Komisy (SaaS)</span>
-          </Link>
+          <div style={styles.group}>
+            <div style={styles.groupTitle}>PLATFORMA SAAS</div>
+            <Link
+              href="/admin/tenants"
+              style={{
+                ...styles.navItem,
+                ...(pathname.startsWith("/admin/tenants") ? styles.navItemActive : {}),
+              }}
+            >
+              <span style={styles.navIcon}>🏢</span>
+              <span>Lista Komisów</span>
+            </Link>
+
+            <Link
+              href="/admin/leads?tenant=all"
+              style={{
+                ...styles.navItem,
+                ...(pathname.startsWith("/admin/leads") && activeTenantParam === "all" ? styles.navItemActive : {}),
+              }}
+            >
+              <span style={styles.navIcon}>📊</span>
+              <span>Wszystkie Leady</span>
+            </Link>
+
+            <Link
+              href="/admin/platform"
+              style={{
+                ...styles.navItem,
+                ...(pathname.startsWith("/admin/platform") ? styles.navItemActive : {}),
+              }}
+            >
+              <span style={styles.navIcon}>🌐</span>
+              <span>Strona VroomDealer</span>
+            </Link>
+          </div>
+        )}
+
+        {/* SECTION 2: Active Tenant Management (Only shown when a tenant is selected or for regular dealer) */}
+        {(!isSuperAdmin || activeTenant) && (
+          <div style={styles.group}>
+            <div style={styles.groupTitle}>
+              {activeTenant
+                ? `WYBRANY KOMIS: ${activeTenant.businessName.toUpperCase()}`
+                : "ZARZĄDZANIE KOMISEM"}
+            </div>
+
+            <Link
+              href={
+                activeTenant
+                  ? `/admin/leads?tenant=${activeTenant.slug}`
+                  : "/admin/leads"
+              }
+              style={{
+                ...styles.navItem,
+                ...(pathname.startsWith("/admin/leads") && activeTenantParam !== "all" ? styles.navItemActive : {}),
+              }}
+            >
+              <span style={styles.navIcon}>📋</span>
+              <span>Leady Komisu</span>
+            </Link>
+
+            <Link
+              href={
+                activeTenant
+                  ? `/admin/settings?tenant=${activeTenant.slug}`
+                  : "/admin/settings"
+              }
+              style={{
+                ...styles.navItem,
+                ...(pathname.startsWith("/admin/settings") ? styles.navItemActive : {}),
+              }}
+            >
+              <span style={styles.navIcon}>⚙️</span>
+              <span>Ustawienia Komisu</span>
+            </Link>
+          </div>
         )}
       </nav>
 
       {/* Footer */}
       <div style={styles.footer}>
-        <a
-          href={`/${slug}`}
-          target="_blank"
-          rel="noreferrer"
-          style={styles.liveSiteLink}
-        >
-          🌐 Otwórz landing ↗
-        </a>
+        {(activeTenant || !isSuperAdmin) && (
+          <a
+            href={activeTenant ? `/${activeTenant.slug}` : `/${slug}`}
+            target="_blank"
+            rel="noreferrer"
+            style={styles.liveSiteLink}
+          >
+            🔗 Podgląd wizytówki ({activeTenant ? activeTenant.slug : slug}) ↗
+          </a>
+        )}
 
         <button onClick={() => signOut()} style={styles.logoutBtn}>
           🚪 Wyloguj się
         </button>
-        <div style={styles.poweredBy}>VroomDealer.pl SaaS</div>
+        <div style={styles.poweredBy}>VroomDealer SaaS Engine</div>
       </div>
     </aside>
   );
@@ -128,7 +183,7 @@ export function AdminSidebar({
 
 const styles: Record<string, React.CSSProperties> = {
   sidebar: {
-    width: "260px",
+    width: "270px",
     minHeight: "100vh",
     background: "linear-gradient(180deg, #1e293b 0%, #0f172a 100%)",
     borderRight: "1px solid rgba(148, 163, 184, 0.1)",
@@ -153,69 +208,87 @@ const styles: Record<string, React.CSSProperties> = {
   },
   brandName: {
     color: "#f1f5f9",
-    fontSize: "15px",
-    fontWeight: "700",
+    fontSize: "17px",
+    fontWeight: "800",
     lineHeight: "1.2",
     display: "flex",
     alignItems: "center",
     gap: "6px",
+    letterSpacing: "-0.3px",
   },
   crownBadge: {
     fontSize: "14px",
   },
-  brandSlug: {
-    color: "#64748b",
+  brandSub: {
+    color: "#94a3b8",
     fontSize: "12px",
-    fontFamily: "monospace",
+    fontWeight: "500",
+    marginTop: "2px",
   },
-  superadminSection: {
+  switcherBox: {
     background: "rgba(16, 185, 129, 0.08)",
     border: "1px solid rgba(16, 185, 129, 0.2)",
-    borderRadius: "10px",
-    padding: "10px",
+    borderRadius: "12px",
+    padding: "10px 12px",
     marginBottom: "20px",
   },
-  superadminLabel: {
+  switcherLabel: {
     color: "#10b981",
-    fontSize: "11px",
-    fontWeight: "700",
+    fontSize: "10px",
+    fontWeight: "800",
+    display: "block",
     marginBottom: "6px",
     letterSpacing: "0.5px",
   },
-  tenantSelect: {
+  switcherSelect: {
     width: "100%",
-    background: "rgba(15, 23, 42, 0.8)",
-    border: "1px solid rgba(148, 163, 184, 0.2)",
-    borderRadius: "6px",
+    background: "rgba(15, 23, 42, 0.9)",
+    border: "1px solid rgba(148, 163, 184, 0.25)",
+    borderRadius: "8px",
     color: "#f1f5f9",
-    padding: "6px 8px",
+    padding: "8px 10px",
     fontSize: "12px",
+    fontWeight: "600",
     outline: "none",
+    cursor: "pointer",
   },
   nav: {
     display: "flex",
     flexDirection: "column",
-    gap: "4px",
+    gap: "20px",
     flex: 1,
+  },
+  group: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+  },
+  groupTitle: {
+    color: "#64748b",
+    fontSize: "10px",
+    fontWeight: "800",
+    letterSpacing: "0.8px",
+    padding: "0 12px 6px",
   },
   navItem: {
     display: "flex",
     alignItems: "center",
     gap: "12px",
-    padding: "12px 14px",
+    padding: "10px 12px",
     borderRadius: "10px",
     color: "#94a3b8",
     textDecoration: "none",
-    fontSize: "14px",
+    fontSize: "13px",
     fontWeight: "500",
     transition: "all 0.15s ease",
   },
   navItemActive: {
     background: "rgba(16, 185, 129, 0.12)",
     color: "#10b981",
+    fontWeight: "700",
   },
   navIcon: {
-    fontSize: "18px",
+    fontSize: "16px",
   },
   footer: {
     borderTop: "1px solid rgba(148, 163, 184, 0.1)",
@@ -223,6 +296,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     gap: "10px",
+    marginTop: "16px",
   },
   liveSiteLink: {
     display: "block",

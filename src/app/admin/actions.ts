@@ -75,10 +75,94 @@ export async function getAllTenants() {
   const supabase = await createClient();
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, slug, business_name, custom_domain, contact_phone, notification_email, city, is_published, created_at")
+    .select("id, slug, business_name, custom_domain, contact_phone, notification_email, city, is_published, created_at, is_super_admin")
+    .or("is_super_admin.eq.false,is_super_admin.is.null")
+    .neq("slug", "superadmin")
     .order("created_at", { ascending: false });
 
   return profiles || [];
+}
+
+export async function createTenantAction(formData: FormData) {
+  const currentProfile = await getCurrentProfile();
+  if (!currentProfile?.is_super_admin) {
+    throw new Error("Tylko Superadmin może dodawać nowe komisy.");
+  }
+
+  const businessName = (formData.get("business_name") as string)?.trim();
+  const rawSlug = (formData.get("slug") as string)?.trim();
+  const contactPhone = (formData.get("contact_phone") as string)?.trim();
+  const notificationEmail = (formData.get("notification_email") as string)?.trim();
+  const customDomain = (formData.get("custom_domain") as string)?.trim();
+  const city = (formData.get("city") as string)?.trim();
+
+  if (!businessName || !rawSlug) {
+    throw new Error("Nazwa komisu i identyfikator (slug) są wymagane.");
+  }
+
+  const slug = rawSlug
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  const supabase = await createClient();
+
+  // Check if slug already exists
+  const { data: existing } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (existing) {
+    throw new Error(`Komis o identyfikatorze "${slug}" już istnieje!`);
+  }
+
+  const newProfile = {
+    slug,
+    business_name: businessName,
+    business_description: `Skup aut i komis samochodowy ${businessName} w miejscowości ${city || "Polska"}. Szybka wycena i płatność gotówką.`,
+    contact_phone: contactPhone || null,
+    notification_email: notificationEmail || null,
+    custom_domain: customDomain || null,
+    city: city || null,
+    is_super_admin: false,
+    branding: {
+      primaryColor: "#10b981",
+      accentColor: "#f59e0b",
+      heroTitle: `Skup Aut i Komis ${businessName}`,
+      heroSubtitle: "Szybka wycena, bezpłatny dojazd do klienta i płatność gotówką od ręki!",
+    },
+    business_rules: {
+      minPurchasePrice: 500,
+      maxPurchasePrice: 150000,
+    },
+    opening_hours: {
+      weekdays: "08:00 - 18:00",
+      saturday: "09:00 - 14:00",
+      sunday: "Zamknięte",
+    },
+  };
+
+  const { error } = await supabase.from("profiles").insert([newProfile]);
+
+  if (error) {
+    throw new Error(`Błąd tworzenia komisu: ${error.message}`);
+  }
+
+  redirect(`/admin/tenants?created=${slug}`);
+}
+
+export async function getProfileBySlug(slug: string) {
+  const supabase = await createClient();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  return profile;
 }
 
 export async function updateProfile(formData: FormData) {
@@ -91,17 +175,26 @@ export async function updateProfile(formData: FormData) {
     redirect("/admin/login");
   }
 
-  const { data: currentProfile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
+  const superAdminProfile = await getCurrentProfile();
+  const isSuperAdmin = Boolean(superAdminProfile?.is_super_admin);
 
-  const currentBranding = (currentProfile?.branding as Record<string, unknown>) || {};
-  const currentAnalytics = (currentProfile?.analytics as Record<string, unknown>) || {};
-  const currentSeo = (currentProfile?.seo as Record<string, unknown>) || {};
-  const currentBusinessRules = (currentProfile?.business_rules as Record<string, unknown>) || {};
-  const currentOpeningHours = (currentProfile?.opening_hours as Record<string, unknown>) || {};
+  const targetSlug = formData.get("target_slug") as string | null;
+
+  let queryProfile = superAdminProfile;
+  if (isSuperAdmin && targetSlug) {
+    const found = await getProfileBySlug(targetSlug);
+    if (found) queryProfile = found;
+  }
+
+  if (!queryProfile) {
+    throw new Error("Nie znaleziono profilu do zaktualizowania.");
+  }
+
+  const currentBranding = (queryProfile.branding as Record<string, unknown>) || {};
+  const currentAnalytics = (queryProfile.analytics as Record<string, unknown>) || {};
+  const currentSeo = (queryProfile.seo as Record<string, unknown>) || {};
+  const currentBusinessRules = (queryProfile.business_rules as Record<string, unknown>) || {};
+  const currentOpeningHours = (queryProfile.opening_hours as Record<string, unknown>) || {};
 
   const updates: Record<string, unknown> = {};
 
@@ -203,13 +296,17 @@ export async function updateProfile(formData: FormData) {
   const { error } = await supabase
     .from("profiles")
     .update(updates)
-    .eq("user_id", user.id);
+    .eq("id", queryProfile.id);
 
   if (error) {
     throw new Error(`Błąd zapisu: ${error.message}`);
   }
 
-  redirect("/admin/settings?saved=true");
+  const redirectUrl = isSuperAdmin && targetSlug
+    ? `/admin/settings?tenant=${targetSlug}&saved=true`
+    : `/admin/settings?saved=true`;
+
+  redirect(redirectUrl);
 }
 
 export async function updateLeadStatus(leadId: string, status: string, notes?: string) {

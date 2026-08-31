@@ -5,6 +5,7 @@ import { updateProfile } from "@/app/admin/actions";
 import { useSearchParams } from "next/navigation";
 
 interface SettingsFormProps {
+  targetSlug?: string;
   profile: {
     business_name: string | null;
     business_description: string | null;
@@ -37,7 +38,7 @@ const TABS = [
   { id: "seo", label: "🔍 SEO i Tagi Meta", icon: "🔍" },
 ];
 
-export function SettingsForm({ profile }: SettingsFormProps) {
+export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
   const [activeTab, setActiveTab] = useState("general");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -51,12 +52,22 @@ export function SettingsForm({ profile }: SettingsFormProps) {
   const businessRules = profile.business_rules || {};
   const seo = profile.seo || {};
 
+  const [primaryColor, setPrimaryColor] = useState(
+    (branding.primaryColor as string) || (branding.colors as Record<string, string>)?.primary || "#1686E0"
+  );
+  const [accentColor, setAccentColor] = useState(
+    (branding.accentColor as string) || (branding.colors as Record<string, string>)?.accent || "#1686E0"
+  );
+
   function handleSubmit(formData: FormData) {
     setError(null);
     startTransition(async () => {
       try {
         await updateProfile(formData);
       } catch (e) {
+        if (e instanceof Error && (e.message.includes("NEXT_REDIRECT") || e.message.includes("digest"))) {
+          return;
+        }
         setError(e instanceof Error ? e.message : "Wystąpił błąd zapisu");
       }
     });
@@ -64,6 +75,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 
   return (
     <form action={handleSubmit} style={styles.form}>
+      {targetSlug && <input type="hidden" name="target_slug" value={targetSlug} />}
       {justSaved && (
         <div style={styles.successBanner}>
           ✅ Wszystkie ustawienia komisu zostały pomyślnie zapisane!
@@ -162,21 +174,30 @@ export function SettingsForm({ profile }: SettingsFormProps) {
                   Główny kolor strony (HEX)
                 </label>
                 <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <div
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "6px",
+                      backgroundColor: primaryColor,
+                      border: "1px solid rgba(255,255,255,0.2)",
+                      flexShrink: 0,
+                    }}
+                    title={`Podgląd koloru: ${primaryColor}`}
+                  />
                   <input
                     id="branding_primary_color"
                     name="branding_primary_color"
                     type="text"
-                    defaultValue={(branding.primaryColor as string) || "#10b981"}
+                    value={primaryColor}
+                    onChange={(e) => setPrimaryColor(e.target.value)}
                     style={styles.input}
                   />
                   <input
                     type="color"
-                    value={(branding.primaryColor as string) || "#10b981"}
-                    onChange={(e) => {
-                      const input = document.getElementById("branding_primary_color") as HTMLInputElement;
-                      if (input) input.value = e.target.value;
-                    }}
-                    style={{ width: "40px", height: "40px", border: "none", cursor: "pointer", borderRadius: "8px" }}
+                    value={primaryColor.startsWith("#") && primaryColor.length === 7 ? primaryColor : "#1686E0"}
+                    onChange={(e) => setPrimaryColor(e.target.value)}
+                    style={{ width: "40px", height: "40px", border: "none", cursor: "pointer", borderRadius: "8px", background: "transparent" }}
                   />
                 </div>
               </div>
@@ -186,21 +207,30 @@ export function SettingsForm({ profile }: SettingsFormProps) {
                   Kolor akcentujący (HEX)
                 </label>
                 <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <div
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "6px",
+                      backgroundColor: accentColor,
+                      border: "1px solid rgba(255,255,255,0.2)",
+                      flexShrink: 0,
+                    }}
+                    title={`Podgląd koloru: ${accentColor}`}
+                  />
                   <input
                     id="branding_accent_color"
                     name="branding_accent_color"
                     type="text"
-                    defaultValue={(branding.accentColor as string) || "#f59e0b"}
+                    value={accentColor}
+                    onChange={(e) => setAccentColor(e.target.value)}
                     style={styles.input}
                   />
                   <input
                     type="color"
-                    value={(branding.accentColor as string) || "#f59e0b"}
-                    onChange={(e) => {
-                      const input = document.getElementById("branding_accent_color") as HTMLInputElement;
-                      if (input) input.value = e.target.value;
-                    }}
-                    style={{ width: "40px", height: "40px", border: "none", cursor: "pointer", borderRadius: "8px" }}
+                    value={accentColor.startsWith("#") && accentColor.length === 7 ? accentColor : "#1686E0"}
+                    onChange={(e) => setAccentColor(e.target.value)}
+                    style={{ width: "40px", height: "40px", border: "none", cursor: "pointer", borderRadius: "8px", background: "transparent" }}
                   />
                 </div>
               </div>
