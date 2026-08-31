@@ -7,6 +7,9 @@ import { SectionRenderer } from "@/components/sections/section-renderer";
 import { ContactBar } from "@/components/contact-bar";
 import { Footer } from "@/components/footer";
 import { MetaPixel } from "@/components/meta-pixel";
+import { AnalyticsScripts } from "@/components/analytics-scripts";
+import { CookieConsent } from "@/components/cookie-consent";
+import { DealerSchema } from "@/components/vehicle-schema";
 import { CsJoinForm } from "@/components/cs-join-form";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -63,9 +66,20 @@ export default async function HomePage() {
         created_at: new Date().toISOString(),
       };
 
+      const baseUrl = `https://${tenant.customDomain || host}`;
+
       return (
         <BrandProvider branding={tenant.branding}>
+          <AnalyticsScripts tenant={tenant} />
           {tenant.analytics?.pixelId && <MetaPixel pixelId={tenant.analytics.pixelId} />}
+          <DealerSchema
+            name={tenant.businessName}
+            description={tenant.businessDescription || undefined}
+            address={tenant.location?.address || undefined}
+            city={tenant.location?.city || undefined}
+            phone={tenant.contact.phone || undefined}
+            url={baseUrl}
+          />
           <div className="dealer-layout">
             <DealerHeader tenant={tenant} isCustomDomain={true} />
             <main className="dealer-main">
@@ -74,6 +88,10 @@ export default async function HomePage() {
             <ContactBar profile={profileShim} />
             <Footer tenant={tenant} isCustomDomain={true} />
           </div>
+          <CookieConsent
+            primaryColor={tenant.branding.colors.primary}
+            privacyPolicyUrl="/polityka-prywatnosci"
+          />
         </BrandProvider>
       );
     }
