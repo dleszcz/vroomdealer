@@ -157,8 +157,12 @@ async function sendLeadNotificationEmail(leadData: Lead) {
 
 export async function createLead(leadData: Lead): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    // Triggujemy powiadomienie e-mail asynchronicznie (nie blokuje odpowiedzi)
-    sendLeadNotificationEmail(leadData).catch((e) => console.error(e));
+    // Wysyłamy powiadomienie e-mail (awaitowane, aby Vercel Serverless nie ubił procesu)
+    try {
+      await sendLeadNotificationEmail(leadData);
+    } catch (emailErr) {
+      console.error("❌ Błąd wysyłania maila powiadomienia:", emailErr);
+    }
 
     const isSupabaseConfigured =
       process.env.NEXT_PUBLIC_SUPABASE_URL &&
