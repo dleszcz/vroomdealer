@@ -148,11 +148,15 @@ export async function resolveTenant(identifier: {
 
   // 1. If domain is supplied and not standard domain, attempt domain resolution
   if (domain && !domain.includes("localhost") && !domain.includes("vroomdealer.pl") && !domain.includes("vercel.app")) {
+    const cleanDomain = domain.split(":")[0].toLowerCase().replace(/^www\./, "");
     const allProfiles = await getAllProfiles();
     const matchedProfile = allProfiles.find(
-      (p) => p.custom_domain === domain || p.slug === domain.replace(".com.pl", "").replace(".pl", "")
+      (p) =>
+        p.custom_domain?.toLowerCase() === cleanDomain ||
+        p.custom_domain?.toLowerCase() === domain.toLowerCase() ||
+        p.slug === cleanDomain.replace(".com.pl", "").replace(".pl", "")
     );
-    if (matchedProfile) {
+    if (matchedProfile && matchedProfile.slug !== "superadmin") {
       return profileToTenant(matchedProfile);
     }
   }
@@ -163,7 +167,7 @@ export async function resolveTenant(identifier: {
   }
 
   const profile = await getProfile(slug);
-  if (!profile || profile.is_super_admin) {
+  if (!profile || profile.slug === "superadmin") {
     return null;
   }
 
