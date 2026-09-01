@@ -79,12 +79,10 @@ export function profileToTenant(profile: Profile): DealerTenant {
     (seedMatch?.business_rules as Record<string, unknown> | undefined)
   );
 
-  // Effective location: for d-car, enforce Topólka and Paniewo 3A
-  const isDCarFix = profile.slug === "d-car" && (profile.city === "Warszawa" || !profile.city);
-  const city = isDCarFix ? (seedMatch?.city || "Topólka") : (profile.city || seedMatch?.city || null);
-  const address = isDCarFix ? (seedMatch?.address || "Paniewo 3A") : (profile.address || seedMatch?.address || null);
-  const phone = isDCarFix ? (seedMatch?.contact_phone || "+48 530 826 501") : (profile.contact_phone || seedMatch?.contact_phone || null);
-  const whatsapp = isDCarFix ? (seedMatch?.whatsapp_number || "48530826501") : (profile.whatsapp_number || seedMatch?.whatsapp_number || null);
+  const city = profile.city || seedMatch?.city || null;
+  const address = profile.address || seedMatch?.address || null;
+  const phone = profile.contact_phone || seedMatch?.contact_phone || null;
+  const whatsapp = profile.whatsapp_number || seedMatch?.whatsapp_number || null;
 
   const branding: DealerBranding = {
     logoUrl,
@@ -110,28 +108,28 @@ export function profileToTenant(profile: Profile): DealerTenant {
   return {
     id: profile.id,
     slug: profile.slug,
-    customDomain: profile.custom_domain || (profile.slug === "d-car" ? "d-car.com.pl" : null),
-    businessName: isDCarFix ? "D-CAR / Dawid Woźniak" : profile.business_name,
+    customDomain: profile.custom_domain || null,
+    businessName: profile.business_name,
     businessDescription: profile.business_description || seedMatch?.business_description || null,
     logoUrl,
     contact: {
       phone,
       whatsapp,
-      email: (brandingRaw.contactEmail as string) || profile.notification_email || (profile.slug === "d-car" ? "dawid@d-car.com.pl" : null),
-      facebook: (profile as unknown as Record<string, unknown>).facebook_url as string || (brandingRaw.facebook as string) || (seedBrandingRaw.facebook as string) || "https://www.facebook.com/profile.php?id=100068379260209",
+      email: (brandingRaw.contactEmail as string) || profile.notification_email || null,
+      facebook: (profile as unknown as Record<string, unknown>).facebook_url as string || (brandingRaw.facebook as string) || (seedBrandingRaw.facebook as string) || null,
     },
     location: {
       address,
       city,
-      postalCode: (isDCarFix ? "87-875" : profile.postal_code) || localSeo?.primaryLocation?.postalCode || "87-875",
-      county: profile.county || localSeo?.primaryLocation?.county || "radziejowski",
-      region: profile.region || localSeo?.primaryLocation?.region || "kujawsko-pomorskie",
+      postalCode: profile.postal_code || localSeo?.primaryLocation?.postalCode || null,
+      county: profile.county || localSeo?.primaryLocation?.county || null,
+      region: profile.region || localSeo?.primaryLocation?.region || null,
     },
     branding,
     services,
     pageConfig,
     analytics: (profile.analytics as unknown as DealerTenant["analytics"]) || {
-      pixelId: profile.pixel_id || "1636959447346992",
+      pixelId: profile.pixel_id || (brandingRaw.pixelId as string) || null,
     },
     seo: (profile.seo as unknown as DealerTenant["seo"]) || {
       metaTitle: `${profile.business_name} - Skup aut i sprzedaż samochodów`,

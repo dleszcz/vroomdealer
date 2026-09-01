@@ -29,9 +29,13 @@ async function sendLeadNotificationEmail(leadData: Lead) {
     toEmail =
       leadData.tenantEmail ||
       process.env.NOTIFICATION_EMAIL ||
-      "kontakt@d-car.com.pl";
-    ccEmail =
-      process.env.CC_NOTIFICATION_EMAIL || "danielxleszczynski@gmail.com";
+      "";
+    ccEmail = process.env.CC_NOTIFICATION_EMAIL || undefined;
+  }
+
+  if (!toEmail) {
+    console.log("ℹ️ [Lead Engine] Brak adresu e-mail odbiorcy (brak tenantEmail i NOTIFICATION_EMAIL). Pomijam powiadomienie.");
+    return;
   }
 
   const isSaasApp =
