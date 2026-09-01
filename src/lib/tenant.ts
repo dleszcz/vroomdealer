@@ -117,7 +117,7 @@ export function profileToTenant(profile: Profile): DealerTenant {
     contact: {
       phone,
       whatsapp,
-      email: (brandingRaw.contactEmail as string) || profile.notification_email || (profile.slug === "d-car" ? "dawid@d-car.com.pl" : null),
+      email: (brandingRaw.contactEmail as string) || profile.notification_email || (profile.slug === "d-car" ? "biuro@d-car.com.pl" : null),
       facebook: (profile as unknown as Record<string, unknown>).facebook_url as string || (brandingRaw.facebook as string) || (seedBrandingRaw.facebook as string) || "https://www.facebook.com/profile.php?id=100068379260209",
     },
     location: {

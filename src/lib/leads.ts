@@ -29,7 +29,7 @@ async function sendLeadNotificationEmail(leadData: Lead) {
     toEmail =
       leadData.tenantEmail ||
       process.env.NOTIFICATION_EMAIL ||
-      "kontakt@d-car.com.pl";
+      "biuro@d-car.com.pl";
     ccEmail =
       process.env.CC_NOTIFICATION_EMAIL || "danielxleszczynski@gmail.com";
   }
