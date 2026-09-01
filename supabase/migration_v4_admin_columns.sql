@@ -31,12 +31,17 @@ BEGIN
   END IF;
 END $$;
 
--- 3. Uzupełnij dane D-CAR (postal_code, county, region)
+-- 3. Uzupełnij dane D-CAR (postal_code, county, region, hero image jpg)
 UPDATE profiles
 SET
   postal_code = COALESCE(postal_code, '87-875'),
   county = COALESCE(county, 'radziejowski'),
-  region = COALESCE(region, 'kujawsko-pomorskie')
+  region = COALESCE(region, 'kujawsko-pomorskie'),
+  branding = jsonb_set(
+    COALESCE(branding, '{}'::jsonb),
+    '{media,heroImageUrl}',
+    '"/images/dcar-hero.jpg"'::jsonb
+  )
 WHERE slug = 'd-car';
 
 -- 4. Indeks na leads.updated_at (przydatny dla sortowania w admin panelu)
