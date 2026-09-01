@@ -57,7 +57,7 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
 
   const phone = tenant.contact.phone || "";
   const cleanPhone = phone.replace(/\s/g, "");
-  const heroImage = tenant.branding.media?.heroImageUrl || "/images/dcar-hero.png";
+  const heroImage = tenant.branding.media?.heroImageUrl || "/images/dcar-hero.jpg";
   const primaryColor = tenant.branding.colors.primary || "#1686E0";
 
   const canonicalUrl = `${baseUrl}/${localPage.slug}`;

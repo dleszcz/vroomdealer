@@ -42,11 +42,15 @@ export function profileToTenant(profile: Profile): DealerTenant {
     "/images/dcar-logo.png";
 
   // Build hero image: DB branding.heroImageUrl, DB branding.media.heroImageUrl, Seed media.heroImageUrl
-  const heroImageUrl =
+  let heroImageUrl =
     (brandingRaw.heroImageUrl as string) ||
     rawMedia.heroImageUrl ||
     seedMedia.heroImageUrl ||
-    "/images/dcar-hero.png";
+    "/images/dcar-hero.jpg";
+
+  if (heroImageUrl === "/images/dcar-hero.png") {
+    heroImageUrl = "/images/dcar-hero.jpg";
+  }
 
   // Build services
   const services = mergeServices(
