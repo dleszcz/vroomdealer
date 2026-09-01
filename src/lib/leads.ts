@@ -124,7 +124,7 @@ async function sendLeadNotificationEmail(leadData: Lead) {
     };
 
     if (ccEmail && ccEmail !== toEmail) {
-      resendBody.cc = [ccEmail];
+      resendBody.bcc = [ccEmail];
     }
 
     if (attachments.length > 0) {
