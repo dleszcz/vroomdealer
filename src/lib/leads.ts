@@ -8,30 +8,15 @@ async function sendLeadNotificationEmail(leadData: Lead) {
     return;
   }
 
-  // Detect environment (Development / Preview vs Production)
-  const isProduction =
-    process.env.NODE_ENV === "production" &&
-    process.env.VERCEL_ENV === "production";
+  // Resolve target recipients
+  const toEmail =
+    leadData.tenantEmail ||
+    process.env.NOTIFICATION_EMAIL ||
+    process.env.DEV_NOTIFICATION_EMAIL ||
+    "danielxleszczynski@gmail.com";
 
-  const devTargetEmail =
-    process.env.DEV_NOTIFICATION_EMAIL || "danielxleszczynski@gmail.com";
-
-  let toEmail: string;
-  let ccEmail: string | undefined;
-
-  if (!isProduction) {
-    // Non-production (local dev or preview): send all emails to private email
-    toEmail = devTargetEmail;
-    ccEmail = undefined;
-    console.log(`📧 [Lead Engine - DEV/PREVIEW] Email skierowany na prywatny adres: ${toEmail}`);
-  } else {
-    // Production: send to tenant's email / NOTIFICATION_EMAIL and CC private email
-    toEmail =
-      leadData.tenantEmail ||
-      process.env.NOTIFICATION_EMAIL ||
-      "";
-    ccEmail = process.env.CC_NOTIFICATION_EMAIL || undefined;
-  }
+  const ccEmail =
+    process.env.CC_NOTIFICATION_EMAIL || "danielxleszczynski@gmail.com";
 
   if (!toEmail) {
     console.log("ℹ️ [Lead Engine] Brak adresu e-mail odbiorcy (brak tenantEmail i NOTIFICATION_EMAIL). Pomijam powiadomienie.");
