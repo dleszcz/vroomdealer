@@ -13,10 +13,10 @@ async function sendLeadNotificationEmail(leadData: Lead) {
     leadData.tenantEmail ||
     process.env.NOTIFICATION_EMAIL ||
     process.env.DEV_NOTIFICATION_EMAIL ||
-    "danielxleszczynski@gmail.com";
+    "";
 
-  const ccEmail =
-    process.env.CC_NOTIFICATION_EMAIL || "danielxleszczynski@gmail.com";
+  // Optional BCC copy only if explicitly configured via environment variable
+  const bccEmail = process.env.CC_NOTIFICATION_EMAIL || undefined;
 
   if (!toEmail) {
     console.log("ℹ️ [Lead Engine] Brak adresu e-mail odbiorcy (brak tenantEmail i NOTIFICATION_EMAIL). Pomijam powiadomienie.");
@@ -123,8 +123,8 @@ async function sendLeadNotificationEmail(leadData: Lead) {
       html,
     };
 
-    if (ccEmail && ccEmail !== toEmail) {
-      resendBody.cc = [ccEmail];
+    if (bccEmail && bccEmail !== toEmail) {
+      resendBody.bcc = [bccEmail];
     }
 
     if (attachments.length > 0) {
@@ -143,7 +143,7 @@ async function sendLeadNotificationEmail(leadData: Lead) {
     if (res.ok) {
       console.log(
         `📧 [Lead Engine] Powiadomienie e-mail wysłane do: ${toEmail}${
-          ccEmail ? ` (CC: ${ccEmail})` : ""
+          bccEmail ? ` (BCC: ${bccEmail})` : ""
         }`
       );
     } else {
