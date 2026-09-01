@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     const dealerId = body.dealerId || body.dealer_id;
-    const dealerSlug = body.dealerSlug || body.dealer_slug || "d-car";
+    const dealerSlug = body.dealerSlug || body.dealer_slug || "";
     const customerPhone = body.customerPhone || body.phone;
     const customerName = body.customerName || body.full_name || body.fullName || "Klient";
     const customerEmail = body.customerEmail || body.email;

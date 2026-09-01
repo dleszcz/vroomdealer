@@ -58,11 +58,11 @@ export async function getCurrentProfile() {
 
   if (profile) return profile;
 
-  // Fallback match by d-car or first profile in database
+  // Fallback match first non-superadmin profile in database
   const { data: fallbackProfile, error: fallbackError } = await supabase
     .from("profiles")
     .select("*")
-    .or("slug.eq.d-car,id.neq.00000000-0000-0000-0000-000000000000")
+    .neq("slug", "superadmin")
     .limit(1)
     .maybeSingle();
 
