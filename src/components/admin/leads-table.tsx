@@ -10,9 +10,9 @@ interface Lead {
   customer_name: string | null;
   customer_phone: string;
   customer_email: string | null;
-  vehicle_details: Record<string, unknown> | null;
+  vehicle_details: Record<string, unknown> | string | null;
   local_seo_city: string | null;
-  photos: string[] | null;
+  photos: string[] | number | null;
   status: string;
   notes: string | null;
   created_at: string;
@@ -28,12 +28,55 @@ const STATUS_OPTIONS = [
 ];
 
 const CONDITION_LABELS: Record<string, string> = {
+  sprawny: "Sprawny / Używany",
   sprawny_uzywany: "Sprawny / Używany",
+  uszkodzony: "Uszkodzony mechanicznie",
   uszkodzony_mechanicznie: "Uszkodzony mechanicznie",
   powypadkowy: "Powypadkowy",
   bez_oc_przegladu: "Bez OC / Przeglądu",
+  zlomowanie: "Do złomowania / Kasacji",
   do_zlomowania: "Do złomowania / Kasacji",
 };
+
+interface ParsedVehicle {
+  label: string | null;
+  rawString: string | null;
+  brand?: string;
+  model?: string;
+  year?: string;
+  mileage?: string;
+  condition?: string;
+  expectedPrice?: string;
+}
+
+function parseVehicleDetails(raw: unknown): ParsedVehicle {
+  if (!raw) return { label: null, rawString: null };
+  if (typeof raw === "string") {
+    return { label: raw, rawString: raw };
+  }
+  if (typeof raw === "object") {
+    const obj = raw as Record<string, unknown>;
+    const brand = (obj.brand || obj.make || "") as string;
+    const model = (obj.model || "") as string;
+    const year = (obj.year || "") as string;
+    const mileage = obj.mileage ? String(obj.mileage) : "";
+    const condition = (obj.condition || "") as string;
+    const expectedPrice = obj.expectedPrice || obj.price ? String(obj.expectedPrice || obj.price) : "";
+
+    const label = `${brand} ${model}${year ? ` (${year})` : ""}`.trim();
+    return {
+      label: label || null,
+      rawString: null,
+      brand,
+      model,
+      year,
+      mileage,
+      condition,
+      expectedPrice,
+    };
+  }
+  return { label: null, rawString: null };
+}
 
 function getStatusConfig(status: string) {
   return STATUS_OPTIONS.find((s) => s.value === status) || STATUS_OPTIONS[0];
@@ -144,8 +187,12 @@ function LeadCard({
   onToggle: () => void;
 }) {
   const statusConfig = getStatusConfig(lead.status);
-  const vehicle = lead.vehicle_details as Record<string, string> | null;
-  const photos = Array.isArray(lead.photos) ? lead.photos : [];
+  const vehicle = parseVehicleDetails(lead.vehicle_details);
+  const photosCount = typeof lead.photos === "number"
+    ? lead.photos
+    : Array.isArray(lead.photos)
+    ? lead.photos.length
+    : 0;
   const [isPending, startTransition] = useTransition();
   const [notes, setNotes] = useState(lead.notes || "");
   const router = useRouter();
@@ -178,15 +225,18 @@ function LeadCard({
             )}
           </div>
           <div style={styles.vehicleInfo}>
-            {vehicle?.make && (
-              <span>
-                {vehicle.make} {vehicle.model || ""}{" "}
-                {vehicle.year ? `(${vehicle.year})` : ""}
+            {vehicle.label ? (
+              <span style={{ fontWeight: 600, color: "#f8fafc" }}>
+                🚗 {vehicle.label}
               </span>
-            )}
-            {vehicle?.condition && (
+            ) : vehicle.rawString ? (
+              <span style={{ color: "#cbd5e1", fontSize: "13px" }}>
+                🚗 {vehicle.rawString.slice(0, 45)}...
+              </span>
+            ) : null}
+            {vehicle.condition && (
               <span style={styles.conditionTag}>
-                {CONDITION_LABELS[vehicle.condition as string] || vehicle.condition}
+                {CONDITION_LABELS[vehicle.condition] || vehicle.condition}
               </span>
             )}
           </div>
@@ -210,8 +260,8 @@ function LeadCard({
             {statusConfig.label}
           </div>
           <div style={styles.dateText}>{formatDate(lead.created_at)}</div>
-          {photos.length > 0 && (
-            <span style={styles.photoBadge}>📷 {photos.length}</span>
+          {photosCount > 0 && (
+            <span style={styles.photoBadge}>📷 {photosCount}</span>
           )}
           <span style={styles.expandIcon}>{isExpanded ? "▲" : "▼"}</span>
         </div>
@@ -243,12 +293,12 @@ function LeadCard({
             </div>
 
             {/* Vehicle Details */}
-            {vehicle && (
+            {(vehicle.label || vehicle.rawString) && (
               <div style={styles.detailSection}>
                 <h4 style={styles.detailTitle}>Pojazd</h4>
-                {vehicle.make && (
+                {vehicle.brand && (
                   <p style={styles.detailText}>
-                    <strong>Marka / Model:</strong> {vehicle.make}{" "}
+                    <strong>Marka / Model:</strong> {vehicle.brand}{" "}
                     {vehicle.model || ""}
                   </p>
                 )}
@@ -260,19 +310,30 @@ function LeadCard({
                 {vehicle.mileage && (
                   <p style={styles.detailText}>
                     <strong>Przebieg:</strong>{" "}
-                    {Number(vehicle.mileage).toLocaleString("pl-PL")} km
+                    {isNaN(Number(vehicle.mileage))
+                      ? vehicle.mileage
+                      : Number(vehicle.mileage).toLocaleString("pl-PL")}{" "}
+                    km
                   </p>
                 )}
                 {vehicle.condition && (
                   <p style={styles.detailText}>
                     <strong>Stan:</strong>{" "}
-                    {CONDITION_LABELS[vehicle.condition as string] || vehicle.condition}
+                    {CONDITION_LABELS[vehicle.condition] || vehicle.condition}
                   </p>
                 )}
                 {vehicle.expectedPrice && (
                   <p style={styles.detailText}>
                     <strong>Oczekiwana cena:</strong>{" "}
-                    {Number(vehicle.expectedPrice).toLocaleString("pl-PL")} zł
+                    {isNaN(Number(vehicle.expectedPrice))
+                      ? vehicle.expectedPrice
+                      : Number(vehicle.expectedPrice).toLocaleString("pl-PL")}{" "}
+                    zł
+                  </p>
+                )}
+                {vehicle.rawString && !vehicle.brand && (
+                  <p style={styles.detailText}>
+                    <strong>Opis:</strong> {vehicle.rawString}
                   </p>
                 )}
               </div>
@@ -297,11 +358,11 @@ function LeadCard({
           </div>
 
           {/* Photos */}
-          {photos.length > 0 && (
+          {Array.isArray(lead.photos) && lead.photos.length > 0 && (
             <div style={styles.photosSection}>
-              <h4 style={styles.detailTitle}>📷 Zdjęcia ({photos.length})</h4>
+              <h4 style={styles.detailTitle}>📷 Zdjęcia ({lead.photos.length})</h4>
               <div style={styles.photosGrid}>
-                {photos.map((photo, idx) => (
+                {lead.photos.map((photo: unknown, idx: number) => (
                   <img
                     key={idx}
                     src={photo as string}
