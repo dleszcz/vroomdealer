@@ -33,7 +33,11 @@ export default async function AdminLeadsPage({
 
   let query = supabase.from("leads").select("*");
   if (targetTenant !== "all") {
-    query = query.eq("dealer_id", targetTenant);
+    if (targetProfile && targetProfile.id && targetProfile.slug) {
+      query = query.or(`dealer_id.eq.${targetProfile.id},dealer_id.eq.${targetProfile.slug}`);
+    } else {
+      query = query.eq("dealer_id", targetTenant);
+    }
   }
 
   const { data: leads, error } = await query

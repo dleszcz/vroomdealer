@@ -72,7 +72,7 @@ export async function POST(request: Request) {
     }
 
     const leadData: Lead = {
-      dealerId,
+      dealerId: dealerSlug || dealerId,
       source: body.source || "lead_form_v2",
       campaign: body.campaign,
       landingPath: body.landingPath || "/",
