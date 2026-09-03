@@ -1,9 +1,52 @@
 import type { MetadataRoute } from "next";
+import { headers } from "next/headers";
 import { getAllProfiles, getCars } from "@/lib/data";
-import { profileToTenant } from "@/lib/tenant";
+import { profileToTenant, resolveTenant } from "@/lib/tenant";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://vroomdealer.pl";
+  const reqHeaders = await headers();
+  const host = reqHeaders.get("host")?.split(":")[0].toLowerCase().replace(/^www\./, "");
+
+  // ── CASE 1: Custom Domain Sitemap (e.g. d-car.com.pl) ──
+  if (host && !host.includes("localhost") && !host.includes("vroomdealer.pl") && !host.includes("vercel.app")) {
+    const tenant = await resolveTenant({ domain: host });
+    if (tenant) {
+      const tenantBaseUrl = `https://${tenant.customDomain || host}`;
+
+      const homeUrl: MetadataRoute.Sitemap = [
+        {
+          url: tenantBaseUrl,
+          lastModified: new Date(),
+          changeFrequency: "daily",
+          priority: 1,
+        },
+      ];
+
+      const localPages: MetadataRoute.Sitemap = (tenant.localSeo?.localPages || [])
+        .filter((lp) => lp.enabled && lp.indexable)
+        .map((lp) => ({
+          url: `${tenantBaseUrl}/${lp.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly" as const,
+          priority: 0.9,
+        }));
+
+      const cars = await getCars(tenant.id);
+      const carPages: MetadataRoute.Sitemap = cars
+        .filter((car) => !car.is_sold)
+        .map((car) => ({
+          url: `${tenantBaseUrl}/${car.slug}`,
+          lastModified: new Date(car.created_at),
+          changeFrequency: "weekly" as const,
+          priority: 0.8,
+        }));
+
+      return [...homeUrl, ...localPages, ...carPages];
+    }
+  }
+
+  // ── CASE 2: Main SaaS Platform Sitemap (vroomdealer.pl) ──
   const rawProfiles = await getAllProfiles();
   const profiles = rawProfiles.filter(
     (p) => (p as unknown as { is_published?: boolean }).is_published !== false
@@ -18,32 +61,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const dealerPages: MetadataRoute.Sitemap = profiles.map((profile) => {
-    const tenantUrl = profile.custom_domain
-      ? `https://${profile.custom_domain}`
-      : `${baseUrl}/${profile.slug}`;
-
-    return {
-      url: tenantUrl,
+  const dealerPages: MetadataRoute.Sitemap = profiles
+    .filter((p) => !p.custom_domain)
+    .map((profile) => ({
+      url: `${baseUrl}/${profile.slug}`,
       lastModified: new Date(),
       changeFrequency: "daily" as const,
       priority: 0.9,
-    };
-  });
+    }));
 
-  // Local SEO pages (only enabled & indexable)
   const localSeoPages: MetadataRoute.Sitemap = [];
   for (const profile of profiles) {
+    if (profile.custom_domain) continue; // Custom domains serve their own isolated sitemaps
     const tenant = profileToTenant(profile);
-    const tenantBaseUrl = tenant.customDomain
-      ? `https://${tenant.customDomain}`
-      : `${baseUrl}/${tenant.slug}`;
 
     if (tenant.localSeo?.localPages) {
       for (const localPage of tenant.localSeo.localPages) {
         if (localPage.enabled && localPage.indexable) {
           localSeoPages.push({
-            url: `${tenantBaseUrl}/${localPage.slug}`,
+            url: `${baseUrl}/${tenant.slug}/${localPage.slug}`,
             lastModified: new Date(),
             changeFrequency: "weekly" as const,
             priority: 0.85,
@@ -53,25 +89,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Car pages
-  const carPages: MetadataRoute.Sitemap = [];
-  for (const profile of profiles) {
-    const cars = await getCars(profile.id);
-    const tenantBaseUrl = profile.custom_domain
-      ? `https://${profile.custom_domain}`
-      : `${baseUrl}/${profile.slug}`;
-
-    for (const car of cars) {
-      if (!car.is_sold) {
-        carPages.push({
-          url: `${tenantBaseUrl}/${car.slug}`,
-          lastModified: new Date(car.created_at),
-          changeFrequency: "weekly" as const,
-          priority: 0.8,
-        });
-      }
-    }
-  }
-
-  return [...staticPages, ...dealerPages, ...localSeoPages, ...carPages];
+  return [...staticPages, ...dealerPages, ...localSeoPages];
 }
