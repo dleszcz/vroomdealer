@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   ),
   title: {
     default: "VroomDealer - Platforma sprzedażowa dla komisów samochodowych",
-    template: "%s | VroomDealer",
+    template: "%s",
   },
   description:
     "VroomDealer.pl - ultra-szybkie strony sprzedażowe dla komisów samochodowych. Zwiększ sprzedaż dzięki profesjonalnym ogłoszeniom z retargetingiem i integracją WhatsApp.",

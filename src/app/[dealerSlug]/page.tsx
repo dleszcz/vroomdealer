@@ -37,7 +37,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : undefined;
 
   return {
-    title,
+    title: {
+      absolute: title,
+    },
     description,
     icons: {
       icon: tenant.branding.faviconUrl && tenant.branding.faviconUrl !== "/icon" ? tenant.branding.faviconUrl : `/api/icon?tenant=${dealerSlug}`,

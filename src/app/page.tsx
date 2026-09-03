@@ -23,7 +23,9 @@ export async function generateMetadata(): Promise<Metadata> {
       const title = tenant.seo?.metaTitle || `${tenant.businessName} - Skup Aut i Sprzedaż`;
       const description = tenant.seo?.metaDescription || tenant.businessDescription || "Twój prywatny system sprzedaży i pozyskiwania aut.";
       return {
-        title,
+        title: {
+          absolute: title,
+        },
         description,
         alternates: { canonical: `https://${tenant.customDomain}` },
         openGraph: { title, description, url: `https://${tenant.customDomain}`, type: "website" },
