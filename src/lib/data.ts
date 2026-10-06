@@ -1,10 +1,10 @@
-import { Profile, Car } from "@/types/database";
+import { Tenant, Car } from "@/types/database";
 
 // ============================================================
 // SEED DATA - used for development before Supabase is connected
 // ============================================================
 
-export const seedProfileDCar: Profile = {
+export const seedTenantDCar: Tenant = {
   id: "dcar-0000-41d4-a716-446655440001",
   slug: "d-car",
   custom_domain: "d-car.com.pl",
@@ -21,7 +21,7 @@ export const seedProfileDCar: Profile = {
   county: "radziejowski",
   region: "kujawsko-pomorskie",
   branding: {
-    facebook: "https://www.facebook.com/profile.php?id=100068379260209",
+    facebook: "https://www.facebook.com/tenant.php?id=100068379260209",
     logoUrl: "/images/dcar-logo.png",
     faviconUrl: "/icon",
     colors: {
@@ -409,7 +409,7 @@ export const seedProfileDCar: Profile = {
 };
 
 
-export const seedProfile: Profile = {
+export const seedTenant: Tenant = {
   id: "550e8400-e29b-41d4-a716-446655440000",
   slug: "komis-maciek",
   business_name: "Auto Komis Maciek",
@@ -440,12 +440,12 @@ export const seedProfile: Profile = {
   created_at: new Date().toISOString(),
 };
 
-export const allSeedProfiles: Profile[] = [seedProfileDCar, seedProfile];
+export const allSeedTenants: Tenant[] = [seedTenantDCar, seedTenant];
 
 export const seedCars: Car[] = [
   {
     id: "car-007",
-    profile_id: seedProfileDCar.id,
+    tenant_id: seedTenantDCar.id,
     slug: "mitsubishi-outlander-lift-2007-lpg",
     make: "Mitsubishi",
     model: "Outlander Lift",
@@ -474,7 +474,7 @@ export const seedCars: Car[] = [
   },
   {
     id: "car-001",
-    profile_id: seedProfileDCar.id,
+    tenant_id: seedTenantDCar.id,
     slug: "opel-astra-ii-1-6-8v-2000-benzyna",
     make: "Opel",
     model: "Astra II 1.6 8V",
@@ -503,7 +503,7 @@ export const seedCars: Car[] = [
   },
   {
     id: "car-002",
-    profile_id: seedProfileDCar.id,
+    tenant_id: seedTenantDCar.id,
     slug: "audi-a38p-2-0-tdi-2003-diesel",
     make: "Audi",
     model: "A3 8P 2.0 TDI",
@@ -529,7 +529,7 @@ export const seedCars: Car[] = [
   },
   {
     id: "car-004",
-    profile_id: seedProfileDCar.id,
+    tenant_id: seedTenantDCar.id,
     slug: "hyundai-i30-2015-lift-1-4-crdi",
     make: "Hyundai",
     model: "i30 Lift",
@@ -555,7 +555,7 @@ export const seedCars: Car[] = [
   },
   {
     id: "car-005",
-    profile_id: seedProfileDCar.id,
+    tenant_id: seedTenantDCar.id,
     slug: "audi-a3-sportback-2-0-tfsi-2004-benzyna",
     make: "Audi",
     model: "A3 Sportback 2.0 TFSI",
@@ -581,7 +581,7 @@ export const seedCars: Car[] = [
   },
   {
     id: "car-006",
-    profile_id: seedProfileDCar.id,
+    tenant_id: seedTenantDCar.id,
     slug: "opel-astra-h-lift-1-6-2007-benzyna",
     make: "Opel",
     model: "Astra H Lift 1.6",
@@ -615,9 +615,9 @@ const USE_SEED =
   !process.env.NEXT_PUBLIC_SUPABASE_URL ||
   process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder");
 
-export async function getProfile(slug: string): Promise<Profile | null> {
+export async function getTenant(slug: string): Promise<Tenant | null> {
   if (USE_SEED) {
-    const found = allSeedProfiles.find((p) => p.slug === slug);
+    const found = allSeedTenants.find((p) => p.slug === slug);
     return found || null;
   }
 
@@ -625,25 +625,25 @@ export async function getProfile(slug: string): Promise<Profile | null> {
     const { createClient } = await import("@/lib/supabase/server");
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from("profiles")
+      .from("tenants")
       .select("*")
       .eq("slug", slug)
       .single();
 
     if (error || !data) {
-      const found = allSeedProfiles.find((p) => p.slug === slug);
+      const found = allSeedTenants.find((p) => p.slug === slug);
       return found || null;
     }
     return data;
   } catch {
-    const found = allSeedProfiles.find((p) => p.slug === slug);
+    const found = allSeedTenants.find((p) => p.slug === slug);
     return found || null;
   }
 }
 
-export async function getCars(profileId: string): Promise<Car[]> {
+export async function getCars(tenantId: string): Promise<Car[]> {
   if (USE_SEED) {
-    const matched = seedCars.filter((c) => c.profile_id === profileId);
+    const matched = seedCars.filter((c) => c.tenant_id === tenantId);
     return matched.length > 0 ? matched : seedCars;
   }
 
@@ -653,7 +653,7 @@ export async function getCars(profileId: string): Promise<Car[]> {
     const { data } = await supabase
       .from("cars")
       .select("*")
-      .eq("profile_id", profileId)
+      .eq("tenant_id", tenantId)
       .order("is_featured", { ascending: false })
       .order("created_at", { ascending: false });
 
@@ -689,22 +689,22 @@ export async function getCar(carSlug: string): Promise<Car | null> {
   }
 }
 
-export async function getAllProfiles(): Promise<Profile[]> {
+export async function getAllTenants(): Promise<Tenant[]> {
   if (USE_SEED) {
-    return allSeedProfiles;
+    return allSeedTenants;
   }
 
   try {
     const { createClient } = await import("@/lib/supabase/server");
     const supabase = await createClient();
-    const { data } = await supabase.from("profiles").select("*");
+    const { data } = await supabase.from("tenants").select("*");
 
     if (!data || data.length === 0) {
-      return allSeedProfiles;
+      return allSeedTenants;
     }
     return data;
   } catch {
-    return allSeedProfiles;
+    return allSeedTenants;
   }
 }
 
