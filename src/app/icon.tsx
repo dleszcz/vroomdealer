@@ -11,7 +11,7 @@ export default function Icon() {
       <div
         style={{
           fontSize: 22,
-          background: isDev ? '#f97316' : '#000000', // Orange in DEV, Black in PROD
+          background: '#000000',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -22,10 +22,30 @@ export default function Icon() {
           fontWeight: 900,
           fontFamily: "system-ui, sans-serif",
           boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
-          border: '1px solid #333333'
+          border: '1px solid #333333',
+          position: 'relative',
+          overflow: 'hidden'
         }}
       >
-        {isDev ? 'DEV' : 'VD'}
+        VD
+        {isDev && (
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '8px',
+            background: '#ef4444',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '6px',
+            fontWeight: 800,
+            color: 'white',
+          }}>
+            DEV
+          </div>
+        )}
       </div>
     ),
     { ...size }
