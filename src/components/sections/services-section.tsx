@@ -1,0 +1,49 @@
+"use client";
+
+import React from "react";
+import { CarFront, FileText, Siren, WalletCards } from "lucide-react";
+import { DealerTenant, SectionConfig } from "@/types/landing";
+import { trackEvent } from "@/lib/analytics";
+
+interface Props { tenant: DealerTenant; config?: SectionConfig; }
+const icons = [WalletCards, CarFront, Siren, FileText];
+const defaults = [
+  { title: "Skup aut", text: "Skupujemy auta wszystkich marek, w każdym stanie technicznym.", label: "Sprzedaj auto", href: "#lead-form" },
+  { title: "Sprzedaż aut", text: "Szeroki wybór sprawdzonych samochodów.", label: "Zobacz ofertę", href: "#vehicles" },
+  { title: "Pomoc drogowa", text: "Laweta 24/7 na terenie całego kraju.", label: "Zadzwoń", href: "" },
+  { title: "Inne usługi", text: "Transport aut, przygotowanie do rejestracji i inne.", label: "Sprawdź", href: "#contact" },
+];
+
+export function ServicesSection({ tenant }: Props) {
+  const phone = tenant.contact.phone || "";
+  const leadHref = tenant.contact.whatsapp ? `https://wa.me/${tenant.contact.whatsapp.replace(/\D/g, "")}` : phone ? `tel:${phone.replace(/\s/g, "")}` : "#about";
+  const configured = tenant.services.filter(s => s.enabled).slice(0, 4);
+  const cards = configured.length ? configured.map((service, i) => ({
+    title: service.title,
+    text: service.description,
+    label: service.ctaLabel || defaults[i]?.label || "Sprawdź",
+    href: service.ctaType === "phone" ? `tel:${(service.ctaValue || phone).replace(/\s/g, "")}` : service.ctaType === "whatsapp" || service.ctaType === "lead_form" ? leadHref : service.ctaValue || defaults[i]?.href || "#about",
+  })) : defaults.map((d, i) => ({ ...d, href: i === 2 ? `tel:${phone.replace(/\s/g, "")}` : d.href }));
+
+  return (
+    <section id="services" className="vd-section vd-section--bordered">
+      <div className="vd-container">
+        <div className="services__header">
+          <span className="vd-eyebrow">Nasza oferta</span>
+          <h2 className="vd-heading">Usługi dla kierowców i właścicieli aut</h2>
+        </div>
+        <div className="services__grid">
+          {cards.map((card, i) => {
+            const Icon = icons[i] || FileText;
+            return <div key={`${card.title}-${i}`} className="service-card">
+              <Icon className="service-card__icon" strokeWidth={1.7} />
+              <h3 className="service-card__title">{card.title}</h3>
+              <p className="service-card__text">{card.text}</p>
+              <a className="vd-button vd-button--outline service-card__button" href={card.href} onClick={() => trackEvent("service_clicked", { dealer_id: tenant.id, service: card.title })}>{card.label}</a>
+            </div>;
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
