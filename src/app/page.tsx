@@ -28,7 +28,12 @@ export default function Home() {
               <Link href="/sprzedaj" className="hover:text-slate-900 transition-colors">Skup aut (Demo)</Link>
             </nav>
             <div className="flex items-center">
-              <a href="https://vroomsites.pl/admin" target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-slate-900 hover:bg-slate-800 !text-white text-sm font-bold rounded-lg transition-colors shadow-sm">
+              <a 
+                href={process.env.NODE_ENV === 'development' ? 'http://localhost:3000/admin' : 'https://vroomdealer.pl/admin'} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 !text-white text-sm font-bold rounded-lg transition-colors shadow-sm"
+              >
                 Panel Logowania
               </a>
             </div>
