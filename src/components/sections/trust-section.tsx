@@ -19,7 +19,7 @@ const defaultTestimonials = [
     author: "Krzysztof K. (Włocławek)",
   },
   {
-    quote: "Sprzedałem kilkuletnie auto w rozliczeniu. Wszystko uczciwie i zgodnie z ustaleniami telefonicznymi. Szczerze polecam D-CAR!",
+    quote: "Sprzedałem kilkuletnie auto w rozliczeniu. Wszystko uczciwie i zgodnie z ustaleniami telefonicznymi. Szczerze polecam to miejsce!",
     author: "Piotr R. (Lubraniec)",
   },
 ];
