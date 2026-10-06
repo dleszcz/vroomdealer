@@ -26,6 +26,7 @@ export default function Home() {
               <Link href="#funkcje" className="hover:text-slate-900 transition-colors">Funkcje</Link>
               <Link href="/dla-komisow" className="hover:text-slate-900 transition-colors">Dla Komisów (Marketplace)</Link>
               <Link href="/sprzedaj" className="hover:text-slate-900 transition-colors">Skup aut (Demo)</Link>
+            </nav>
           </div>
         </div>
       </header>
