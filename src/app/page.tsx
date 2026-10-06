@@ -29,7 +29,7 @@ export default function Home() {
             </nav>
             <div className="flex items-center">
               <a 
-                href={`${process.env.NEXT_PUBLIC_VROOMSITES_URL || 'https://vroomdealer.pl'}/admin`}
+                href={`${process.env.NEXT_PUBLIC_VROOMSITES_URL}/admin`}
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="px-4 py-2 bg-slate-900 hover:bg-slate-800 !text-white text-sm font-bold rounded-lg transition-colors shadow-sm"
