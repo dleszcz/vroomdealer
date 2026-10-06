@@ -26,17 +26,6 @@ export default function Home() {
               <Link href="#funkcje" className="hover:text-slate-900 transition-colors">Funkcje</Link>
               <Link href="/dla-komisow" className="hover:text-slate-900 transition-colors">Dla Komisów (Marketplace)</Link>
               <Link href="/sprzedaj" className="hover:text-slate-900 transition-colors">Skup aut (Demo)</Link>
-            </nav>
-            <div className="flex items-center">
-              <a 
-                href={`${process.env.NEXT_PUBLIC_VROOMSITES_URL}/admin`}
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 !text-white text-sm font-bold rounded-lg transition-colors shadow-sm"
-              >
-                Panel Logowania
-              </a>
-            </div>
           </div>
         </div>
       </header>
