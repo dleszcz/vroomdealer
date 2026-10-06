@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VroomDealer - Sprzedaj auto bezpiecznie i szybko",
-  description: "Dzięki naszej sieci zweryfikowanych dealerów, otrzymasz rzetelną, gwarantowaną wycenę. Zero negocjacji na podjeździe, formalności załatwiane na miejscu, pieniądze na koncie tego samego dnia.",
+  title: "VroomDealer - Nowoczesna strona dla Twojego komisu",
+  description: "Uruchom profesjonalną, ultra-szybką stronę komisu z własną domeną, panelem zarządzania autami i modułem do zbierania leadów w kilka minut.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
