@@ -6,6 +6,7 @@
   --color-surface-primary: #ffffff;
   --color-surface-secondary: #f4f4f5; /* szary (zinc-100) */
   --font-heading: var(--font-montserrat), var(--font-geist-sans), sans-serif;
+  --font-logo: var(--font-outfit), var(--font-geist-sans), sans-serif;
 }
 
 :root {
