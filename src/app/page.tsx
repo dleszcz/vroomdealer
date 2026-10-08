@@ -84,7 +84,7 @@ const FAQ = [
 function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
   return (
     <div className="max-w-2xl">
-      <p className="text-[13px] font-medium text-emerald-700">{eyebrow}</p>
+      <p className="text-[13px] font-medium text-brand">{eyebrow}</p>
       <h2 className="mt-2 text-[30px] font-semibold leading-[1.15] tracking-tight text-zinc-950 sm:text-[36px]">{title}</h2>
       {children && <p className="mt-4 text-[17px] leading-relaxed text-zinc-600">{children}</p>}
     </div>
@@ -97,7 +97,7 @@ export default function Home() {
       <SiteHeader />
       <main className="bg-[#fbfaf7] text-zinc-950">
         {/* Hero */}
-        <section className="border-b border-zinc-200">
+        <section className="border-b border-zinc-200 bg-white">
           <div className="mx-auto flex max-w-4xl flex-col items-center px-5 pb-20 pt-16 text-center sm:px-8 lg:pb-32 lg:pt-28">
             <h1 className="text-[40px] font-semibold leading-[1.05] tracking-[-0.03em] text-zinc-950 sm:text-[56px] lg:text-[64px]">
               Uniwersalny ekosystem dla Twojego komisu.
@@ -109,7 +109,7 @@ export default function Home() {
               <Link
                 href="#kontakt"
                 id="hero-cta-contact"
-                className="rounded-md bg-zinc-950 px-5 py-3 text-center text-[15px] font-medium text-zinc-50 transition-colors hover:bg-zinc-800"
+                className="rounded-md bg-brand px-5 py-3 text-center text-[15px] font-medium text-zinc-50 transition-colors hover:bg-brand-hover"
               >
                 Umów się na prezentację
               </Link>
@@ -203,7 +203,7 @@ export default function Home() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="scroll-mt-16 border-b border-zinc-200 bg-white">
+        <section id="faq" className="scroll-mt-16 border-b border-zinc-200">
           <div className="mx-auto grid max-w-6xl gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:py-24">
             <SectionHeading eyebrow="FAQ" title="Najczęstsze pytania" />
             <div className="divide-y divide-zinc-200 border-y border-zinc-200">
@@ -221,7 +221,7 @@ export default function Home() {
         </section>
 
         {/* Contact */}
-        <section id="kontakt" className="scroll-mt-16">
+        <section id="kontakt" className="scroll-mt-16 bg-white">
           <div className="mx-auto grid max-w-6xl gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:py-24">
             <div>
               <SectionHeading eyebrow="Kontakt" title="Porozmawiajmy 15 minut o Twoim biznesie.">
@@ -245,12 +245,12 @@ export default function Home() {
 
 function Check() {
   return (
-    <svg aria-hidden viewBox="0 0 16 16" className="mt-1 h-4 w-4 flex-none text-emerald-700" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg aria-hidden viewBox="0 0 16 16" className="mt-1 h-4 w-4 flex-none text-brand" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M3 8.5l3 3 7-7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
 function Dash() {
-  return <span aria-hidden className="mt-[11px] h-px w-3 flex-none bg-zinc-400" />;
+  return <span aria-hidden className="mt-[11px] h-px w-3 flex-none bg-brand" />;
 }
