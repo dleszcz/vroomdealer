@@ -6,8 +6,8 @@ export const contentType = 'image/png'
 
 export default function Icon() {
   const isDev = process.env.NODE_ENV === 'development';
-  // Żółty na localhost, Viper Green na produkcji
-  const fillColor = isDev ? '#eab308' : '#22c55e'; 
+  // Jasnoniebieski na localhost, Ciemniejszy niebieski na produkcji
+  const fillColor = isDev ? '#60a5fa' : '#2563eb'; 
 
   return new ImageResponse(
     (

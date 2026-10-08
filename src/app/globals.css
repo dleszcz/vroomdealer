@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand: #22c55e; /* viper green (green-500) */
-  --color-brand-hover: #16a34a; /* viper-hover (green-600) */
+  --color-brand: #2563EB; /* blue-600 */
+  --color-brand-hover: #1d4ed8; /* blue-700 */
   --color-surface-primary: #ffffff;
   --color-surface-secondary: #f4f4f5; /* szary (zinc-100) */
   --font-heading: var(--font-montserrat), var(--font-geist-sans), sans-serif;

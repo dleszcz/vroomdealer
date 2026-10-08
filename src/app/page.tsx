@@ -84,7 +84,7 @@ const FAQ = [
 function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
   return (
     <div className="max-w-2xl">
-      <p className="text-[13px] font-medium text-brand">{eyebrow}</p>
+      <p className="text-[13px] font-bold uppercase tracking-wider text-brand">{eyebrow}</p>
       <h2 className="mt-2 font-heading text-[30px] font-semibold leading-[1.15] tracking-tight text-zinc-950 sm:text-[36px]">{title}</h2>
       {children && <p className="mt-4 text-[17px] leading-relaxed text-zinc-600">{children}</p>}
     </div>
