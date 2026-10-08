@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
-import { ProductPreview } from "@/components/site/product-preview";
 import { PilotForm } from "@/components/site/pilot-form";
 
 export const metadata: Metadata = {
@@ -99,37 +98,30 @@ export default function Home() {
       <main className="bg-[#fbfaf7] text-zinc-950">
         {/* Hero */}
         <section className="border-b border-zinc-200">
-          <div className="mx-auto grid max-w-6xl items-center gap-14 px-5 pb-20 pt-14 sm:px-8 lg:grid-cols-[1.05fr_1fr] lg:pb-28 lg:pt-24">
-            <div>
-              <p className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-1 text-[13px] text-zinc-600">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
-                Dla komisów i importerów, 10–150 aut
-              </p>
-              <h1 className="mt-6 text-[40px] font-semibold leading-[1.05] tracking-[-0.03em] text-zinc-950 sm:text-[56px]">
-                Uniwersalny ekosystem dla Twojego komisu.
-              </h1>
-              <p className="mt-6 max-w-xl text-[18px] leading-relaxed text-zinc-600">
-                Elastyczna platforma sprzedażowa, zaawansowany system do zarządzania skupem aut oraz niesamowicie szybka strona internetowa zoptymalizowana pod Google.
-              </p>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="#kontakt"
-                  id="hero-cta-contact"
-                  className="rounded-md bg-zinc-950 px-5 py-3 text-center text-[15px] font-medium text-zinc-50 transition-colors hover:bg-zinc-800"
-                >
-                  Umów się na prezentację
-                </Link>
-                <Link
-                  href="#jak-to-dziala"
-                  id="hero-cta-how"
-                  className="rounded-md border border-zinc-300 bg-white px-5 py-3 text-center text-[15px] font-medium text-zinc-950 transition-colors hover:border-zinc-950"
-                >
-                  Zobacz, jak to działa
-                </Link>
-              </div>
-              <p className="mt-6 text-[14px] text-zinc-500">Skupiasz się na tym, co potrafisz najlepiej – my dajemy Ci narzędzia.</p>
+          <div className="mx-auto flex max-w-4xl flex-col items-center px-5 pb-20 pt-16 text-center sm:px-8 lg:pb-32 lg:pt-28">
+            <h1 className="text-[40px] font-semibold leading-[1.05] tracking-[-0.03em] text-zinc-950 sm:text-[56px] lg:text-[64px]">
+              Uniwersalny ekosystem dla Twojego komisu.
+            </h1>
+            <p className="mt-6 max-w-2xl text-[18px] leading-relaxed text-zinc-600 sm:text-[20px]">
+              Elastyczna platforma sprzedażowa, zaawansowany system do zarządzania skupem aut oraz niesamowicie szybka strona internetowa zoptymalizowana pod Google.
+            </p>
+            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href="#kontakt"
+                id="hero-cta-contact"
+                className="rounded-md bg-zinc-950 px-5 py-3 text-center text-[15px] font-medium text-zinc-50 transition-colors hover:bg-zinc-800"
+              >
+                Umów się na prezentację
+              </Link>
+              <Link
+                href="#jak-to-dziala"
+                id="hero-cta-how"
+                className="rounded-md border border-zinc-300 bg-white px-5 py-3 text-center text-[15px] font-medium text-zinc-950 transition-colors hover:border-zinc-950"
+              >
+                Zobacz, jak to działa
+              </Link>
             </div>
-            <ProductPreview />
+            <p className="mt-6 text-[14px] text-zinc-500">Skupiasz się na tym, co potrafisz najlepiej – my dajemy Ci narzędzia.</p>
           </div>
         </section>
 
