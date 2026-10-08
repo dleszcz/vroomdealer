@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand: #22c55e; /* viper green (green-500) */
+  --color-brand-hover: #16a34a; /* viper-hover (green-600) */
+  --color-surface-primary: #ffffff;
+  --color-surface-secondary: #f4f4f5; /* szary (zinc-100) */
+  --font-heading: var(--font-montserrat), var(--font-geist-sans), sans-serif;
+}
+
 :root {
   --color-primary: #1686E0;
   --color-primary-fg: #ffffff;

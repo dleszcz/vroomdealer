@@ -53,13 +53,14 @@ export function PilotForm() {
           <input id="email" name="email" type="email" autoComplete="email" className={input} />
         </div>
         <div>
-          <label htmlFor="adSpend" className={label}>Ilość aut w ofercie / skupowanych rocznie</label>
+          <label htmlFor="adSpend" className={label}>Wielkość komisu</label>
           <select id="adSpend" name="adSpend" defaultValue="" className={input}>
             <option value="">Wybierz</option>
-            <option>do 50 aut</option>
+            <option>do 10 aut</option>
+            <option>do 25 aut</option>
+            <option>25–50 aut</option>
             <option>50–150 aut</option>
-            <option>150–300 aut</option>
-            <option>powyżej 300 aut</option>
+            <option>powyżej 150 aut</option>
           </select>
         </div>
         <div>
@@ -83,8 +84,8 @@ export function PilotForm() {
         <p role="alert" className="mt-5 text-[14px] text-red-600">{state.message}</p>
       )}
 
-      <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-[13px] leading-relaxed text-zinc-500 sm:max-w-xs">
+      <div className="mt-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <p className="text-[13px] leading-relaxed text-zinc-500 sm:max-w-[320px]">
           Wysyłając formularz, zgadzasz się na kontakt w sprawie wdrożenia. Szczegóły w{" "}
           <Link href="/polityka-prywatnosci" className="underline underline-offset-2 hover:text-zinc-900">polityce prywatności</Link>.
         </p>
@@ -92,7 +93,7 @@ export function PilotForm() {
           type="submit"
           id="pilot-form-submit"
           disabled={pending}
-          className="rounded-md bg-zinc-950 px-5 py-3 text-[15px] font-medium text-zinc-50 transition-colors hover:bg-zinc-800 disabled:opacity-60"
+          className="shrink-0 rounded-md bg-brand px-6 py-3 text-[15px] font-medium text-zinc-50 transition-colors hover:bg-brand-hover disabled:opacity-60"
         >
           {pending ? "Wysyłanie…" : "Wyślij zgłoszenie"}
         </button>

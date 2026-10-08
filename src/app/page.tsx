@@ -85,7 +85,7 @@ function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: 
   return (
     <div className="max-w-2xl">
       <p className="text-[13px] font-medium text-brand">{eyebrow}</p>
-      <h2 className="mt-2 text-[30px] font-semibold leading-[1.15] tracking-tight text-zinc-950 sm:text-[36px]">{title}</h2>
+      <h2 className="mt-2 font-heading text-[30px] font-semibold leading-[1.15] tracking-tight text-zinc-950 sm:text-[36px]">{title}</h2>
       {children && <p className="mt-4 text-[17px] leading-relaxed text-zinc-600">{children}</p>}
     </div>
   );
@@ -95,11 +95,11 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
-      <main className="bg-[#fbfaf7] text-zinc-950">
+      <main className="bg-surface-secondary text-zinc-950">
         {/* Hero */}
-        <section className="border-b border-zinc-200 bg-white">
+        <section className="border-b border-zinc-200 bg-surface-primary">
           <div className="mx-auto flex max-w-4xl flex-col items-center px-5 pb-20 pt-16 text-center sm:px-8 lg:pb-32 lg:pt-28">
-            <h1 className="text-[40px] font-semibold leading-[1.05] tracking-[-0.03em] text-zinc-950 sm:text-[56px] lg:text-[64px]">
+            <h1 className="font-heading text-[40px] font-extrabold leading-[1.05] tracking-[-0.03em] text-zinc-950 sm:text-[56px] lg:text-[64px]">
               Uniwersalny ekosystem dla Twojego komisu.
             </h1>
             <p className="mt-6 max-w-2xl text-[18px] leading-relaxed text-zinc-600 sm:text-[20px]">
@@ -142,7 +142,7 @@ export default function Home() {
         </section>
 
         {/* How it works */}
-        <section id="jak-to-dziala" className="scroll-mt-16 border-b border-zinc-200 bg-white">
+        <section id="jak-to-dziala" className="scroll-mt-16 border-b border-zinc-200 bg-surface-primary">
           <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:py-24">
             <SectionHeading eyebrow="Jak to działa" title="Cztery kroki. Żadnego przepisywania ogłoszeń." />
             <ol className="mt-14 grid gap-10 md:grid-cols-4 md:gap-8">
@@ -175,7 +175,7 @@ export default function Home() {
         </section>
 
         {/* Pilot */}
-        <section id="pilotaz" className="scroll-mt-16 border-b border-zinc-200 bg-white">
+        <section id="pilotaz" className="scroll-mt-16 border-b border-zinc-200 bg-surface-primary">
           <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:py-24">
             <SectionHeading eyebrow="Współpraca" title="Szukamy pierwszych partnerów do wdrożenia.">
               Zanim udostępnimy platformę szeroko, szukamy partnerów (komisów, importerów, skupów), którzy chcą zbudować z nami przewagę technologiczną dla swojej firmy.
@@ -221,7 +221,7 @@ export default function Home() {
         </section>
 
         {/* Contact */}
-        <section id="kontakt" className="scroll-mt-16 bg-white">
+        <section id="kontakt" className="scroll-mt-16 bg-surface-primary">
           <div className="mx-auto grid max-w-6xl gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:py-24">
             <div>
               <SectionHeading eyebrow="Kontakt" title="Porozmawiajmy 15 minut o Twoim biznesie.">

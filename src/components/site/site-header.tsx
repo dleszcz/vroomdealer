@@ -9,7 +9,7 @@ const NAV = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-[#fbfaf7]/90 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-surface-secondary/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
         <Link href="/" aria-label="VroomDealer, strona główna">
           <Logo />
@@ -24,7 +24,7 @@ export function SiteHeader() {
         <Link
           href="/#kontakt"
           id="header-cta"
-          className="rounded-md bg-zinc-950 px-4 py-2 text-[14px] font-medium text-zinc-50 transition-colors hover:bg-zinc-800"
+          className="rounded-md bg-brand px-4 py-2 text-[14px] font-medium text-zinc-50 transition-colors hover:bg-brand-hover"
         >
           Umów rozmowę
         </Link>

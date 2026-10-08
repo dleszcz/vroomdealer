@@ -8,22 +8,22 @@ export const metadata: Metadata = {
   alternates: { canonical: "/polityka-prywatnosci" },
 };
 
-const h2 = "mt-10 text-[19px] font-semibold text-zinc-950";
+const h2 = "mt-10 font-heading text-[19px] font-semibold text-zinc-950";
 const p = "mt-3 text-[15px] leading-relaxed text-zinc-600";
 
 export default function PrivacyPolicyPage() {
   return (
     <>
       <SiteHeader />
-      <main className="bg-[#fbfaf7]">
+      <main className="bg-surface-secondary">
         <article className="mx-auto max-w-2xl px-5 py-16 sm:px-8 lg:py-24">
-          <h1 className="text-[34px] font-semibold tracking-tight text-zinc-950">Polityka prywatności</h1>
+          <h1 className="font-heading text-[34px] font-semibold tracking-tight text-zinc-950">Polityka prywatności</h1>
           <p className="mt-2 text-[14px] text-zinc-500">Ostatnia aktualizacja: październik 2026</p>
 
           <h2 className={h2}>1. Administrator danych</h2>
           <p className={p}>
-            Administratorem danych osobowych przekazanych przez formularze w serwisie vroomdealer.pl jest VroomDealer. W sprawach dotyczących danych osobowych napisz na{" "}
-            <a href="mailto:biuro@vroomdealer.pl" className="text-zinc-950 underline underline-offset-2">biuro@vroomdealer.pl</a>.
+            Administratorem danych osobowych przekazanych przez formularze w serwisie vroomdealer.pl jest Daniel Leszczyński prowadzący działalność gospodarczą pod adresem ul. Dominikanów 16, 87-880 Brześć Kujawski, NIP: 8883083559 (zwany dalej: &quot;VroomDealer&quot;). W sprawach dotyczących danych osobowych napisz na{" "}
+            <a href="mailto:biuro@vroomdealer.pl" className="text-brand underline underline-offset-2 hover:text-brand-hover">biuro@vroomdealer.pl</a>.
           </p>
 
           <h2 className={h2}>2. Jakie dane zbieramy i po co</h2>
