@@ -1,15 +1,31 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { PilotForm } from "@/components/site/pilot-form";
+import { ScoutLanding } from "@/components/site/scout-landing";
 
-export const metadata: Metadata = {
-  title: "VroomDealer: Uniwersalny ekosystem i strona WWW dla Twojego komisu",
-  description:
-    "Elastyczna platforma sprzedażowa, narzędzia do pozyskiwania aut ze skupu i profesjonalna strona internetowa z mocnym SEO. Rozwiązania wspierające cele biznesowe dealerów samochodowych.",
-  alternates: { canonical: "/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const headerList = await headers();
+  const host = headerList.get("host") || "";
+  const isScout = host.startsWith("scout.") || host.includes("scout.vroomdealer");
+
+  if (isScout) {
+    return {
+      title: "VroomScout: Gotowe leady na odkup aut dla skupów i komisów | VroomDealer",
+      description:
+        "Otrzymuj bezpośrednie zgłoszenia wyceny i odkupu aut od osób prywatnych w Twoim regionie na wyłączność. Sprawdzone dane, zdjęcia i natychmiastowy kontakt.",
+    };
+  }
+
+  return {
+    title: "VroomDealer: Uniwersalny ekosystem i strona WWW dla Twojego komisu",
+    description:
+      "Elastyczna platforma sprzedażowa, narzędzia do pozyskiwania aut ze skupu i profesjonalna strona internetowa z mocnym SEO. Rozwiązania wspierające cele biznesowe dealerów samochodowych.",
+    alternates: { canonical: "/" },
+  };
+}
 
 const PROBLEMS = [
   {
@@ -91,7 +107,23 @@ function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: 
   );
 }
 
-export default function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: Promise<{ scout?: string }>;
+}) {
+  const headerList = await headers();
+  const host = headerList.get("host") || "";
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const isScout =
+    host.startsWith("scout.") ||
+    host.includes("scout.vroomdealer") ||
+    resolvedSearchParams?.scout === "1";
+
+  if (isScout) {
+    return <ScoutLanding />;
+  }
+
   return (
     <>
       <SiteHeader />
