@@ -605,26 +605,21 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
       ======================================================== */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 px-3.5 sm:px-6 py-2.5 sm:py-3 text-white shadow-2xl">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
-          {/* Imię, auto i telefon klienta */}
-          <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 text-slate-200 font-black text-sm shadow-inner">
-              {(lead.customer_name || 'K').charAt(0).toUpperCase()}
+          {/* Dane klienta i pojazdu - pełna przestrzeń na telefon i miejscowość */}
+          <div className="min-w-0 flex-1 pr-1">
+            <div className="flex items-center gap-1.5 truncate">
+              <span className="text-xs sm:text-sm text-emerald-400 font-mono font-bold truncate">
+                {lead.customer_phone}
+              </span>
+              <span className="text-slate-600 font-normal">•</span>
+              <span className="text-xs sm:text-sm font-bold text-white truncate">
+                {lead.customer_name || 'Klient'}
+              </span>
             </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 truncate">
-                <span className="text-sm sm:text-base font-black text-white truncate">
-                  {lead.customer_name || 'Klient'}
-                </span>
-                <span className="text-slate-500 font-normal hidden xs:inline">•</span>
-                <span className="text-xs text-emerald-400 font-mono font-bold truncate">
-                  {lead.customer_phone}
-                </span>
-              </div>
-              <div className="text-[11px] text-slate-400 truncate flex items-center gap-1 mt-0.5">
-                <span className="truncate text-slate-300 font-medium">{lead.make_model}</span>
-                <span className="text-slate-600">•</span>
-                <span className="text-slate-400 truncate">{lead.city}</span>
-              </div>
+            <div className="text-[11px] text-slate-400 truncate flex items-center gap-1.5 mt-0.5">
+              <span className="truncate text-slate-300 font-medium">{lead.make_model}</span>
+              <span className="text-slate-600">•</span>
+              <span className="text-slate-400 truncate font-semibold">{lead.city}</span>
             </div>
           </div>
 
