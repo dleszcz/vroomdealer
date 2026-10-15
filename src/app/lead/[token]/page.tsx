@@ -109,6 +109,32 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
           };
         }
       }
+
+      // 4. Fallback Bridge: Query VroomScout engine API directly
+      if (!lead) {
+        const isLocalHost = process.env.NODE_ENV !== 'production';
+        const scoutOrigins = isLocalHost
+          ? ['http://localhost:3003', 'https://autozglowy.pl', 'https://zdajauto.pl']
+          : ['https://autozglowy.pl', 'https://zdajauto.pl'];
+
+        for (const origin of scoutOrigins) {
+          try {
+            const apiRes = await fetch(`${origin}/api/lead-by-token?token=${encodeURIComponent(token)}`, {
+              cache: 'no-store',
+              signal: AbortSignal.timeout(3000),
+            });
+            if (apiRes.ok) {
+              const resData = await apiRes.json();
+              if (resData?.lead) {
+                lead = resData.lead;
+                break;
+              }
+            }
+          } catch {
+            // ignore and try next origin
+          }
+        }
+      }
     } catch (e) {
       console.warn('Error fetching lead by token in VroomDealer:', e);
     }
