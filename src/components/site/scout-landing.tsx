@@ -44,23 +44,17 @@ export function ScoutLanding() {
             <Link href="/" className="flex items-center gap-2" aria-label="VroomScout, strona główna">
               <Logo inverted suffix="Scout" />
             </Link>
-            <span className="hidden sm:inline-block text-[11px] font-bold uppercase tracking-wider text-zinc-400 pl-3 border-l border-zinc-800">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 pl-3 border-l border-zinc-800 hidden xs:inline-block">
               Sieć Odkupu Samochodów
             </span>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div>
             <a
-              href="#token-lookup"
-              className="text-xs sm:text-sm font-medium text-zinc-300 hover:text-white transition-colors"
+              href="https://vroomdealer.pl"
+              className="text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
             >
-              Weryfikacja leada
-            </a>
-            <a
-              href="#dolacz-do-sieci"
-              className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm transition-all shadow-sm active:scale-98"
-            >
-              Zgłoś swój skup
+              VroomDealer.pl →
             </a>
           </div>
         </div>
@@ -82,7 +76,7 @@ export function ScoutLanding() {
           {/* Quick Actions */}
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <a
-              href="#dolacz-do-sieci"
+              href="#formularz-partnerski"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm sm:text-base shadow-sm transition-all active:scale-98"
             >
               <span>Zgłoś swój skup do sieci</span>
@@ -120,7 +114,7 @@ export function ScoutLanding() {
       </section>
 
       {/* Token Lookup Console */}
-      <section id="token-lookup" className="py-12 sm:py-16 bg-[#0D1016] border-b border-zinc-800/80">
+      <section id="token-lookup" className="scroll-mt-20 py-12 sm:py-16 bg-[#0D1016] border-b border-zinc-800/80">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div className="p-6 sm:p-8 rounded-3xl bg-[#121620] border border-zinc-800 shadow-xl space-y-5">
             <div className="flex items-start gap-3.5">
@@ -321,7 +315,7 @@ export function ScoutLanding() {
             </div>
           </div>
 
-          <div>
+          <div id="formularz-partnerski" className="scroll-mt-24">
             <ScoutPartnerForm />
           </div>
         </div>
