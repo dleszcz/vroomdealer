@@ -69,10 +69,7 @@ export function ScoutLanding() {
       {/* Hero Section */}
       <section className="pt-14 sm:pt-22 pb-16 sm:pb-24 border-b border-zinc-800/70">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-6 sm:space-y-8">
-          <div className="space-y-3">
-            <p className="text-xs sm:text-[13px] font-bold uppercase tracking-[0.12em] text-blue-500">
-              Dedykowany strumień aut dla dealerów i komisów
-            </p>
+          <div>
             <h1 className="font-heading text-3xl sm:text-5xl lg:text-[58px] font-extrabold text-white tracking-[-0.03em] leading-[1.12]">
               Auta od osób prywatnych bezpośrednio do Twojego skupu
             </h1>
@@ -339,19 +336,19 @@ export function ScoutLanding() {
           <p className="font-medium text-zinc-400">
             VroomScout Partner Engine — Moduł ekosystemu VroomDealer dedykowany pozyskiwaniu aut dla branży motoryzacyjnej.
           </p>
-          <div className="flex items-center justify-center gap-4 text-zinc-400">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-zinc-400 text-xs px-2">
             <a href="https://vroomdealer.pl" className="hover:text-white transition-colors">
-              Platforma VroomDealer.pl
+              VroomDealer.pl
             </a>
-            <span>•</span>
-            <a href="https://autozglowy.pl" target="_blank" className="hover:text-white transition-colors">
+            <span className="text-zinc-600 hidden xs:inline">•</span>
+            <a href="https://autozglowy.pl" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
               AutoZglowy.pl
             </a>
-            <span>•</span>
-            <a href="https://zdajauto.pl" target="_blank" className="hover:text-white transition-colors">
+            <span className="text-zinc-600 hidden xs:inline">•</span>
+            <a href="https://zdajauto.pl" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
               ZdajAuto.pl
             </a>
-            <span>•</span>
+            <span className="text-zinc-600 hidden xs:inline">•</span>
             <Link href="/polityka-prywatnosci" className="hover:text-white transition-colors">
               Polityka prywatności
             </Link>

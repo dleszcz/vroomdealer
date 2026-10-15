@@ -211,24 +211,16 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 pb-44 font-sans antialiased selection:bg-amber-200">
-      {/* Top Header - VroomDealer Partner Console */}
-      <header className="bg-slate-950 text-white py-3.5 px-4 border-b border-slate-800 sticky top-0 z-30 shadow-md">
+      {/* Top Header */}
+      <header className="bg-slate-950 text-white py-3 px-3.5 sm:px-6 border-b border-slate-800 sticky top-0 z-30 shadow-md">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-            <div className="flex items-center gap-2">
-              <Logo inverted suffix="Scout" />
-              <span className="text-xs px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-bold border border-blue-500/30">
-                Partner Console
-              </span>
-            </div>
-            <span className="hidden sm:inline text-xs text-slate-400 font-medium">
-              | Karta wyceny dla odkupu
-            </span>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <Logo inverted suffix="Scout" />
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-800 text-slate-200 border border-slate-700 flex items-center gap-1.5">
+            <span className="text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 rounded-full bg-slate-800 text-slate-200 border border-slate-700 flex items-center gap-1.5 shrink-0">
               <span className={`w-2 h-2 rounded-full ${brandBg}`} />
               Źródło: <strong>{brandLabel}</strong>
             </span>
@@ -390,31 +382,34 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
               <a
                 href={`tel:${cleanPhone}`}
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm shadow-md transition-all active:scale-95"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm shadow-md transition-all active:scale-98 shrink-0"
               >
-                <Phone className="w-4 h-4 fill-current" />
+                <Phone className="w-4 h-4 fill-current shrink-0" />
                 <span>Zadzwoń teraz</span>
               </a>
-              <a
-                href={`sms:${cleanPhone}`}
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm border border-slate-700 transition-all active:scale-95"
-              >
-                <span>SMS</span>
-              </a>
-              {cleanPhone && (
+
+              <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
                 <a
-                  href={`https://wa.me/48${cleanPhone}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center px-4 py-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm transition-all active:scale-95"
-                  title="Otwórz WhatsApp"
+                  href={`sms:${cleanPhone}`}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs sm:text-sm border border-slate-700 transition-all active:scale-98"
                 >
-                  <span>WhatsApp</span>
+                  <span>SMS</span>
                 </a>
-              )}
+                {cleanPhone && (
+                  <a
+                    href={`https://wa.me/48${cleanPhone}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 px-3 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm transition-all active:scale-98"
+                    title="Otwórz WhatsApp"
+                  >
+                    <span>WhatsApp</span>
+                  </a>
+                )}
+              </div>
             </div>
           </div>
 
