@@ -13,28 +13,50 @@ async function sendLeadNotificationEmail(leadData: Lead) {
     leadData.tenantEmail ||
     process.env.NOTIFICATION_EMAIL ||
     process.env.DEV_NOTIFICATION_EMAIL ||
-    "";
+    "danielxleszczynski@gmail.com";
 
   // Optional BCC copy only if explicitly configured via environment variable
   const bccEmail = process.env.CC_NOTIFICATION_EMAIL || undefined;
 
   if (!toEmail) {
-    console.log("ℹ️ [Lead Engine] Brak adresu e-mail odbiorcy (brak tenantEmail i NOTIFICATION_EMAIL). Pomijam powiadomienie.");
+    console.log("ℹ️ [Lead Engine] Brak adresu e-mail odbiorcy. Pomijam powiadomienie.");
     return;
   }
 
+  const isScoutPartner =
+    leadData.source === "vroomscout_partner_application" ||
+    leadData.dealerId === "vroomscout_network";
+
   const isSaasApp =
     leadData.source === "vroomdealer_saas_test_application" ||
+    leadData.source === "vroomdealer_pilot_application" ||
     leadData.dealerId === "vroomdealer_saas";
 
-  const subject = isSaasApp
+  const subject = isScoutPartner
+    ? `🤝 NOWE ZGŁOSZENIE DO SIECI VROOMSCOUT: ${leadData.customerName || leadData.customerPhone}`
+    : isSaasApp
     ? `🚀 Nowe zgłoszenie do testów VroomDealer: ${leadData.customerName || leadData.customerPhone}`
     : `🚗 NOWY LEAD dla komisu [${leadData.dealerId}]: ${leadData.customerName || leadData.customerPhone}`;
 
   const rawDetails = leadData.vehicleDetails as string | Record<string, unknown> | undefined;
   let vehicleHtml = "";
 
-  if (typeof rawDetails === "string" && rawDetails.trim()) {
+  if (isScoutPartner) {
+    const details = (rawDetails && typeof rawDetails === "object" ? rawDetails : {}) as Record<string, unknown>;
+    vehicleHtml = `
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin:16px 0;">
+        <h4 style="margin:0 0 10px;color:#0f172a;font-size:15px;">🏢 Szczegóły zgłoszenia partnerskiego:</h4>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;color:#334155;">
+          ${details.dealerName ? `<tr><td style="padding:4px 0;font-weight:bold;width:40%;">Nazwa firmy/komisu:</td><td>${details.dealerName}</td></tr>` : ""}
+          ${details.contactName ? `<tr><td style="padding:4px 0;font-weight:bold;">Osoba do kontaktu:</td><td>${details.contactName}</td></tr>` : ""}
+          ${details.city ? `<tr><td style="padding:4px 0;font-weight:bold;">Miasto / Rejon:</td><td>${details.city}</td></tr>` : ""}
+          ${details.stockProfile ? `<tr><td style="padding:4px 0;font-weight:bold;">Profil skupowanych aut:</td><td>${details.stockProfile}</td></tr>` : ""}
+          ${details.targetVolume ? `<tr><td style="padding:4px 0;font-weight:bold;">Szacowany wolumen:</td><td>${details.targetVolume}</td></tr>` : ""}
+          ${details.note ? `<tr><td style="padding:4px 0;font-weight:bold;">Dodatkowe uwagi:</td><td>${details.note}</td></tr>` : ""}
+        </table>
+      </div>
+    `;
+  } else if (typeof rawDetails === "string" && rawDetails.trim()) {
     vehicleHtml = `
       <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin:16px 0;">
         <h4 style="margin:0 0 8px;color:#0f172a;font-size:15px;">🚗 Szczegóły pojazdu:</h4>
@@ -93,10 +115,16 @@ async function sendLeadNotificationEmail(leadData: Lead) {
     `
     : "";
 
+  const headerTitle = isScoutPartner
+    ? "🤝 NOWE ZGŁOSZENIE DO SIECI VROOMSCOUT"
+    : isSaasApp
+    ? "🚀 Nowe zgłoszenie do testów VroomDealer.pl"
+    : "⚡ NOWY LEAD ZGŁOSZENIOWY SKUPU";
+
   const html = `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;padding:24px;border:1px solid #cbd5e1;border-radius:16px;background:#ffffff;">
       <div style="background:#0f172a;padding:16px 20px;border-radius:12px;margin-bottom:20px;">
-        <h2 style="color:#10b981;margin:0;font-size:20px;">${isSaasApp ? "🚀 Nowe zgłoszenie do testów VroomDealer.pl" : "⚡ NOWY LEAD ZGŁOSZENIOWY SKUPU"}</h2>
+        <h2 style="color:#10b981;margin:0;font-size:20px;">${headerTitle}</h2>
         <p style="color:#94a3b8;margin:4px 0 0;font-size:13px;">Komis: <strong>${leadData.dealerId}</strong> | Ścieżka: <code>${leadData.landingPath}</code></p>
       </div>
 

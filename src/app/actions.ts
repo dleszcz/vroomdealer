@@ -74,3 +74,59 @@ export async function submitPilotApplication(_prev: PilotFormState, formData: Fo
   }
   return { status: "success" };
 }
+
+export async function submitScoutPartnerApplication(_prev: PilotFormState, formData: FormData): Promise<PilotFormState> {
+  const parsed = schema.safeParse({
+    dealerName: formData.get("dealerName") ?? "",
+    contactName: formData.get("contactName") ?? undefined,
+    phone: formData.get("phone") ?? "",
+    email: formData.get("email") ?? "",
+    city: formData.get("city") ?? "",
+    adSpend: formData.get("adSpend") ?? undefined,
+    stock: formData.get("stock") ?? undefined,
+    website: formData.get("website") ?? "",
+  });
+
+  if (!parsed.success) {
+    const errors = parsed.error.flatten().fieldErrors;
+    // Honeypot filled: pretend success, drop silently.
+    if (errors.website) return { status: "success" };
+    return {
+      status: "error",
+      message: "Uzupełnij wymagane pola.",
+      fieldErrors: {
+        dealerName: errors.dealerName?.[0],
+        phone: errors.phone?.[0],
+        city: errors.city?.[0],
+      },
+    };
+  }
+
+  const d = parsed.data;
+
+  const result = await createLead({
+    dealerId: "vroomscout_network",
+    source: "vroomscout_partner_application",
+    landingPath: "/scout",
+    customerName: d.contactName ? `${d.contactName} (${d.dealerName})` : d.dealerName,
+    customerPhone: d.phone,
+    customerEmail: d.email || undefined,
+    vehicleDetails: {
+      dealerName: d.dealerName,
+      contactName: d.contactName,
+      city: d.city,
+      stockProfile: d.stock,
+      targetVolume: d.adSpend,
+      note: [d.stock ? `Profil aut: ${d.stock}` : null, d.adSpend ? `Szacowany wolumen: ${d.adSpend}` : null]
+        .filter(Boolean)
+        .join(" · ") || undefined,
+    },
+    status: "new",
+  });
+
+  if (!result.success) {
+    return { status: "error", message: "Nie udało się przesłać zgłoszenia. Skontaktuj się z nami bezpośrednio: biuro@vroomdealer.pl" };
+  }
+  return { status: "success" };
+}
+

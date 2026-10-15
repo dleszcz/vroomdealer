@@ -20,7 +20,8 @@ import {
   Truck,
   Check,
 } from 'lucide-react';
-import { PilotForm } from './pilot-form';
+import { ScoutPartnerForm } from './scout-partner-form';
+import { Logo } from './logo';
 
 export function ScoutLanding() {
   const router = useRouter();
@@ -46,13 +47,11 @@ export function ScoutLanding() {
       <header className="border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="font-heading font-black text-xl sm:text-2xl tracking-tight text-white">
-                Vroom<span className="text-blue-500">Dealer</span>
-              </span>
+            <Link href="/" className="flex items-center gap-2" aria-label="VroomScout, strona główna">
+              <Logo inverted suffix="Scout" />
             </Link>
             <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-blue-500/15 text-blue-400 border border-blue-500/30">
-              <Zap className="w-3 h-3" /> Scout Partner Engine
+              <Zap className="w-3 h-3" /> Partner Engine
             </span>
           </div>
 
@@ -336,14 +335,8 @@ export function ScoutLanding() {
             </div>
           </div>
 
-          <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl text-slate-950">
-            <h3 className="font-heading font-black text-xl text-slate-950 mb-2">
-              Zgłoszenie partnera skupu
-            </h3>
-            <p className="text-xs text-slate-600 mb-6">
-              Wypełnij krótki formularz. Skontaktujemy się telefonicznie w ciągu 24h, aby ustalić Twój rejon i preferowany profil aut.
-            </p>
-            <PilotForm />
+          <div>
+            <ScoutPartnerForm />
           </div>
         </div>
       </section>
@@ -351,6 +344,9 @@ export function ScoutLanding() {
       {/* Footer */}
       <footer className="py-8 sm:py-12 bg-slate-950 text-slate-500 text-xs text-center border-t border-slate-900">
         <div className="max-w-6xl mx-auto px-4 space-y-3">
+          <div className="flex justify-center pb-1">
+            <Logo inverted suffix="Scout" />
+          </div>
           <p className="font-semibold text-slate-400">
             VroomScout Partner Engine — Moduł ekosystemu VroomDealer dedykowany pozyskiwaniu aut dla branży motoryzacyjnej.
           </p>

@@ -21,6 +21,7 @@ import {
   ArrowRight,
   Sparkles,
 } from 'lucide-react';
+import { Logo } from '@/components/site/logo';
 
 interface LeadPageProps {
   params: Promise<{
@@ -46,15 +47,17 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
     notFound();
   }
 
-  // Fetch lead from Supabase by access_token
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  // Fetch lead from Supabase by access_token, id or fallback to leads table
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://xfagkubntiqvrvbmoira.supabase.co";
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_jVG5YKjSeT7YwPk188_jxg_yFlMFt0A";
 
   let lead: any = null;
 
   if (supabaseUrl && supabaseKey && !supabaseUrl.includes('placeholder')) {
     try {
       const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      // 1. Query scout_leads by access_token
       const { data, error } = await supabase
         .from('scout_leads')
         .select('*')
@@ -63,6 +66,48 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
 
       if (!error && data) {
         lead = data;
+      } else {
+        // 2. Query scout_leads by id (UUID)
+        const { data: dataById } = await supabase
+          .from('scout_leads')
+          .select('*')
+          .eq('id', token)
+          .single();
+
+        if (dataById) {
+          lead = dataById;
+        }
+      }
+
+      // 3. Fallback to general leads table
+      if (!lead) {
+        const { data: generalLead } = await supabase
+          .from('leads')
+          .select('*')
+          .eq('id', token)
+          .single();
+
+        if (generalLead) {
+          const veh = (generalLead.vehicle_details || {}) as Record<string, any>;
+          lead = {
+            id: generalLead.id,
+            access_token: generalLead.id,
+            source_domain: generalLead.source || 'VroomDealer',
+            category: 'osobowe',
+            make_model: veh.brand ? `${veh.brand} ${veh.model || ''}`.trim() : (generalLead.customer_name || 'Pojazd ze zgłoszenia'),
+            year: veh.year || 2018,
+            fuel: veh.fuelType || 'diesel',
+            condition: veh.condition || 'bardzo_dobry',
+            condition_notes: veh.note || null,
+            price_bracket: veh.expectedPrice ? `${veh.expectedPrice} zł` : 'Czeka na wycenę',
+            city: veh.city || generalLead.local_seo_city || 'Polska',
+            customer_name: generalLead.customer_name || 'Klient',
+            customer_phone: generalLead.customer_phone,
+            photo_urls: [],
+            created_at: generalLead.created_at,
+            status: generalLead.status || 'new',
+          };
+        }
       }
     } catch (e) {
       console.warn('Error fetching lead by token in VroomDealer:', e);
@@ -82,19 +127,28 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
               Nie znaleziono zgłoszenia
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Zgłoszenie o identyfikatorze <code className="bg-slate-800 px-2 py-0.5 rounded text-amber-400 font-mono text-xs">{token.slice(0, 16)}...</code> nie istnieje w podłączonej bazie danych lub odnośnik wygasł.
+              Zgłoszenie o identyfikatorze <code className="bg-slate-800 px-2 py-0.5 rounded text-amber-400 font-mono text-xs">{token.slice(0, 16)}...</code> wygasło, zostało już obsłużone lub podany link jest niekompletny.
             </p>
           </div>
-          <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs text-slate-400 text-left space-y-1.5">
-            <p className="font-semibold text-slate-300">💡 Wskazówka techniczna:</p>
-            <p>Upewnij się, że formularz wyceny zapisuje zgłoszenia do produkcyjnej bazy danych Supabase (tej samej, z której czyta VroomDealer).</p>
+          <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs text-slate-400 text-left space-y-2">
+            <p className="font-semibold text-slate-300">Potrzebujesz pomocy?</p>
+            <p className="leading-relaxed">
+              Skontaktuj się bezpośrednio z opiekunem sieci VroomScout pod numerem{" "}
+              <a href="tel:+48577022555" className="text-blue-400 font-bold hover:underline">
+                +48 577 022 555
+              </a>{" "}
+              lub napisz na{" "}
+              <a href="mailto:biuro@vroomdealer.pl" className="text-blue-400 font-bold hover:underline">
+                biuro@vroomdealer.pl
+              </a>.
+            </p>
           </div>
           <div className="pt-2">
             <a
-              href="https://vroomdealer.pl"
+              href="/"
               className="inline-flex items-center justify-center gap-2 w-full py-3.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all"
             >
-              Powrót do VroomDealer.pl
+              Powrót do strony głównej
             </a>
           </div>
         </div>
@@ -137,11 +191,9 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
           <div className="flex items-center gap-2.5">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
             <div className="flex items-center gap-2">
-              <span className="font-black text-sm sm:text-base tracking-tight text-white">
-                Vroom<span className="text-blue-500">Dealer</span>
-              </span>
+              <Logo inverted suffix="Scout" />
               <span className="text-xs px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-bold border border-blue-500/30">
-                Scout Partner
+                Partner Console
               </span>
             </div>
             <span className="hidden sm:inline text-xs text-slate-400 font-medium">

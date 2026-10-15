@@ -219,7 +219,10 @@ export interface LeadVehicleData {
   expectedPrice?: number | string;
   description?: string;
   dealerName?: string;
+  contactName?: string;
   city?: string;
+  stockProfile?: string;
+  targetVolume?: string;
   note?: string;
 }
 
