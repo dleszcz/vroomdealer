@@ -69,15 +69,14 @@ export function ScoutPartnerForm() {
   return (
     <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl text-slate-950 border border-slate-100">
       <div className="mb-6">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold mb-3 border border-blue-100/60">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          Program pilotażowy VroomScout
-        </div>
-        <h3 className="font-heading font-black text-2xl text-slate-950 tracking-tight">
-          Zgłoszenie partnera skupu
+        <span className="block text-[11px] font-bold uppercase tracking-wider text-blue-600 mb-1.5">
+          Formularz zgłoszeniowy
+        </span>
+        <h3 className="font-heading font-extrabold text-2xl text-slate-950 tracking-tight">
+          Zgłoszenie do sieci odkupu
         </h3>
-        <p className="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
-          Wypełnij krótki formularz. Skontaktujemy się telefonicznie w ciągu 24h, aby ustalić Twój rejon i preferowany profil aut.
+        <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
+          Wypełnij poniższe dane. Skontaktujemy się telefonicznie w ciągu 24h, aby ustalić Twój rejon i preferowany profil aut.
         </p>
       </div>
 

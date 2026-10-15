@@ -32,53 +32,44 @@ async function sendLeadNotificationEmail(leadData: Lead) {
     leadData.source === "vroomdealer_pilot_application" ||
     leadData.dealerId === "vroomdealer_saas";
 
-  const subject = isScoutPartner
-    ? `🤝 NOWE ZGŁOSZENIE DO SIECI VROOMSCOUT: ${leadData.customerName || leadData.customerPhone}`
-    : isSaasApp
-    ? `🚀 Nowe zgłoszenie do testów VroomDealer: ${leadData.customerName || leadData.customerPhone}`
-    : `🚗 NOWY LEAD dla komisu [${leadData.dealerId}]: ${leadData.customerName || leadData.customerPhone}`;
-
   const rawDetails = leadData.vehicleDetails as string | Record<string, unknown> | undefined;
+  const partnerDetails = (rawDetails && typeof rawDetails === "object" ? rawDetails : {}) as Record<string, unknown>;
+  const partnerCompany = (partnerDetails.dealerName as string) || leadData.customerName || "Partner";
+  const partnerCity = (partnerDetails.city as string) || "Polska";
+
+  const subject = isScoutPartner
+    ? `[VroomScout] Zgłoszenie partnerskie: ${partnerCompany} (${partnerCity})`
+    : isSaasApp
+    ? `Nowe zgłoszenie do testów VroomDealer: ${leadData.customerName || leadData.customerPhone}`
+    : `Nowy lead odkupu: ${leadData.customerName || leadData.customerPhone}`;
+
   let vehicleHtml = "";
 
-  if (isScoutPartner) {
-    const details = (rawDetails && typeof rawDetails === "object" ? rawDetails : {}) as Record<string, unknown>;
-    vehicleHtml = `
-      <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin:16px 0;">
-        <h4 style="margin:0 0 10px;color:#0f172a;font-size:15px;">🏢 Szczegóły zgłoszenia partnerskiego:</h4>
-        <table style="width:100%;border-collapse:collapse;font-size:14px;color:#334155;">
-          ${details.dealerName ? `<tr><td style="padding:4px 0;font-weight:bold;width:40%;">Nazwa firmy/komisu:</td><td>${details.dealerName}</td></tr>` : ""}
-          ${details.contactName ? `<tr><td style="padding:4px 0;font-weight:bold;">Osoba do kontaktu:</td><td>${details.contactName}</td></tr>` : ""}
-          ${details.city ? `<tr><td style="padding:4px 0;font-weight:bold;">Miasto / Rejon:</td><td>${details.city}</td></tr>` : ""}
-          ${details.stockProfile ? `<tr><td style="padding:4px 0;font-weight:bold;">Profil skupowanych aut:</td><td>${details.stockProfile}</td></tr>` : ""}
-          ${details.targetVolume ? `<tr><td style="padding:4px 0;font-weight:bold;">Szacowany wolumen:</td><td>${details.targetVolume}</td></tr>` : ""}
-          ${details.note ? `<tr><td style="padding:4px 0;font-weight:bold;">Dodatkowe uwagi:</td><td>${details.note}</td></tr>` : ""}
-        </table>
-      </div>
-    `;
-  } else if (typeof rawDetails === "string" && rawDetails.trim()) {
-    vehicleHtml = `
-      <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin:16px 0;">
-        <h4 style="margin:0 0 8px;color:#0f172a;font-size:15px;">🚗 Szczegóły pojazdu:</h4>
-        <p style="margin:0;font-size:14px;color:#334155;line-height:1.5;">${rawDetails}</p>
-      </div>
-    `;
-  } else if (rawDetails && typeof rawDetails === "object") {
-    const vehicleObj = rawDetails as Record<string, unknown>;
-    vehicleHtml = `
-      <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin:16px 0;">
-        <h4 style="margin:0 0 10px;color:#0f172a;font-size:15px;">🚗 Dane pojazdu:</h4>
-        <table style="width:100%;border-collapse:collapse;font-size:14px;color:#334155;">
-          ${vehicleObj.brand ? `<tr><td style="padding:4px 0;font-weight:bold;width:40%;">Marka i Model:</td><td>${vehicleObj.brand} ${vehicleObj.model || ""}</td></tr>` : ""}
-          ${vehicleObj.year ? `<tr><td style="padding:4px 0;font-weight:bold;">Rok produkcji:</td><td>${vehicleObj.year}</td></tr>` : ""}
-          ${vehicleObj.mileage ? `<tr><td style="padding:4px 0;font-weight:bold;">Przebieg:</td><td>${vehicleObj.mileage} km</td></tr>` : ""}
-          ${vehicleObj.fuelType ? `<tr><td style="padding:4px 0;font-weight:bold;">Paliwo / Skrzynia:</td><td>${vehicleObj.fuelType} ${vehicleObj.transmission ? `(${vehicleObj.transmission})` : ""}</td></tr>` : ""}
-          ${vehicleObj.condition ? `<tr><td style="padding:4px 0;font-weight:bold;">Stan auta:</td><td>${vehicleObj.condition}</td></tr>` : ""}
-          ${vehicleObj.expectedPrice ? `<tr><td style="padding:4px 0;font-weight:bold;">Oczekiwana cena:</td><td><strong style="color:#059669;">${vehicleObj.expectedPrice} zł</strong></td></tr>` : ""}
-          ${vehicleObj.city ? `<tr><td style="padding:4px 0;font-weight:bold;">Lokalizacja:</td><td>${vehicleObj.city}</td></tr>` : ""}
-        </table>
-      </div>
-    `;
+  if (!isScoutPartner) {
+    if (typeof rawDetails === "string" && rawDetails.trim()) {
+      vehicleHtml = `
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin:16px 0;">
+          <h4 style="margin:0 0 8px;color:#0f172a;font-size:15px;">🚗 Szczegóły pojazdu:</h4>
+          <p style="margin:0;font-size:14px;color:#334155;line-height:1.5;">${rawDetails}</p>
+        </div>
+      `;
+    } else if (rawDetails && typeof rawDetails === "object") {
+      const vehicleObj = rawDetails as Record<string, unknown>;
+      vehicleHtml = `
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin:16px 0;">
+          <h4 style="margin:0 0 10px;color:#0f172a;font-size:15px;">🚗 Dane pojazdu:</h4>
+          <table style="width:100%;border-collapse:collapse;font-size:14px;color:#334155;">
+            ${vehicleObj.brand ? `<tr><td style="padding:4px 0;font-weight:bold;width:40%;">Marka i Model:</td><td>${vehicleObj.brand} ${vehicleObj.model || ""}</td></tr>` : ""}
+            ${vehicleObj.year ? `<tr><td style="padding:4px 0;font-weight:bold;">Rok produkcji:</td><td>${vehicleObj.year}</td></tr>` : ""}
+            ${vehicleObj.mileage ? `<tr><td style="padding:4px 0;font-weight:bold;">Przebieg:</td><td>${vehicleObj.mileage} km</td></tr>` : ""}
+            ${vehicleObj.fuelType ? `<tr><td style="padding:4px 0;font-weight:bold;">Paliwo / Skrzynia:</td><td>${vehicleObj.fuelType} ${vehicleObj.transmission ? `(${vehicleObj.transmission})` : ""}</td></tr>` : ""}
+            ${vehicleObj.condition ? `<tr><td style="padding:4px 0;font-weight:bold;">Stan auta:</td><td>${vehicleObj.condition}</td></tr>` : ""}
+            ${vehicleObj.expectedPrice ? `<tr><td style="padding:4px 0;font-weight:bold;">Oczekiwana cena:</td><td><strong style="color:#059669;">${vehicleObj.expectedPrice} zł</strong></td></tr>` : ""}
+            ${vehicleObj.city ? `<tr><td style="padding:4px 0;font-weight:bold;">Lokalizacja:</td><td>${vehicleObj.city}</td></tr>` : ""}
+          </table>
+        </div>
+      `;
+    }
   }
 
   // Photos rendering in HTML + attachments for Resend API
@@ -107,41 +98,73 @@ async function sendLeadNotificationEmail(leadData: Lead) {
   const attributionHtml = attributionObj
     ? `
       <div style="background:#f1f5f9;padding:12px;border-radius:8px;margin:12px 0;font-size:13px;color:#475569;">
-        <strong>📊 Źródło ruchu (Attribution):</strong><br/>
-        UTM Source: <code>${attributionObj.utm_source || "Brak (Organic/Direct)"}</code> | 
-        Campaign: <code>${attributionObj.utm_campaign || "Brak"}</code> | 
-        Referrer: <code>${attributionObj.referrer || "Bezpośrednie wejście"}</code>
+        <strong>📊 Źródło ruchu:</strong> 
+        <code>${attributionObj.utm_source || "Organiczne / Bezpośrednie"}</code>
       </div>
     `
     : "";
 
-  const headerTitle = isScoutPartner
-    ? "🤝 NOWE ZGŁOSZENIE DO SIECI VROOMSCOUT"
-    : isSaasApp
-    ? "🚀 Nowe zgłoszenie do testów VroomDealer.pl"
-    : "⚡ NOWY LEAD ZGŁOSZENIOWY SKUPU";
+  const html = isScoutPartner
+    ? `
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;padding:24px;border:1px solid #e2e8f0;border-radius:16px;background:#ffffff;">
+        <div style="border-bottom:1px solid #e2e8f0;padding-bottom:16px;margin-bottom:20px;">
+          <div style="font-size:11px;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">
+            VroomScout • Sieć Partnerska
+          </div>
+          <h2 style="color:#0f172a;margin:0;font-size:20px;font-weight:800;">
+            Nowe zgłoszenie do sieci odkupu
+          </h2>
+          <p style="color:#64748b;margin:4px 0 0;font-size:13px;">
+            Rejon: <strong>${partnerCity}</strong> | Źródło: <code>scout.vroomdealer.pl</code>
+          </p>
+        </div>
 
-  const html = `
-    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;padding:24px;border:1px solid #cbd5e1;border-radius:16px;background:#ffffff;">
-      <div style="background:#0f172a;padding:16px 20px;border-radius:12px;margin-bottom:20px;">
-        <h2 style="color:#10b981;margin:0;font-size:20px;">${headerTitle}</h2>
-        <p style="color:#94a3b8;margin:4px 0 0;font-size:13px;">Komis: <strong>${leadData.dealerId}</strong> | Ścieżka: <code>${leadData.landingPath}</code></p>
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:20px;border-radius:12px;margin-bottom:20px;">
+          <table style="width:100%;border-collapse:collapse;font-size:14px;color:#334155;">
+            <tr>
+              <td style="padding:6px 0;font-weight:600;color:#64748b;width:38%;">Nazwa firmy/komisu:</td>
+              <td style="padding:6px 0;font-weight:700;color:#0f172a;font-size:15px;">${partnerCompany}</td>
+            </tr>
+            ${partnerDetails.contactName ? `<tr><td style="padding:6px 0;font-weight:600;color:#64748b;">Osoba do kontaktu:</td><td style="padding:6px 0;font-weight:600;color:#0f172a;">${partnerDetails.contactName}</td></tr>` : ""}
+            <tr>
+              <td style="padding:6px 0;font-weight:600;color:#64748b;">Telefon:</td>
+              <td style="padding:6px 0;"><a href="tel:${leadData.customerPhone}" style="color:#2563eb;font-size:16px;font-weight:700;text-decoration:none;">${leadData.customerPhone}</a></td>
+            </tr>
+            ${leadData.customerEmail ? `<tr><td style="padding:6px 0;font-weight:600;color:#64748b;">E-mail:</td><td style="padding:6px 0;color:#0f172a;">${leadData.customerEmail}</td></tr>` : ""}
+            <tr>
+              <td style="padding:6px 0;font-weight:600;color:#64748b;">Miasto / Rejon:</td>
+              <td style="padding:6px 0;font-weight:600;color:#0f172a;">${partnerCity}</td>
+            </tr>
+            ${partnerDetails.stockProfile ? `<tr><td style="padding:6px 0;font-weight:600;color:#64748b;">Profil skupowanych aut:</td><td style="padding:6px 0;color:#0f172a;">${partnerDetails.stockProfile}</td></tr>` : ""}
+            ${partnerDetails.targetVolume ? `<tr><td style="padding:6px 0;font-weight:600;color:#64748b;">Szacowany wolumen:</td><td style="padding:6px 0;color:#0f172a;">${partnerDetails.targetVolume}</td></tr>` : ""}
+          </table>
+        </div>
+
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0 16px;" />
+        <p style="font-size:12px;color:#94a3b8;margin:0;text-align:center;">Wysłane automatycznie przez system VroomScout Partner Engine</p>
       </div>
+    `
+    : `
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;padding:24px;border:1px solid #cbd5e1;border-radius:16px;background:#ffffff;">
+        <div style="background:#0f172a;padding:16px 20px;border-radius:12px;margin-bottom:20px;">
+          <h2 style="color:#10b981;margin:0;font-size:18px;">${isSaasApp ? "Zgłoszenie do testów VroomDealer.pl" : "Nowy lead skupu pojazdów"}</h2>
+          <p style="color:#94a3b8;margin:4px 0 0;font-size:13px;">Komis: <strong>${leadData.dealerId}</strong> | Ścieżka: <code>${leadData.landingPath}</code></p>
+        </div>
 
-      <div style="font-size:16px;color:#1e293b;line-height:1.6;">
-        <p style="margin:8px 0;"><strong>👤 Imię i nazwisko:</strong> ${leadData.customerName || "Brak danych"}</p>
-        <p style="margin:8px 0;font-size:18px;"><strong>📞 Telefon kontaktowy:</strong> <a href="tel:${leadData.customerPhone}" style="color:#2563eb;font-weight:bold;text-decoration:none;">${leadData.customerPhone}</a></p>
-        ${leadData.customerEmail ? `<p style="margin:8px 0;"><strong>✉️ Email:</strong> ${leadData.customerEmail}</p>` : ""}
+        <div style="font-size:15px;color:#1e293b;line-height:1.6;margin-bottom:16px;">
+          <p style="margin:6px 0;"><strong>👤 Imię i nazwisko:</strong> ${leadData.customerName || "Brak danych"}</p>
+          <p style="margin:6px 0;font-size:17px;"><strong>📞 Telefon:</strong> <a href="tel:${leadData.customerPhone}" style="color:#2563eb;font-weight:bold;text-decoration:none;">${leadData.customerPhone}</a></p>
+          ${leadData.customerEmail ? `<p style="margin:6px 0;"><strong>✉️ Email:</strong> ${leadData.customerEmail}</p>` : ""}
+        </div>
+
+        ${vehicleHtml}
+        ${photosHtml}
+        ${attributionHtml}
+
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0 16px;" />
+        <p style="font-size:12px;color:#94a3b8;margin:0;text-align:center;">Wysłane automatycznie przez system VroomDealer.pl Engine</p>
       </div>
-
-      ${vehicleHtml}
-      ${photosHtml}
-      ${attributionHtml}
-
-      <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0 16px;" />
-      <p style="font-size:12px;color:#94a3b8;margin:0;text-align:center;">Wysłane automatycznie przez system VroomDealer.pl Engine</p>
-    </div>
-  `;
+    `;
 
   try {
     const resendBody: Record<string, unknown> = {
