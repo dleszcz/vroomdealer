@@ -69,25 +69,37 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
     }
   }
 
-  // Fallback demo mock if DB is empty or during verification
+  // If lead is not found in Supabase database
   if (!lead) {
-    lead = {
-      source_domain: 'AutoZglowy.pl',
-      make_model: 'Volkswagen Passat B8 2.0 TDI',
-      year: 2017,
-      fuel: 'diesel',
-      category: 'osobowe',
-      condition: 'bardzo_dobry',
-      condition_notes: 'Pierwszy właściciel, salon Polska, bezwypadkowy. Komplet opon zimowych w bagażniku.',
-      price_bracket: '44 500 zł (do negocjacji)',
-      city: 'Warszawa (mazowieckie)',
-      customer_name: 'Daniel',
-      customer_phone: '600 123 456',
-      photo_urls: [],
-      status: 'new',
-      created_at: new Date().toISOString(),
-      accepted_terms_version: 'v1.0-2026-10',
-    };
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 text-2xl">
+            <AlertTriangle className="w-8 h-8 text-amber-500" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-xl sm:text-2xl font-black text-white">
+              Nie znaleziono zgłoszenia
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Zgłoszenie o identyfikatorze <code className="bg-slate-800 px-2 py-0.5 rounded text-amber-400 font-mono text-xs">{token.slice(0, 16)}...</code> nie istnieje w podłączonej bazie danych lub odnośnik wygasł.
+            </p>
+          </div>
+          <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs text-slate-400 text-left space-y-1.5">
+            <p className="font-semibold text-slate-300">💡 Wskazówka techniczna:</p>
+            <p>Upewnij się, że formularz wyceny zapisuje zgłoszenia do produkcyjnej bazy danych Supabase (tej samej, z której czyta VroomDealer).</p>
+          </div>
+          <div className="pt-2">
+            <a
+              href="https://vroomdealer.pl"
+              className="inline-flex items-center justify-center gap-2 w-full py-3.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all"
+            >
+              Powrót do VroomDealer.pl
+            </a>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const isZdajAuto = lead.source_domain?.toLowerCase().includes('zdajauto');
