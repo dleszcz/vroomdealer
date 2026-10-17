@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useId } from 'react';
-import { MessageSquare, Send, Copy, Check, TrendingDown, XCircle, Sparkles } from 'lucide-react';
+import React, { useState, useId, useMemo } from 'react';
+import { MessageSquare, Send, Copy, Check, TrendingDown, XCircle, Sparkles, RotateCcw } from 'lucide-react';
+import { formatPolishGreeting } from '@/lib/greeting';
 
 interface LeadQuickResponseProps {
   vehicleTitle: string;
@@ -18,23 +19,40 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'counter' | 'reject'>('counter');
   const [offerPrice, setOfferPrice] = useState<string>('');
+  const [customMessage, setCustomMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
   const inputId = useId();
 
-  const cleanPhone = customerPhone.replace(/\D/g, '');
-  const greeting = customerName && customerName !== 'Klient' && customerName !== 'Brak'
-    ? `Dzień dobry, Panie/Pani ${customerName}`
-    : 'Dzień dobry';
+  const cleanPhone = (customerPhone || '').replace(/\D/g, '');
+  const greeting = useMemo(() => formatPolishGreeting(customerName), [customerName]);
 
-  const counterMessage = offerPrice.trim()
-    ? `${greeting}, w nawiązaniu do zgłoszenia ${vehicleTitle} w serwisie ${brandLabel}. Po analizie stanu i kosztów przygotowania, możemy zaproponować pewne ${offerPrice.trim()} zł płatne gotówką od ręki z odbiorem pod Pana domem. Jeśli zależy Panu na szybkiej i bezpiecznej transakcji bez marudnych oglądaczy – proszę o odpowiedź lub kontakt telefoniczny.`
-    : `${greeting}, w nawiązaniu do zgłoszenia ${vehicleTitle} w serwisie ${brandLabel}. Chętnie odkupimy auto za gotówkę od ręki z odbiorem pod domem. Proszę o informację, jaka ostateczna kwota gotówką wchodziłaby w grę?`;
+  const defaultCounterMessage = useMemo(() => {
+    if (offerPrice.trim()) {
+      return `${greeting}, piszę w sprawie ${vehicleTitle}. Zapoznałem się ze zgłoszeniem i mogę zaproponować ${offerPrice.trim()} zł gotówką od ręki z odbiorem na miejscu i prostą umową. Jeśli propozycja Panu/Pani odpowiada – proszę o kontakt lub krótką odpowiedź.`;
+    }
+    return `${greeting}, piszę w sprawie ${vehicleTitle}. Zapoznałem się ze zgłoszeniem i jestem zainteresowany odkupem za gotówkę od ręki z odbiorem na miejscu. Jaka ostateczna kwota gotówką wchodzi w grę?`;
+  }, [greeting, vehicleTitle, offerPrice]);
 
-  const rejectMessage = `${greeting}, dziękujemy za zgłoszenie ${vehicleTitle} w serwisie ${brandLabel}. W tym momencie nasi lokalni partnerzy nie mają wolnych mocy na odkup tego konkretnego modelu/rocznika. Życzymy udanej i bezproblemowej sprzedaży!`;
+  const defaultRejectMessage = useMemo(() => {
+    return `${greeting}, piszę w sprawie ${vehicleTitle}. Dziękuję za kontakt, jednak przy tym modelu i roczniku nie będę w stanie zaproponować satysfakcjonującej kwoty. Życzę powodzenia w sprzedaży!`;
+  }, [greeting, vehicleTitle]);
 
-  const currentMessage = activeTab === 'counter' ? counterMessage : rejectMessage;
+  const currentDefaultMessage = activeTab === 'counter' ? defaultCounterMessage : defaultRejectMessage;
+  const currentMessage = customMessage !== null ? customMessage : currentDefaultMessage;
+  const isActionDisabled = activeTab === 'counter' && !offerPrice.trim();
+
+  const handleTabChange = (tab: 'counter' | 'reject') => {
+    setActiveTab(tab);
+    setCustomMessage(null);
+  };
+
+  const handlePriceChange = (val: string) => {
+    setOfferPrice(val);
+    setCustomMessage(null);
+  };
 
   const handleCopy = () => {
+    if (isActionDisabled) return;
     if (navigator?.clipboard) {
       navigator.clipboard.writeText(currentMessage);
       setCopied(true);
@@ -54,10 +72,10 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
         <div>
           <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-blue-600" />
-            Szybka odpowiedź z telefonu (0 zł kosztów)
+            Szybka odpowiedź z Twojego telefonu
           </h3>
           <p className="text-[11px] text-slate-500 mt-0.5">
-            Wysyłasz ze swojego telefonu przez SMS lub WhatsApp. Klient odpisze bezpośrednio do Ciebie.
+            Wiadomość wyślesz bezpośrednio ze swojego numeru. Klient odpisze wprost do Ciebie.
           </p>
         </div>
 
@@ -65,7 +83,7 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
         <div className="flex items-center gap-1.5 p-1 bg-slate-200/80 rounded-xl self-start sm:self-auto">
           <button
             type="button"
-            onClick={() => setActiveTab('counter')}
+            onClick={() => handleTabChange('counter')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'counter'
                 ? 'bg-white text-slate-900 shadow-xs'
@@ -77,7 +95,7 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('reject')}
+            onClick={() => handleTabChange('reject')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'reject'
                 ? 'bg-white text-slate-900 shadow-xs'
@@ -92,9 +110,8 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
 
       {activeTab === 'counter' && (
         <div className="space-y-2">
-          <label htmlFor={inputId} className="text-xs font-bold text-slate-700 flex items-center justify-between">
-            <span>Twoja maksymalna propozycja gotówkowa (zł):</span>
-            <span className="text-[11px] text-slate-400 font-normal">Wstawia kwotę do treści SMS</span>
+          <label htmlFor={inputId} className="text-xs font-bold text-slate-700 block">
+            Twoja maksymalna propozycja gotówkowa (zł):
           </label>
           <div className="relative">
             <input
@@ -103,8 +120,12 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
               inputMode="numeric"
               placeholder="np. 14 000"
               value={offerPrice}
-              onChange={(e) => setOfferPrice(e.target.value)}
-              className="w-full h-11 px-3.5 pr-12 rounded-xl border border-slate-300 bg-white text-slate-900 font-bold text-sm focus:border-slate-900 focus:outline-none transition-colors"
+              onChange={(e) => handlePriceChange(e.target.value)}
+              className={`w-full h-11 px-3.5 pr-12 rounded-xl border bg-white text-slate-900 font-bold text-sm focus:outline-none transition-colors ${
+                !offerPrice.trim()
+                  ? 'border-amber-300 focus:border-amber-500 ring-2 ring-amber-100'
+                  : 'border-slate-300 focus:border-slate-900'
+              }`}
             />
             <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">
               PLN
@@ -113,57 +134,113 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
         </div>
       )}
 
-      {/* Podgląd generowanej wiadomości */}
-      <div className="p-3.5 rounded-xl bg-white border border-slate-200/90 text-xs text-slate-700 space-y-1.5">
-        <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-          <span className="flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-blue-500" />
-            Podgląd wiadomości do klienta:
-          </span>
-          <span className="text-slate-400 font-mono text-[10px]">{currentMessage.length} zn.</span>
+      {/* Edytor wiadomości z możliwością zmiany treści */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+          <label htmlFor="quick-response-editor" className="flex items-center gap-1.5 cursor-pointer">
+            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+            <span>Treść wiadomości do klienta (możesz edytować):</span>
+          </label>
+          <div className="flex items-center gap-2">
+            {customMessage !== null && (
+              <button
+                type="button"
+                onClick={() => setCustomMessage(null)}
+                className="text-[10px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer transition-colors"
+                title="Przywróć domyślny szablon"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Przywróć szablon</span>
+              </button>
+            )}
+            <span className="text-slate-400 font-mono text-[10px]">{currentMessage.length} zn.</span>
+          </div>
         </div>
-        <p className="leading-relaxed text-slate-800 italic select-all">
-          “{currentMessage}”
-        </p>
+        <textarea
+          id="quick-response-editor"
+          rows={4}
+          value={currentMessage}
+          onChange={(e) => setCustomMessage(e.target.value)}
+          className="w-full p-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs sm:text-sm font-medium leading-relaxed focus:border-slate-900 focus:outline-none transition-colors resize-y shadow-xs"
+          placeholder="Wpisz treść wiadomości..."
+        />
       </div>
 
       {/* Przyciski akcji (SMS, WhatsApp, Kopiuj) */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-        <a
-          href={smsHref}
-          className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-98 text-center cursor-pointer"
-        >
-          <Send className="w-4 h-4 text-emerald-400" />
-          <span>Otwórz w SMS</span>
-        </a>
+      <div className="space-y-2 pt-1">
+        {isActionDisabled && (
+          <p className="text-[11px] font-medium text-amber-800 bg-amber-50 border border-amber-200/80 rounded-xl px-3 py-2 flex items-center gap-2">
+            <span className="text-amber-600 font-bold shrink-0">💡</span>
+            <span>Wpisz kwotę, aby odblokować przyciski</span>
+          </p>
+        )}
 
-        <a
-          href={whatsappHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-98 text-center cursor-pointer"
-        >
-          <MessageSquare className="w-4 h-4 text-white" />
-          <span>Wyślij WhatsApp</span>
-        </a>
-
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-xs sm:text-sm transition-all cursor-pointer"
-        >
-          {copied ? (
-            <>
-              <Check className="w-4 h-4 text-emerald-600" />
-              <span className="text-emerald-700">Skopiowano!</span>
-            </>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          {isActionDisabled ? (
+            <button
+              type="button"
+              disabled
+              className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-slate-200 text-slate-400 font-bold text-xs sm:text-sm cursor-not-allowed select-none"
+              title="Wpisz kwotę powyżej, aby odblokować"
+            >
+              <Send className="w-4 h-4 text-slate-400" />
+              <span>Otwórz w SMS</span>
+            </button>
           ) : (
-            <>
-              <Copy className="w-4 h-4 text-slate-500" />
-              <span>Kopiuj treść</span>
-            </>
+            <a
+              href={smsHref}
+              className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-98 text-center cursor-pointer"
+            >
+              <Send className="w-4 h-4 text-emerald-400" />
+              <span>Otwórz w SMS</span>
+            </a>
           )}
-        </button>
+
+          {isActionDisabled ? (
+            <button
+              type="button"
+              disabled
+              className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-slate-200 text-slate-400 font-bold text-xs sm:text-sm cursor-not-allowed select-none"
+              title="Wpisz kwotę powyżej, aby odblokować"
+            >
+              <MessageSquare className="w-4 h-4 text-slate-400" />
+              <span>Wyślij WhatsApp</span>
+            </button>
+          ) : (
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-98 text-center cursor-pointer"
+            >
+              <MessageSquare className="w-4 h-4 text-white" />
+              <span>Wyślij WhatsApp</span>
+            </a>
+          )}
+
+          <button
+            type="button"
+            disabled={isActionDisabled}
+            onClick={handleCopy}
+            className={`flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl border font-bold text-xs sm:text-sm transition-all ${
+              isActionDisabled
+                ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed select-none'
+                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 cursor-pointer'
+            }`}
+          >
+            {copied ? (
+              <>
+                <Check className="w-4 h-4 text-emerald-600" />
+                <span className="text-emerald-700">Skopiowano!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4 text-slate-500" />
+                <span>Kopiuj treść</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

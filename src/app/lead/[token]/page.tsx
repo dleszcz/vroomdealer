@@ -16,6 +16,7 @@ import {
 import { Logo } from '@/components/site/logo';
 import { LeadGallery } from '@/components/lead/lead-gallery';
 import { LeadQuickResponse } from '@/components/lead/lead-quick-response';
+import { formatPolishGreeting, formatPolishVocative } from '@/lib/greeting';
 
 interface LeadPageProps {
   params: Promise<{
@@ -315,10 +316,10 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
   const freshness = getLeadFreshness(lead.created_at);
 
   const conditionLabels: Record<string, string> = {
-    bardzo_dobry: '✨ Bardzo dobry (sprawny, wsiadać i jechać)',
-    drobne_poprawki: '🔧 Drobne poprawki (blacharka / kosmetyka / eksploatacja)',
-    wymaga_naprawy: '⚠️ Wymaga naprawy mechanicznej (silnik, skrzynia itp.)',
-    niesprawny: '🛑 Powypadkowy / Nie odpala / Po kolizji',
+    bardzo_dobry: 'Bardzo dobry (sprawny, wsiadać i jechać)',
+    drobne_poprawki: 'Drobne poprawki (blacharka / kosmetyka / eksploatacja)',
+    wymaga_naprawy: 'Wymaga naprawy mechanicznej (silnik, skrzynia itp.)',
+    niesprawny: 'Powypadkowy / Nie odpala / Po kolizji',
   };
 
   const cleanPhone = (lead.customer_phone || '').replace(/[^0-9]/g, '');
@@ -360,10 +361,10 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
     .join(' • ');
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 pb-44 font-sans antialiased selection:bg-amber-200">
+    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-amber-200">
       {/* Top Header */}
-      <header className="bg-slate-950 text-white py-3 px-3.5 sm:px-6 border-b border-slate-800 sticky top-0 z-30 shadow-md">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+      <header className="bg-slate-950 text-white py-3 px-4 sm:px-6 border-b border-slate-800 sticky top-0 z-30 shadow-md">
+        <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Logo inverted suffix="Scout" />
           </div>
@@ -376,13 +377,9 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-3.5 sm:px-6 py-3 sm:py-5 space-y-3 sm:space-y-4">
-        {/* ========================================================
-            GŁÓWNA KARTA POJAZDU (WIDOCZNA OD RAZU NA TELEFONIE)
-        ======================================================== */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden p-4 sm:p-7 space-y-5">
-          {/* 1. Tytuł, Data zgłoszenia i Oczekiwania cenowe */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 pb-4 border-b border-slate-100">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 pb-24 sm:pb-28 space-y-6">
+        {/* 1. Tytuł, Data zgłoszenia i Oczekiwania cenowe */}
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3.5 pb-4 border-b border-slate-100">
             <div>
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span className="text-[11px] font-semibold text-slate-500">
@@ -423,30 +420,53 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
                   <Fuel className="w-3.5 h-3.5 text-slate-500" />
                   {lead.fuel}
                 </span>
-                <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                  {lead.city}
-                </span>
                 {isListedOnPortals && (
-                  <span className="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 flex items-center gap-1.5 font-bold">
-                    📢 Na portalach (OLX / Otomoto)
-                  </span>
-                )}
-                {isOffMarket && (
-                  <span className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center gap-1.5 font-bold">
-                    💎 Tylko w VroomScout
+                  <span className="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 font-bold">
+                    Na portalach
                   </span>
                 )}
               </div>
             </div>
 
-            {/* Oczekiwana cena klienta */}
-            <div className="sm:text-right bg-emerald-50 sm:bg-transparent p-3 sm:p-0 rounded-2xl border border-emerald-100 sm:border-0 shrink-0">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 sm:text-slate-400 block">
-                Oczekiwania cenowe klienta
-              </span>
-              <div className="text-2xl sm:text-3xl font-black text-emerald-600 sm:text-slate-950 mt-0.5 tracking-tight">
-                {lead.price_bracket || 'Czeka na propozycję'}
+            {/* Oczekiwana cena klienta & Stan i status pojazdu */}
+            <div className="sm:text-right bg-emerald-50/60 sm:bg-transparent p-3 sm:p-0 rounded-2xl border border-emerald-100 sm:border-0 shrink-0 space-y-2">
+              <div>
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 sm:text-slate-400 block">
+                  Oczekiwania cenowe klienta
+                </span>
+                <div className="text-2xl sm:text-3xl font-black text-emerald-600 sm:text-slate-950 mt-0.5 tracking-tight">
+                  {lead.price_bracket || 'Czeka na propozycję'}
+                </div>
+              </div>
+
+              {/* Deklarowany stan auta i status OC / PT (bez 'cardów') */}
+              <div className="pt-2 sm:pt-1 border-t border-emerald-200/60 sm:border-t-0 space-y-1.5 text-xs">
+                <div className="flex items-center sm:justify-end gap-1.5 text-slate-700">
+                  <span className="text-slate-500 sm:text-slate-400 text-[11px] font-bold uppercase tracking-wider">Stan:</span>
+                  <span className="font-extrabold text-slate-900">
+                    {conditionLabels[lead.condition] || lead.condition}
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center sm:justify-end gap-1.5 pt-0.5">
+                  <span
+                    className={`px-2 py-0.5 rounded-md font-bold text-[11px] ${
+                      hasNoInsurance
+                        ? 'bg-red-100 text-red-800 border border-red-200'
+                        : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                    }`}
+                  >
+                    {hasNoInsurance ? '⚠️ Brak OC (laweta)' : '✅ OC Ważne'}
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 rounded-md font-bold text-[11px] ${
+                      hasNoMot
+                        ? 'bg-red-100 text-red-800 border border-red-200'
+                        : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                    }`}
+                  >
+                    {hasNoMot ? '⚠️ Brak badania tech.' : '✅ Przegląd ważny'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -458,44 +478,6 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
             cleanPhone={cleanPhone}
             brandLabel={brandLabel}
           />
-
-          {/* 3. Status techniczny i formalny */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-              <span className="text-[11px] font-bold uppercase text-slate-400 block">
-                Deklarowany stan auta
-              </span>
-              <p className="font-extrabold text-slate-900 text-sm">
-                {conditionLabels[lead.condition] || lead.condition}
-              </p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-              <span className="text-[11px] font-bold uppercase text-slate-400 block">
-                Status ubezpieczenia i przeglądu
-              </span>
-              <div className="flex flex-wrap gap-2 pt-0.5 text-xs font-bold">
-                <span
-                  className={`px-2.5 py-1 rounded-lg ${
-                    hasNoInsurance
-                      ? 'bg-red-100 text-red-800 border border-red-200'
-                      : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                  }`}
-                >
-                  {hasNoInsurance ? '⚠️ BRAK WAŻNEGO OC (Konieczna laweta)' : '✅ OC Ważne'}
-                </span>
-                <span
-                  className={`px-2.5 py-1 rounded-lg ${
-                    hasNoMot
-                      ? 'bg-red-100 text-red-800 border border-red-200'
-                      : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                  }`}
-                >
-                  {hasNoMot ? '⚠️ Brak badania technicznego' : '✅ Przegląd ważny'}
-                </span>
-              </div>
-            </div>
-          </div>
 
           {/* 5. Uwagi / opis mankamentów od klienta */}
           {cleanConditionNotes && (
@@ -509,19 +491,16 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
             </div>
           )}
 
-          {/* 6. Szybka odpowiedź z telefonu dealera: Kontroferta cenowa / Uprzejma odmowa (0 zł) */}
-          <LeadQuickResponse
-            vehicleTitle={`${lead.make_model} (${lead.year})`}
-            brandLabel={brandLabel}
-            customerName={lead.customer_name || 'Klient'}
-            customerPhone={cleanPhone}
-          />
-        </div>
+        {/* 5. Szybka odpowiedź z telefonu dealera: Kontroferta cenowa / Uprzejma odmowa (0 zł) */}
+        <LeadQuickResponse
+          vehicleTitle={`${lead.make_model} (${lead.year})`}
+          brandLabel={brandLabel}
+          customerName={lead.customer_name || 'Klient'}
+          customerPhone={cleanPhone}
+        />
 
-        {/* ========================================================
-            PRAKTYCZNY PORADNIK KUPCA (ROZWIJANY AKORDEON)
-        ======================================================== */}
-        <details className="group bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden transition-all">
+        {/* 6. PRAKTYCZNY PORADNIK KUPCA (ROZWIJANY AKORDEON) */}
+        <details className="group bg-slate-50/80 rounded-2xl border border-slate-200 shadow-xs overflow-hidden transition-all">
           <summary className="p-4 sm:p-5 flex items-center justify-between cursor-pointer select-none hover:bg-slate-50 transition-colors list-none">
             <div className="flex items-center gap-3 text-slate-900 font-extrabold text-sm sm:text-base">
               <div className="p-2 rounded-xl bg-blue-50 text-blue-600 shrink-0">
@@ -558,7 +537,7 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
                   Nigdy nie podawaj jednej sztywnej kwoty przez telefon. Zapytaj wprost:
                 </p>
                 <div className="p-3 rounded-xl bg-white border border-slate-200 text-xs italic text-slate-800 leading-relaxed">
-                  &ldquo;Dzień dobry {lead.customer_name || 'Panie/Pani'}, dzwonię z {brandLabel} z sieci VroomDealer. Wstępnie przy tym roczniku i modelu płacimy w granicach {lead.price_bracket ? 'widełek zbliżonych do Pana oczekiwań' : 'rynkowych stawek odkupu'}. Zaznaczył Pan pewne mankamenty – co dokładnie jest do zrobienia i czy kupił Pan już nowe auto?&rdquo;
+                  &ldquo;{formatPolishGreeting(lead.customer_name)}, dzwonię z {brandLabel} z sieci VroomDealer. Wstępnie przy tym roczniku i modelu płacimy w granicach {lead.price_bracket ? 'widełek zbliżonych do oczekiwań' : 'rynkowych stawek odkupu'}. Zaznaczył Pan pewne mankamenty – co dokładnie jest do zrobienia i czy nowe auto już czeka?&rdquo;
                 </div>
                 <p className="text-[11px] text-slate-500">
                   💡 Jeśli nowe auto już czeka pod domem, klient chce po prostu świętego spokoju i natychmiastowej gotówki.
@@ -624,7 +603,7 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
                   Sprzedający wybrał skup, bo ma dość marudnych oglądaczy. Pokaż mu transparentne liczby:
                 </p>
                 <div className="p-3 rounded-xl bg-white border border-slate-200 text-xs italic text-slate-800 leading-relaxed">
-                  &ldquo;Panie {lead.customer_name || 'Danielu'}, auto ma swoje lata i normalne ślady. Nasza propozycja uwzględnia to, że musimy zrobić serwis olejowy i naprawy. Oferuję kwotę X zł gotówką od ręki, spisujemy umowę i zabieramy auto.&rdquo;
+                  &ldquo;{formatPolishVocative(lead.customer_name) ? `${formatPolishVocative(lead.customer_name)}, ` : ''}auto ma swoje lata i normalne ślady. Nasza propozycja uwzględnia to, że musimy zrobić serwis olejowy i naprawy. Oferuję kwotę X zł gotówką od ręki, spisujemy umowę i zabieramy auto.&rdquo;
                 </div>
               </div>
 
@@ -671,8 +650,8 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
       {/* ========================================================
           STICKY BOTTOM BAR (PRZYPIĘTY NA DOLE EKRANU MOBILNEGO)
       ======================================================== */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 px-3.5 sm:px-6 py-2.5 sm:py-3 text-white shadow-2xl">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 px-4 sm:px-6 py-2.5 sm:py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] text-white shadow-2xl">
+        <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1 pr-1">
             <div className="flex items-center gap-1.5 truncate">
               <span className="text-xs sm:text-sm text-emerald-400 font-mono font-bold truncate">
@@ -683,10 +662,9 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
                 {lead.customer_name || 'Klient'}
               </span>
             </div>
-            <div className="text-[11px] text-slate-400 truncate flex items-center gap-1.5 mt-0.5">
-              <span className="truncate text-slate-300 font-medium">{lead.make_model}</span>
-              <span className="text-slate-600">•</span>
-              <span className="text-slate-400 truncate font-semibold">{lead.city}</span>
+            <div className="text-[11px] text-slate-300 truncate flex items-center gap-1 mt-0.5 font-medium">
+              <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+              <span className="truncate">{lead.city || 'Polska'}</span>
             </div>
           </div>
 

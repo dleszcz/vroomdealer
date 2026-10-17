@@ -81,7 +81,7 @@ export const LeadGallery: React.FC<LeadGalleryProps> = ({
   };
 
   const whatsappPhotosPrompt = encodeURIComponent(
-    `Dzień dobry, kontaktuję się z ${brandLabel} w sprawie wyceny i odkupu ${vehicleTitle}. Czy mógłby Pan/Pani podesłać tutaj 3-4 zdjęcia auta (przód, boki, wnętrze)? Pozdrawiam!`
+    `Dzień dobry, kontaktuję się z ${brandLabel} w sprawie wyceny i odkupu ${vehicleTitle}. Czy można prosić o podesłanie tutaj 3-4 zdjęć auta (przód, boki, wnętrze)? Pozdrawiam!`
   );
 
   return (
