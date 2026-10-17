@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useId, useMemo } from 'react';
-import { MessageSquare, Send, Copy, Check, TrendingDown, XCircle, Sparkles, RotateCcw } from 'lucide-react';
+import { MessageSquare, Send, Copy, Check, TrendingDown, XCircle, Sparkles, RotateCcw, Handshake } from 'lucide-react';
 import { formatPolishGreeting } from '@/lib/greeting';
 
 interface LeadQuickResponseProps {
@@ -11,13 +11,15 @@ interface LeadQuickResponseProps {
   customerPhone: string;
 }
 
+type ResponseTab = 'interest' | 'counter' | 'reject';
+
 export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
   vehicleTitle,
   brandLabel,
   customerName,
   customerPhone,
 }) => {
-  const [activeTab, setActiveTab] = useState<'counter' | 'reject'>('counter');
+  const [activeTab, setActiveTab] = useState<ResponseTab>('interest');
   const [offerPrice, setOfferPrice] = useState<string>('');
   const [customMessage, setCustomMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
@@ -26,22 +28,36 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
   const cleanPhone = (customerPhone || '').replace(/\D/g, '');
   const greeting = useMemo(() => formatPolishGreeting(customerName), [customerName]);
 
+  // 1. Opcja pierwsza: Zainteresowanie (bez konieczności podawania kwoty)
+  const defaultInterestMessage = useMemo(() => {
+    return `${greeting}, piszę w sprawie ${vehicleTitle}. Zapoznałem się ze zgłoszeniem i jestem zainteresowany odkupem za gotówkę od ręki z odbiorem na miejscu. Jaka ostateczna kwota gotówką wchodzi w grę?`;
+  }, [greeting, vehicleTitle]);
+
+  // 2. Opcja druga: Kontroferta z konkretną kwotą
   const defaultCounterMessage = useMemo(() => {
     if (offerPrice.trim()) {
       return `${greeting}, piszę w sprawie ${vehicleTitle}. Zapoznałem się ze zgłoszeniem i mogę zaproponować ${offerPrice.trim()} zł gotówką od ręki z odbiorem na miejscu i prostą umową. Jeśli propozycja Panu/Pani odpowiada – proszę o kontakt lub krótką odpowiedź.`;
     }
-    return `${greeting}, piszę w sprawie ${vehicleTitle}. Zapoznałem się ze zgłoszeniem i jestem zainteresowany odkupem za gotówkę od ręki z odbiorem na miejscu. Jaka ostateczna kwota gotówką wchodzi w grę?`;
+    return `${greeting}, piszę w sprawie ${vehicleTitle}. Zapoznałem się ze zgłoszeniem i mogę zaproponować [kwota] zł gotówką od ręki z odbiorem na miejscu i prostą umową. Jeśli propozycja Panu/Pani odpowiada – proszę o kontakt lub krótką odpowiedź.`;
   }, [greeting, vehicleTitle, offerPrice]);
 
+  // 3. Opcja trzecia: Uprzejma odmowa
   const defaultRejectMessage = useMemo(() => {
     return `${greeting}, piszę w sprawie ${vehicleTitle}. Dziękuję za kontakt, jednak przy tym modelu i roczniku nie będę w stanie zaproponować satysfakcjonującej kwoty. Życzę powodzenia w sprzedaży!`;
   }, [greeting, vehicleTitle]);
 
-  const currentDefaultMessage = activeTab === 'counter' ? defaultCounterMessage : defaultRejectMessage;
+  const currentDefaultMessage = useMemo(() => {
+    if (activeTab === 'interest') return defaultInterestMessage;
+    if (activeTab === 'counter') return defaultCounterMessage;
+    return defaultRejectMessage;
+  }, [activeTab, defaultInterestMessage, defaultCounterMessage, defaultRejectMessage]);
+
   const currentMessage = customMessage !== null ? customMessage : currentDefaultMessage;
+
+  // Przyciski są zablokowane TYLKO w kontrofercie, dopóki użytkownik nie wpisze kwoty
   const isActionDisabled = activeTab === 'counter' && !offerPrice.trim();
 
-  const handleTabChange = (tab: 'counter' | 'reject') => {
+  const handleTabChange = (tab: ResponseTab) => {
     setActiveTab(tab);
     setCustomMessage(null);
   };
@@ -60,7 +76,7 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
     }
   };
 
-  // Build SMS URI (iOS uses &body=, Android/others use ?body=, ?&body= works across most)
+  // Build SMS URI (iOS uses &body=, Android/others use ?body=)
   const isIos = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
   const smsSeparator = isIos ? '&body=' : '?body=';
   const smsHref = `sms:${cleanPhone}${smsSeparator}${encodeURIComponent(currentMessage)}`;
@@ -68,48 +84,62 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 sm:p-5 space-y-4 text-left shadow-xs">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/80 pb-3">
-        <div>
-          <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-blue-600" />
-            Szybka odpowiedź z Twojego telefonu
-          </h3>
-          <p className="text-[11px] text-slate-500 mt-0.5">
-            Wiadomość wyślesz bezpośrednio ze swojego numeru. Klient odpisze wprost do Ciebie.
-          </p>
-        </div>
-
-        {/* Tab Switcher */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-200/80 rounded-xl self-start sm:self-auto">
-          <button
-            type="button"
-            onClick={() => handleTabChange('counter')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-              activeTab === 'counter'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <TrendingDown className="w-3.5 h-3.5 text-amber-600" />
-            <span>Kontroferta</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => handleTabChange('reject')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-              activeTab === 'reject'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <XCircle className="w-3.5 h-3.5 text-slate-500" />
-            <span>Uprzejma odmowa</span>
-          </button>
-        </div>
+      {/* Nagłówek sekcji */}
+      <div className="border-b border-slate-200/80 pb-3">
+        <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+          <MessageSquare className="w-4 h-4 text-blue-600" />
+          Szybka odpowiedź z Twojego telefonu
+        </h3>
+        <p className="text-[11px] text-slate-500 mt-0.5">
+          Wiadomość wyślesz bezpośrednio ze swojego numeru. Klient odpisze wprost do Ciebie.
+        </p>
       </div>
 
+      {/* Trzy opcje wyświetlone w nowej linii */}
+      <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-200/80 rounded-xl">
+        <button
+          type="button"
+          onClick={() => handleTabChange('interest')}
+          className={`py-2 px-1.5 sm:px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center ${
+            activeTab === 'interest'
+              ? 'bg-white text-slate-900 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Handshake className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+          <span className="truncate">Zainteresowanie</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleTabChange('counter')}
+          className={`py-2 px-1.5 sm:px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center ${
+            activeTab === 'counter'
+              ? 'bg-white text-slate-900 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <TrendingDown className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+          <span className="truncate">Kontroferta</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleTabChange('reject')}
+          className={`py-2 px-1.5 sm:px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center ${
+            activeTab === 'reject'
+              ? 'bg-white text-slate-900 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <XCircle className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+          <span className="truncate">Uprzejma odmowa</span>
+        </button>
+      </div>
+
+      {/* Pole kwoty – widoczne TYLKO przy opcji Kontroferta */}
       {activeTab === 'counter' && (
-        <div className="space-y-2">
+        <div className="space-y-2 animate-fadeIn">
           <label htmlFor={inputId} className="text-xs font-bold text-slate-700 block">
             Twoja maksymalna propozycja gotówkowa (zł):
           </label>
@@ -171,7 +201,7 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
         {isActionDisabled && (
           <p className="text-[11px] font-medium text-amber-800 bg-amber-50 border border-amber-200/80 rounded-xl px-3 py-2 flex items-center gap-2">
             <span className="text-amber-600 font-bold shrink-0">💡</span>
-            <span>Wpisz kwotę, aby odblokować przyciski</span>
+            <span>Wpisz kwotę powyżej, aby odblokować przyciski</span>
           </p>
         )}
 

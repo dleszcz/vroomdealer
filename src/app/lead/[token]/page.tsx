@@ -378,98 +378,99 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 pb-24 sm:pb-28 space-y-6">
-        {/* 1. Tytuł, Data zgłoszenia i Oczekiwania cenowe */}
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3.5 pb-4 border-b border-slate-100">
+        {/* 1. Tytuł pojazdu, Data i Badges (Pełna szerokość na długą nazwę auta) */}
+        <div className="space-y-3 pb-4 border-b border-slate-100">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+              <span className="text-[11px] font-semibold text-slate-500">
+                {new Date(lead.created_at).toLocaleString('pl-PL', {
+                  timeZone: 'Europe/Warsaw',
+                  day: 'numeric',
+                  month: 'short',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </span>
+              <span className="text-slate-300">•</span>
+              <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${freshness.badgeClass}`}>
+                {freshness.label}
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight leading-snug">
+              {lead.make_model}
+            </h1>
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2.5 text-xs font-bold text-slate-700">
+              <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                Rocznik: {lead.year}
+              </span>
+              {mileage && (
+                <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 flex items-center gap-1.5 font-mono">
+                  <Gauge className="w-3.5 h-3.5 text-slate-500" />
+                  {mileage.includes('km') ? mileage : `${mileage} km`}
+                </span>
+              )}
+              {enginePower && (
+                <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 flex items-center gap-1.5 font-mono">
+                  <Zap className="w-3.5 h-3.5 text-amber-500" />
+                  {enginePower.includes('KM') ? enginePower : `${enginePower} KM`}
+                </span>
+              )}
+              <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 flex items-center gap-1.5 uppercase">
+                <Fuel className="w-3.5 h-3.5 text-slate-500" />
+                {lead.fuel}
+              </span>
+              {isListedOnPortals && (
+                <span className="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 font-bold">
+                  Na portalach
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Oczekiwana cena klienta & Stan i status pojazdu (Poniżej tytułu dla pełnej czytelności) */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-emerald-50/70 border border-emerald-100/90">
             <div>
-              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="text-[11px] font-semibold text-slate-500">
-                  {new Date(lead.created_at).toLocaleString('pl-PL', {
-                    timeZone: 'Europe/Warsaw',
-                    day: 'numeric',
-                    month: 'short',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </span>
-                <span className="text-slate-300">•</span>
-                <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${freshness.badgeClass}`}>
-                  {freshness.label}
-                </span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
-                {lead.make_model}
-              </h1>
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2 text-xs font-bold text-slate-700">
-                <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                  Rocznik: {lead.year}
-                </span>
-                {mileage && (
-                  <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 flex items-center gap-1.5 font-mono">
-                    <Gauge className="w-3.5 h-3.5 text-slate-500" />
-                    {mileage.includes('km') ? mileage : `${mileage} km`}
-                  </span>
-                )}
-                {enginePower && (
-                  <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 flex items-center gap-1.5 font-mono">
-                    <Zap className="w-3.5 h-3.5 text-amber-500" />
-                    {enginePower.includes('KM') ? enginePower : `${enginePower} KM`}
-                  </span>
-                )}
-                <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 flex items-center gap-1.5 uppercase">
-                  <Fuel className="w-3.5 h-3.5 text-slate-500" />
-                  {lead.fuel}
-                </span>
-                {isListedOnPortals && (
-                  <span className="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 font-bold">
-                    Na portalach
-                  </span>
-                )}
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 block">
+                Oczekiwania cenowe klienta
+              </span>
+              <div className="text-2xl sm:text-3xl font-black text-emerald-700 mt-0.5 tracking-tight">
+                {lead.price_bracket || 'Czeka na propozycję'}
               </div>
             </div>
 
-            {/* Oczekiwana cena klienta & Stan i status pojazdu */}
-            <div className="sm:text-right bg-emerald-50/60 sm:bg-transparent p-3 sm:p-0 rounded-2xl border border-emerald-100 sm:border-0 shrink-0 space-y-2">
-              <div>
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 sm:text-slate-400 block">
-                  Oczekiwania cenowe klienta
+            {/* Deklarowany stan auta i status OC / PT */}
+            <div className="pt-2 sm:pt-0 border-t border-emerald-200/60 sm:border-t-0 space-y-1.5 text-xs sm:text-right">
+              <div className="flex items-center sm:justify-end gap-1.5 text-slate-700">
+                <span className="text-slate-500 text-[11px] font-bold uppercase tracking-wider">Stan:</span>
+                <span className="font-extrabold text-slate-900">
+                  {conditionLabels[lead.condition] || lead.condition}
                 </span>
-                <div className="text-2xl sm:text-3xl font-black text-emerald-600 sm:text-slate-950 mt-0.5 tracking-tight">
-                  {lead.price_bracket || 'Czeka na propozycję'}
-                </div>
               </div>
-
-              {/* Deklarowany stan auta i status OC / PT (bez 'cardów') */}
-              <div className="pt-2 sm:pt-1 border-t border-emerald-200/60 sm:border-t-0 space-y-1.5 text-xs">
-                <div className="flex items-center sm:justify-end gap-1.5 text-slate-700">
-                  <span className="text-slate-500 sm:text-slate-400 text-[11px] font-bold uppercase tracking-wider">Stan:</span>
-                  <span className="font-extrabold text-slate-900">
-                    {conditionLabels[lead.condition] || lead.condition}
-                  </span>
-                </div>
-                <div className="flex flex-wrap items-center sm:justify-end gap-1.5 pt-0.5">
-                  <span
-                    className={`px-2 py-0.5 rounded-md font-bold text-[11px] ${
-                      hasNoInsurance
-                        ? 'bg-red-100 text-red-800 border border-red-200'
-                        : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                    }`}
-                  >
-                    {hasNoInsurance ? '⚠️ Brak OC (laweta)' : '✅ OC Ważne'}
-                  </span>
-                  <span
-                    className={`px-2 py-0.5 rounded-md font-bold text-[11px] ${
-                      hasNoMot
-                        ? 'bg-red-100 text-red-800 border border-red-200'
-                        : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                    }`}
-                  >
-                    {hasNoMot ? '⚠️ Brak badania tech.' : '✅ Przegląd ważny'}
-                  </span>
-                </div>
+              <div className="flex flex-wrap items-center sm:justify-end gap-1.5 pt-0.5">
+                <span
+                  className={`px-2 py-0.5 rounded-md font-bold text-[11px] ${
+                    hasNoInsurance
+                      ? 'bg-red-100 text-red-800 border border-red-200'
+                      : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                  }`}
+                >
+                  {hasNoInsurance ? '⚠️ Brak OC (laweta)' : '✅ OC Ważne'}
+                </span>
+                <span
+                  className={`px-2 py-0.5 rounded-md font-bold text-[11px] ${
+                    hasNoMot
+                      ? 'bg-red-100 text-red-800 border border-red-200'
+                      : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                  }`}
+                >
+                  {hasNoMot ? '⚠️ Brak badania tech.' : '✅ Przegląd ważny'}
+                </span>
               </div>
             </div>
           </div>
+        </div>
+
 
           {/* 2. Zdjęcia pojazdu z pełnoekranową galerią (Lightbox) */}
           <LeadGallery
