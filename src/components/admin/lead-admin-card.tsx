@@ -337,7 +337,15 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
 
           {/* Sekcja Mikro-Wyceny AI (Flat, clean styling bez kart w kartach) */}
           <div className="space-y-2 pt-0.5">
-            {!aiValuation ? (
+            {!numericPrice ? (
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-amber-400 font-bold">ℹ️</span>
+                  <span>Klient nie podał kwoty – kalkulacja marży i wycena wyłączona</span>
+                </div>
+                <span className="text-[11px] text-blue-400 font-semibold">Użyj „Zainteresowanie” w SMS</span>
+              </div>
+            ) : !aiValuation ? (
               <button
                 type="button"
                 onClick={handleLoadAiValuation}
@@ -353,6 +361,7 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
                 </span>
               </button>
             ) : (
+
               <div className="border-l-2 border-amber-500 pl-3 py-1 space-y-2 text-xs">
                 {/* Header: Rating & Source Badge */}
                 <div className="flex flex-wrap items-center justify-between gap-1.5">

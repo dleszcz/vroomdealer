@@ -41,9 +41,32 @@ export function generateAlgorithmicValuation(
   isQuotaExceeded: boolean = false
 ): AiValuationResult {
   const numericPrice = parsePriceAmount(lead.price_bracket, lead.condition_notes);
+
+  // Gdy cena nie jest podana przez klienta, NIE robimy wyliczeń, aby nie generować fikcyjnych liczb
+  if (!numericPrice || numericPrice <= 0) {
+    return {
+      suggestedBuyPrice: 'Brak ceny klienta',
+      estimatedMarketPrice: 'Czeka na propozycję',
+      profitMargin: 'Brak danych',
+      rating: 'fair',
+      ratingLabel: '❓ Czeka na wycenę (brak kwoty)',
+      verdict: 'Klient nie podał oczekiwanej ceny. Wyliczenia marży i zysku są wyłączone, aby nie tworzyć nierealistycznych szacunków. Skontaktuj się ze sprzedającym (użyj szablonu SMS „Zainteresowanie”), aby poznać jego oczekiwania cenowe.',
+      negotiationTips: [
+        'Wyślij SMS z pytaniem: „Jaka ostateczna kwota gotówką wchodzi w grę?”',
+        'Poproś o wyjściową propozycję sprzedawcy przed składaniem własnej kontroferty.',
+        'Zbadaj motywację sprzedaży auta przed podaniem wyceny odkupu.'
+      ],
+      targetAudience: 'Wymaga kontaktu ws. ceny',
+      source: isQuotaExceeded ? 'quota_fallback' : 'algorithmic_fallback',
+      methodLabel: 'Wyliczenia wstrzymane (brak ceny)',
+      methodDescription: 'Gdy klient nie podał oczekiwanej kwoty, wyliczenia marży i kwot odkupu są wyłączone, aby nie podawać nierealistycznych liczb.',
+    };
+  }
+
   const currentYear = new Date().getFullYear();
   const age = Math.max(1, currentYear - lead.year);
   const titleLower = (lead.make_model || '').toLowerCase();
+
 
   const isPremium = /mercedes|bmw|audi|porsche|lexus|volvo|jaguar/i.test(titleLower);
   const isSuv = /kuga|qashqai|tiguan|rav4|sportage|tucson|cr-v|x3|x5|q5|glc/i.test(titleLower);
@@ -130,6 +153,13 @@ export function generateAlgorithmicValuation(
  * natychmiast wraca do darmowego algorytmu Vroom bez żadnych kosztów.
  */
 export async function getAiValuationForLead(lead: LeadDataForAi): Promise<AiValuationResult> {
+  const numericPrice = parsePriceAmount(lead.price_bracket, lead.condition_notes);
+
+  // Gdy cena nie jest podana, nie robimy wyliczeń ani nie odpytujemy AI o fikcyjne kwoty
+  if (!numericPrice || numericPrice <= 0) {
+    return generateAlgorithmicValuation(lead);
+  }
+
   const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
   const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
 
@@ -137,6 +167,7 @@ export async function getAiValuationForLead(lead: LeadDataForAi): Promise<AiValu
   if (!isProduction || !apiKey) {
     return generateAlgorithmicValuation(lead);
   }
+
 
   try {
     const prompt = `Jesteś bezwzględnie doświadczonym ekspertem wyceny samochodów używanych w Polsce oraz doradcą dla skupów aut i handlarzy (flipowanie aut).

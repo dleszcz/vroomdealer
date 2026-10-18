@@ -233,6 +233,9 @@ export const AdminDashboardClient: React.FC<AdminDashboardClientProps> = ({ init
       if (sortBy === 'price_desc') {
         const pA = parsePriceAmount(a.price_bracket, a.condition_notes) ?? 0;
         const pB = parsePriceAmount(b.price_bracket, b.condition_notes) ?? 0;
+        if (!pA && !pB) return 0;
+        if (!pA) return 1;
+        if (!pB) return -1;
         return pB - pA;
       }
       // Domyślnie: najnowsze (data + godzina)

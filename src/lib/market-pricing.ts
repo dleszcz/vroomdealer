@@ -75,9 +75,10 @@ export function assessMarketPrice(
       status: 'unpriced',
       badgeLabel: 'Czeka na wycenę',
       badgeClass: 'bg-slate-100 text-slate-700 border-slate-300',
-      description: 'Klient nie podał kwoty lub oczekuje propozycji od skupu.',
+      description: 'Klient nie podał kwoty – wyliczenia marży i zysku są wyłączone.',
     };
   }
+
 
   // Szacunkowa siatka wartości w zależności od rocznika i prestiżu marki
   const currentYear = new Date().getFullYear();
