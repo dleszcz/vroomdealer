@@ -111,9 +111,9 @@ export function assessMarketPrice(
   const age = Math.max(1, currentYear - year);
 
   const titleLower = makeAndModel.toLowerCase();
-  const isPremium = /mercedes|bmw|audi|porsche|lexus|volvo/i.test(titleLower);
+  const isPremium = /mercedes|bmw|audi|porsche|lexus|volvo|jaguar|land rover/i.test(titleLower);
   const isSuv = /kuga|qashqai|tiguan|rav4|sportage|tucson|cr-v|x3|x5|q5|glc/i.test(titleLower);
-  const isBudget = /dacia|fiat|punto|corsa|clio|fabia|yaris|seicento/i.test(titleLower);
+  const isBudget = /dacia|fiat|punto|corsa|clio|fabia|yaris|seicento|matiz|polo|aygo/i.test(titleLower);
 
   // Bazowa wartość rynkowa (mediana)
   let baseNewPrice = 135000;
@@ -121,40 +121,55 @@ export function assessMarketPrice(
   if (isSuv) baseNewPrice = 160000;
   if (isBudget) baseNewPrice = 75000;
 
-  // Uproszczona krzywa amortyzacji
+  // Uproszczona krzywa amortyzacji detalicznej
   const residualPercentage = Math.max(0.08, Math.pow(0.85, age));
   const estimatedMarket = Math.round((baseNewPrice * residualPercentage) / 1000) * 1000;
+
+  // Progi skupowe w zależności od wieku (ryzyko awarii i czas rotacji kapitału)
+  let buyoutRatio = 0.74;
+  if (age >= 16) buyoutRatio = 0.50;
+  else if (age >= 11) buyoutRatio = 0.58;
+  else if (age >= 6) buyoutRatio = 0.68;
+
+  if (isPremium && age >= 11) {
+    buyoutRatio = Math.max(0.42, buyoutRatio - 0.05);
+  }
+
+  const safeBuyoutCeiling = Math.round((estimatedMarket * buyoutRatio) / 1000) * 1000;
 
   const diffRatio = (clientPrice - estimatedMarket) / estimatedMarket;
   const percentage = Math.round(Math.abs(diffRatio) * 100);
 
-  if (diffRatio <= -0.15) {
+  // 1. Okazja dla skupu: cena klienta mieści się w bezpiecznym odkupie skupowym (+/- 5%)
+  if (clientPrice <= safeBuyoutCeiling * 1.05) {
     return {
       status: 'deal',
-      badgeLabel: `🔥 Okazja (~${percentage}% poniżej rynku)`,
+      badgeLabel: `🔥 Okazja pod skup (~${percentage}% poniżej rynku)`,
       badgeClass: 'bg-emerald-500 text-white border-emerald-600 shadow-xs',
-      description: `Szacowana rynkowa: ~${estimatedMarket.toLocaleString('pl-PL')} zł. Cena klienta daje duży margines zysku.`,
+      description: `Średnia rynkowa: ~${estimatedMarket.toLocaleString('pl-PL')} zł. Cena klienta daje wysoki margines zysku dla skupu.`,
       estimatedMarketPrice: estimatedMarket,
       percentageDiff: -percentage,
     };
   }
 
-  if (diffRatio > -0.15 && diffRatio <= 0.12) {
+  // 2. Cena w granicach detalicznych (wymaga negocjacji pod skup)
+  if (clientPrice <= estimatedMarket * 0.90) {
     return {
       status: 'fair',
-      badgeLabel: '⚖️ Cena rynkowa (średnia)',
+      badgeLabel: '⚖️ Baza do negocjacji pod skup',
       badgeClass: 'bg-amber-100 text-amber-900 border-amber-300',
-      description: `W granicach średniej (~${estimatedMarket.toLocaleString('pl-PL')} zł). Standardowa baza do negocjacji.`,
+      description: `Cena klienta (${clientPrice.toLocaleString('pl-PL')} zł) blisko średniej rynkowej (~${estimatedMarket.toLocaleString('pl-PL')} zł). Wymaga zbicia ceny do poziomu skupu (~${safeBuyoutCeiling.toLocaleString('pl-PL')} zł).`,
       estimatedMarketPrice: estimatedMarket,
       percentageDiff: percentage,
     };
   }
 
+  // 3. Cena zawyżona (pełny detal lub powyżej rynku)
   return {
     status: 'overpriced',
-    badgeLabel: `⚠️ Zawyżona (~${percentage}% powyżej rynku)`,
+    badgeLabel: `⚠️ Zawyżona pod skup (~${percentage}% powyżej)`,
     badgeClass: 'bg-red-100 text-red-900 border-red-300',
-    description: `Klient oczekuje powyżej średniej rynkowej (~${estimatedMarket.toLocaleString('pl-PL')} zł). Wymaga zbicia ceny.`,
+    description: `Klient oczekuje ceny detalicznej z ogłoszeń (~${estimatedMarket.toLocaleString('pl-PL')} zł). Bezpieczny odkup dla skupu to max ~${safeBuyoutCeiling.toLocaleString('pl-PL')} zł.`,
     estimatedMarketPrice: estimatedMarket,
     percentageDiff: percentage,
   };

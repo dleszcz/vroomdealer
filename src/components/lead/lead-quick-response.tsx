@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState, useId, useMemo } from 'react';
-import { MessageSquare, Send, Copy, Check, TrendingDown, XCircle, Sparkles, RotateCcw, Handshake } from 'lucide-react';
+import React, { useState, useId, useMemo, useEffect } from 'react';
+import { MessageSquare, Send, Copy, Check, TrendingDown, XCircle, Sparkles, Handshake, Lock } from 'lucide-react';
 import { formatPolishGreeting } from '@/lib/greeting';
+import { useLeadReveal } from './lead-reveal-context';
 
 interface LeadQuickResponseProps {
   vehicleTitle: string;
   brandLabel: string;
   customerName: string;
-  customerPhone: string;
+  customerPhone?: string;
 }
 
 type ResponseTab = 'interest' | 'counter' | 'reject';
@@ -17,15 +18,27 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
   vehicleTitle,
   brandLabel,
   customerName,
-  customerPhone,
+  customerPhone: initialCustomerPhone,
 }) => {
+  const { isRevealed, cleanPhone: revealedCleanPhone, openModal, lastOfferPrice } = useLeadReveal();
   const [activeTab, setActiveTab] = useState<ResponseTab>('interest');
   const [offerPrice, setOfferPrice] = useState<string>('');
   const [customMessage, setCustomMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
   const inputId = useId();
 
-  const cleanPhone = (customerPhone || '').replace(/\D/g, '');
+  // Prefill offer price if dealer entered it in the reveal modal
+  useEffect(() => {
+    if (lastOfferPrice && lastOfferPrice.trim()) {
+      setOfferPrice(lastOfferPrice.trim());
+      setActiveTab('counter');
+    }
+  }, [lastOfferPrice]);
+
+  const cleanPhone = isRevealed && revealedCleanPhone
+    ? revealedCleanPhone
+    : (initialCustomerPhone || '').replace(/\D/g, '');
+
   const greeting = useMemo(() => formatPolishGreeting(customerName), [customerName]);
 
   // 1. Opcja pierwsza: Zainteresowanie (bez konieczności podawania kwoty)
@@ -69,6 +82,10 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
 
   const handleCopy = () => {
     if (isActionDisabled) return;
+    if (!isRevealed) {
+      openModal();
+      return;
+    }
     if (navigator?.clipboard) {
       navigator.clipboard.writeText(currentMessage);
       setCopied(true);
@@ -179,26 +196,40 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
                 className="text-[10px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer transition-colors"
                 title="Przywróć domyślny szablon"
               >
-                <RotateCcw className="w-3 h-3" />
-                <span>Przywróć szablon</span>
+                <span>Przywróć domyślną</span>
               </button>
             )}
-            <span className="text-slate-400 font-mono text-[10px]">{currentMessage.length} zn.</span>
           </div>
         </div>
+
         <textarea
           id="quick-response-editor"
-          rows={4}
+          rows={3}
           value={currentMessage}
           onChange={(e) => setCustomMessage(e.target.value)}
-          className="w-full p-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs sm:text-sm font-medium leading-relaxed focus:border-slate-900 focus:outline-none transition-colors resize-y shadow-xs"
-          placeholder="Wpisz treść wiadomości..."
+          className="w-full p-3.5 rounded-xl border border-slate-300 bg-white text-slate-800 text-xs sm:text-sm leading-relaxed focus:outline-none focus:border-blue-600 transition-colors shadow-2xs font-sans resize-none"
         />
       </div>
 
-      {/* Przyciski akcji (SMS, WhatsApp, Kopiuj) */}
+      {/* Info baner o ukrytym numerze jeśli nieodblokowany */}
+      {!isRevealed && (
+        <div
+          onClick={openModal}
+          className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold flex items-center justify-between gap-2 cursor-pointer hover:bg-amber-100/80 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Lock className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>Numer telefonu klienta jest zamaskowany. Pobierz kontakt (0 zł), aby wysłać wiadomość.</span>
+          </div>
+          <span className="text-[11px] text-amber-900 font-extrabold underline shrink-0">
+            Odblokuj ↗
+          </span>
+        </div>
+      )}
+
+      {/* Przyciski wysyłki */}
       <div className="space-y-2 pt-1">
-        {isActionDisabled && (
+        {isActionDisabled && isRevealed && (
           <p className="text-[11px] font-medium text-amber-800 bg-amber-50 border border-amber-200/80 rounded-xl px-3 py-2 flex items-center gap-2">
             <span className="text-amber-600 font-bold shrink-0">💡</span>
             <span>Wpisz kwotę powyżej, aby odblokować przyciski</span>
@@ -206,7 +237,16 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          {isActionDisabled ? (
+          {!isRevealed ? (
+            <button
+              type="button"
+              onClick={openModal}
+              className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-98 text-center cursor-pointer"
+            >
+              <Lock className="w-4 h-4 text-amber-400" />
+              <span>Odblokuj numer (SMS)</span>
+            </button>
+          ) : isActionDisabled ? (
             <button
               type="button"
               disabled
@@ -226,7 +266,16 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
             </a>
           )}
 
-          {isActionDisabled ? (
+          {!isRevealed ? (
+            <button
+              type="button"
+              onClick={openModal}
+              className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-98 text-center cursor-pointer"
+            >
+              <Lock className="w-4 h-4 text-white" />
+              <span>Odblokuj (WhatsApp)</span>
+            </button>
+          ) : isActionDisabled ? (
             <button
               type="button"
               disabled
@@ -250,10 +299,10 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
 
           <button
             type="button"
-            disabled={isActionDisabled}
+            disabled={isRevealed && isActionDisabled}
             onClick={handleCopy}
             className={`flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl border font-bold text-xs sm:text-sm transition-all ${
-              isActionDisabled
+              isRevealed && isActionDisabled
                 ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed select-none'
                 : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 cursor-pointer'
             }`}

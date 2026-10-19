@@ -49,6 +49,7 @@ export function extractExtras(notes?: string | null): string {
       if (s.startsWith('Oczekiwana kwota:')) return false;
       if (s.startsWith('Przebieg:')) return false;
       if (s.startsWith('Moc:')) return false;
+      if (s.includes('POBRANIE KONTAKTU')) return false;
       return true;
     })
     .join(', ');

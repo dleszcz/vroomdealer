@@ -9,7 +9,9 @@ import {
   ExternalLink,
   MessageSquare,
   AlertTriangle,
+  Lock,
 } from 'lucide-react';
+import { useLeadReveal } from './lead-reveal-context';
 
 interface LeadGalleryProps {
   photoUrls: string[];
@@ -21,9 +23,11 @@ interface LeadGalleryProps {
 export const LeadGallery: React.FC<LeadGalleryProps> = ({
   photoUrls,
   vehicleTitle,
-  cleanPhone,
+  cleanPhone: initialCleanPhone,
   brandLabel,
 }) => {
+  const { isRevealed, cleanPhone: revealedCleanPhone, openModal } = useLeadReveal();
+  const cleanPhone = isRevealed && revealedCleanPhone ? revealedCleanPhone : initialCleanPhone;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const hasPhotos = Array.isArray(photoUrls) && photoUrls.length > 0;
@@ -129,17 +133,26 @@ export const LeadGallery: React.FC<LeadGalleryProps> = ({
               Większość sprzedających posiada zdjęcia w telefonie. Poproś o podesłanie kilku fotek na WhatsApp lub MMS.
             </p>
           </div>
-          {cleanPhone && (
+          {!isRevealed ? (
+            <button
+              type="button"
+              onClick={openModal}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs transition-all shrink-0 active:scale-95 cursor-pointer"
+            >
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+              <span>Odblokuj kontakt (WhatsApp)</span>
+            </button>
+          ) : cleanPhone ? (
             <a
               href={`https://wa.me/48${cleanPhone}?text=${whatsappPhotosPrompt}`}
               target="_blank"
               rel="noreferrer"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all shrink-0 active:scale-95"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all shrink-0 active:scale-95 cursor-pointer"
             >
               <MessageSquare className="w-3.5 h-3.5" />
               <span>Poproś o zdjęcia na WhatsApp</span>
             </a>
-          )}
+          ) : null}
         </div>
       )}
 

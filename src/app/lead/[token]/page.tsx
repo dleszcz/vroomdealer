@@ -16,6 +16,10 @@ import {
 import { Logo } from '@/components/site/logo';
 import { LeadGallery } from '@/components/lead/lead-gallery';
 import { LeadQuickResponse } from '@/components/lead/lead-quick-response';
+import { LeadRevealProvider } from '@/components/lead/lead-reveal-context';
+import { LeadRevealModal } from '@/components/lead/lead-reveal-modal';
+import { LeadBottomBar } from '@/components/lead/lead-bottom-bar';
+import { maskPhoneNumber } from '@/lib/lead-reveal';
 import { formatPolishGreeting, formatPolishVocative } from '@/lib/greeting';
 
 interface LeadPageProps {
@@ -322,7 +326,7 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
     niesprawny: 'Powypadkowy / Nie odpala / Po kolizji',
   };
 
-  const cleanPhone = (lead.customer_phone || '').replace(/[^0-9]/g, '');
+  const maskedPhone = maskPhoneNumber(lead.customer_phone);
 
   const hasNoInsurance =
     lead.condition_notes?.includes('BRAK WAŻNEGO OC') || lead.no_insurance;
@@ -353,6 +357,7 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
       if (s.includes('Wystawione na portalach')) return false;
       if (s.includes('Tylko w VroomScout')) return false;
       if (s.includes('Off-market')) return false;
+      if (s.includes('POBRANIE KONTAKTU')) return false;
       if (s.startsWith('Oczekiwana kwota:')) return false;
       if (s.startsWith('Przebieg:')) return false;
       if (s.startsWith('Moc:')) return false;
@@ -361,8 +366,14 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
     .join(' • ');
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-amber-200">
-      {/* Top Header */}
+    <LeadRevealProvider
+      token={token}
+      initialMaskedPhone={maskedPhone}
+      customerName={lead.customer_name || 'Klient'}
+    >
+      <LeadRevealModal />
+      <div className="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-amber-200">
+        {/* Top Header */}
       <header className="bg-slate-950 text-white py-3 px-4 sm:px-6 border-b border-slate-800 sticky top-0 z-30 shadow-md">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -476,7 +487,6 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
           <LeadGallery
             photoUrls={lead.photo_urls || []}
             vehicleTitle={`${lead.make_model} (${lead.year})`}
-            cleanPhone={cleanPhone}
             brandLabel={brandLabel}
           />
 
@@ -497,7 +507,6 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
           vehicleTitle={`${lead.make_model} (${lead.year})`}
           brandLabel={brandLabel}
           customerName={lead.customer_name || 'Klient'}
-          customerPhone={cleanPhone}
         />
 
         {/* 6. PRAKTYCZNY PORADNIK KUPCA (ROZWIJANY AKORDEON) */}
@@ -649,44 +658,10 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
       </main>
 
       {/* ========================================================
-          STICKY BOTTOM BAR (PRZYPIĘTY NA DOLE EKRANU MOBILNEGO)
+          STICKY BOTTOM BAR (Z BRAMKĄ ODKRYWANIA DLA SKUPÓW)
       ======================================================== */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 px-4 sm:px-6 py-2.5 sm:py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] text-white shadow-2xl">
-        <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
-          <div className="min-w-0 flex-1 pr-1">
-            <div className="flex items-center gap-1.5 truncate">
-              <span className="text-xs sm:text-sm text-emerald-400 font-mono font-bold truncate">
-                {lead.customer_phone}
-              </span>
-              <span className="text-slate-600 font-normal">•</span>
-              <span className="text-xs sm:text-sm font-bold text-white truncate">
-                {lead.customer_name || 'Klient'}
-              </span>
-            </div>
-            <div className="text-[11px] text-slate-300 truncate flex items-center gap-1 mt-0.5 font-medium">
-              <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-              <span className="truncate">{lead.city || 'Polska'}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <a
-              href={`sms:${cleanPhone}`}
-              className="px-3 sm:px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs sm:text-sm border border-slate-700 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
-            >
-              <span>SMS</span>
-            </a>
-
-            <a
-              href={`tel:${cleanPhone}`}
-              className="inline-flex items-center gap-2 px-3.5 sm:px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs sm:text-sm shadow-lg transition-all active:scale-95 cursor-pointer"
-            >
-              <Phone className="w-4 h-4 fill-current shrink-0" />
-              <span>Zadzwoń</span>
-            </a>
-          </div>
-        </div>
-      </div>
+      <LeadBottomBar city={lead.city || 'Polska'} />
     </div>
-  );
+  </LeadRevealProvider>
+);
 }

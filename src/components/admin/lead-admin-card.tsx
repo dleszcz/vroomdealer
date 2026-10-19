@@ -20,13 +20,16 @@ import {
   XCircle,
   Truck,
   Sparkles,
-  Info
+  Info,
+  Building2,
+  Eye,
 } from 'lucide-react';
 
 import { generateBuyerPitch, extractExtras } from '@/lib/pitch-template';
 import { assessMarketPrice, parsePriceAmount, getOtomotoSearchUrl, getOlxSearchUrl } from '@/lib/market-pricing';
 import { getAiValuationAction } from '@/app/admin/actions';
 import type { AiValuationResult } from '@/lib/ai-valuation';
+import { parseBuyerReveals, stripRevealTags } from '@/lib/lead-reveal';
 
 interface LeadAdminCardProps {
 
@@ -133,9 +136,11 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
   const currentStatusObj = STATUS_CONFIG[currentStatus] || STATUS_CONFIG.new;
   const StatusIcon = currentStatusObj.icon;
 
-  const extras = extractExtras(lead.condition_notes);
-  const hasNoInsurance = lead.condition_notes?.includes('BRAK WAŻNEGO OC');
-  const hasNoMot = lead.condition_notes?.includes('BRAK WAŻNEGO PRZEGLĄDU');
+  const buyerReveals = parseBuyerReveals(lead.condition_notes);
+  const cleanNotes = stripRevealTags(lead.condition_notes);
+  const extras = extractExtras(cleanNotes);
+  const hasNoInsurance = cleanNotes.includes('BRAK WAŻNEGO OC');
+  const hasNoMot = cleanNotes.includes('BRAK WAŻNEGO PRZEGLĄDU');
 
   // AI Valuation State (cached per lead in localStorage)
   const [aiValuation, setAiValuation] = useState<AiValuationResult | null>(() => {
@@ -189,6 +194,13 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
           </div>
 
           <div className="flex items-center gap-2">
+            {buyerReveals.length > 0 && (
+              <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold flex items-center gap-1">
+                <Eye className="w-2.5 h-2.5" />
+                <span>{buyerReveals.length} {buyerReveals.length === 1 ? 'skup' : 'skupy'}</span>
+              </span>
+            )}
+
             <span className={`px-2 py-0.5 rounded-md border text-[10px] font-bold flex items-center gap-1 ${currentStatusObj.badgeClass}`}>
               <StatusIcon className="w-2.5 h-2.5" />
               <span>{currentStatusObj.label}</span>
@@ -373,6 +385,51 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
             </div>
           </div>
 
+          {/* Sekcja pobrań kontaktu przez skupy */}
+          {buyerReveals.length > 0 && (
+            <div className="p-3 rounded-xl bg-slate-900/90 border border-emerald-500/30 space-y-2">
+              <div className="flex items-center justify-between text-xs font-bold text-emerald-400">
+                <span className="flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span>Skupy aut, które pobrały kontakt ({buyerReveals.length}):</span>
+                </span>
+                <span className="text-[10px] text-slate-500 font-normal">Zarejestrowane w systemie</span>
+              </div>
+              <div className="space-y-1.5">
+                {buyerReveals.map((buyer, idx) => (
+                  <div
+                    key={idx}
+                    className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-xs flex flex-wrap items-center justify-between gap-2"
+                  >
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white">{buyer.buyerName}</span>
+                        {buyer.offerPrice && (
+                          <span className="px-1.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold text-[10px]">
+                            Oferta: {buyer.offerPrice} zł
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-slate-500 block">
+                        Pobrano: {buyer.timestamp}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={`tel:${buyer.buyerPhone.replace(/\D/g, '')}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 font-mono font-bold text-[11px] inline-flex items-center gap-1 transition-colors"
+                      >
+                        <Phone className="w-3 h-3" />
+                        <span>{buyer.buyerPhone}</span>
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Sekcja Mikro-Wyceny AI (Flat, clean styling bez kart w kartach) */}
           <div className="space-y-2 pt-0.5">
             {!numericPrice ? (
@@ -440,19 +497,6 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
                   {aiValuation.verdict}
                 </p>
 
-                {aiValuation.negotiationTips?.length > 0 && (
-                  <div className="space-y-1 pt-0.5">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Argumenty do zbicia ceny dla skupu:</span>
-                    <ul className="space-y-1 text-[11px] text-slate-300">
-                      {aiValuation.negotiationTips.map((tip, idx) => (
-                        <li key={idx} className="flex items-start gap-1.5">
-                          <span className="text-amber-400 font-bold shrink-0">•</span>
-                          <span>{tip}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
 
                 {/* Informacja jak to liczymy */}
                 {aiValuation.methodDescription && (
