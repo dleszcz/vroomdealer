@@ -30,6 +30,7 @@ import { assessMarketPrice, parsePriceAmount, getOtomotoSearchUrl, getOlxSearchU
 import { getAiValuationAction } from '@/app/admin/actions';
 import type { AiValuationResult } from '@/lib/ai-valuation';
 import { parseBuyerReveals, stripRevealTags } from '@/lib/lead-reveal';
+import { formatLocation } from '@/lib/location-resolver';
 
 interface LeadAdminCardProps {
 
@@ -223,7 +224,7 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
             </h2>
 
             <div className="flex flex-wrap items-center gap-x-2 text-xs text-slate-400 font-medium">
-              <span className="text-slate-300 font-semibold">{lead.city || 'Polska'}</span>
+              <span className="text-slate-300 font-semibold">{formatLocation(lead.city)}</span>
               <span className="text-slate-600">•</span>
               <span className="uppercase text-[11px] text-slate-400">{lead.fuel}</span>
               {cleanNotes.includes('Pilna sprzedaż') && (

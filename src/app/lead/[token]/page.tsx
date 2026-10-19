@@ -20,6 +20,7 @@ import { LeadRevealProvider } from '@/components/lead/lead-reveal-context';
 import { LeadBottomBar } from '@/components/lead/lead-bottom-bar';
 import { maskPhoneNumber } from '@/lib/lead-reveal';
 import { formatPolishGreeting, formatPolishVocative } from '@/lib/greeting';
+import { formatLocation } from '@/lib/location-resolver';
 
 interface LeadPageProps {
   params: Promise<{
@@ -200,13 +201,14 @@ export async function generateMetadata({ params }: LeadPageProps): Promise<Metad
   const mileage = lead.mileage || (mileageMatch ? mileageMatch[1].trim() : null);
   const enginePower = lead.engine_power || (powerMatch ? powerMatch[1].trim() : null);
 
-  const title = `${lead.make_model} (${lead.year}) • ${priceDisplay} • ${lead.city}`;
+  const resolvedCity = formatLocation(lead.city);
+  const title = `${lead.make_model} (${lead.year}) • ${priceDisplay} • ${resolvedCity}`;
   
   const specsParts = [
     lead.fuel ? lead.fuel.toUpperCase() : '',
     mileage ? `Przebieg: ${mileage}` : '',
     enginePower ? `Moc: ${enginePower}` : '',
-    lead.city ? `Lokalizacja: ${lead.city}` : '',
+    resolvedCity ? `Lokalizacja: ${resolvedCity}` : '',
   ].filter(Boolean);
 
   const description = `Zgłoszenie odkupu z ${brandLabel}. ${specsParts.join(' • ')}. Zobacz zdjęcia pojazdu i bezpośredni kontakt do klienta.`;
@@ -681,7 +683,7 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
       {/* ========================================================
           STICKY BOTTOM BAR (Z BRAMKĄ ODKRYWANIA DLA SKUPÓW)
       ======================================================== */}
-      <LeadBottomBar city={lead.city || 'Polska'} />
+      <LeadBottomBar city={formatLocation(lead.city)} />
     </div>
   </LeadRevealProvider>
 );

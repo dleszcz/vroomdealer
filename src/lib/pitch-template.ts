@@ -2,6 +2,8 @@
  * Generator gotowych wiadomości zachęty do odkupu dla partnerskich skupów aut
  */
 
+import { formatLocation } from './location-resolver';
+
 export interface PitchLeadData {
   make_model: string;
   year: number;
@@ -90,7 +92,11 @@ export function generateBuyerPitch(lead: PitchLeadData, leadUrl?: string): strin
   const priceDisplay = isUnpriced
     ? 'Cena: Klient nie podał kwoty (czeka na propozycję odkupu)'
     : `Oczekiwana cena klienta: ${lead.price_bracket}`;
-  const city = lead.city || 'Polska';
+  const city = formatLocation(lead.city);
+
+  const linkPart = leadUrl
+    ? `\n\n📸 Pełna galeria zdjęć, usterki i szczegóły auta pod linkiem:\n${leadUrl}\n\nProszę o informację czy jesteście zainteresowani odkupem.`
+    : '\n\nProszę o informację czy jesteście zainteresowani odkupem.';
 
   return `Dzień dobry, 
 Czy jesteście zainteresowani takim autem?
@@ -99,9 +105,7 @@ ${lead.make_model} (${lead.year}) – ${fuel}
 Lokalizacja: ${city}
 Stan: ${stanFull}
 ${priceDisplay}${urgencyLine}
-
-Auto pochodzi z mojego systemu do pozyskiwania aut od prywatnych właścicieli do skupów.
-Proszę dać znać czy podesłać zdjęcia i kontakt do sprzedawcy.${leadUrl ? `\n\nPodgląd zgłoszenia: ${leadUrl}` : ''}
+${linkPart}
 
 Pozdrawiam,
 Daniel`;
