@@ -1,8 +1,8 @@
-export interface BuyerRevealInfo {
-  buyerName: string;
-  buyerPhone: string;
-  offerPrice?: string;
+export interface ContactRevealEvent {
   timestamp: string;
+  buyerName?: string;
+  buyerPhone?: string;
+  offerPrice?: string;
 }
 
 /**
@@ -32,43 +32,75 @@ export function formatDisplayPhone(phone?: string | null): string {
 }
 
 /**
- * Tworzy ustandaryzowany znacznik pobrania kontaktu do zapisu w condition_notes
+ * Tworzy znacznik kliknięcia / odkrycia kontaktu przez skup
  */
-export function formatRevealTag(info: BuyerRevealInfo): string {
+export function formatClickRevealTag(timestamp?: string): string {
+  const ts = timestamp || new Date().toLocaleString('pl-PL', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Warsaw',
+  });
+  return `[ODKRYCIE KONTAKTU: ${ts}]`;
+}
+
+/**
+ * Tworzy ustandaryzowany znacznik pobrania kontaktu (wsteczna kompatybilność)
+ */
+export function formatRevealTag(info: { buyerName?: string; buyerPhone?: string; offerPrice?: string; timestamp?: string }): string {
+  if (!info.buyerName && !info.buyerPhone) {
+    return formatClickRevealTag(info.timestamp);
+  }
   const parts = [
-    `POBRANIE KONTAKTU: ${info.buyerName.trim()}`,
-    `tel: ${info.buyerPhone.trim()}`,
+    `POBRANIE KONTAKTU: ${(info.buyerName || 'Skup aut').trim()}`,
+    `tel: ${(info.buyerPhone || '').trim()}`,
   ];
   if (info.offerPrice && info.offerPrice.trim()) {
     parts.push(`deklaracja: ${info.offerPrice.trim()} zł`);
   }
-  parts.push(info.timestamp || new Date().toLocaleString('pl-PL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }));
+  parts.push(info.timestamp || new Date().toLocaleString('pl-PL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Warsaw' }));
   return `[${parts.join(' | ')}]`;
 }
 
 /**
- * Wyciąga ze stringa condition_notes wszystkie zarejestrowane pobrania kontaktu przez skupy
+ * Wyciąga ze stringa condition_notes wszystkie zarejestrowane odkrycia kontaktu (zarówno 1-klik, jak i formularz)
  */
-export function parseBuyerReveals(notes?: string | null): BuyerRevealInfo[] {
+export function parseBuyerReveals(notes?: string | null): ContactRevealEvent[] {
   if (!notes) return [];
-  const regex = /\[POBRANIE KONTAKTU:\s*([^|]+)\|\s*tel:\s*([^|]+)(?:\|\s*deklaracja:\s*([^|]+))?\|\s*([^\]]+)\]/gi;
-  const reveals: BuyerRevealInfo[] = [];
-  let match;
-  while ((match = regex.exec(notes)) !== null) {
+  const reveals: ContactRevealEvent[] = [];
+
+  // 1. Dopasowanie 1-klik: [ODKRYCIE KONTAKTU: 19.10 12:45]
+  const clickRegex = /\[ODKRYCIE KONTAKTU:\s*([^\]]+)\]/gi;
+  let clickMatch;
+  while ((clickMatch = clickRegex.exec(notes)) !== null) {
     reveals.push({
-      buyerName: match[1]?.trim() || 'Skup aut',
-      buyerPhone: match[2]?.trim() || '',
-      offerPrice: match[3]?.trim(),
-      timestamp: match[4]?.trim() || '',
+      timestamp: clickMatch[1]?.trim() || '',
     });
   }
+
+  // 2. Dopasowanie formularza (wsteczna kompatybilność): [POBRANIE KONTAKTU: Skup | tel: 123 | ...]
+  const formRegex = /\[POBRANIE KONTAKTU:\s*([^|]+)\|\s*tel:\s*([^|]+)(?:\|\s*deklaracja:\s*([^|]+))?\|\s*([^\]]+)\]/gi;
+  let formMatch;
+  while ((formMatch = formRegex.exec(notes)) !== null) {
+    reveals.push({
+      buyerName: formMatch[1]?.trim() || 'Skup aut',
+      buyerPhone: formMatch[2]?.trim() || '',
+      offerPrice: formMatch[3]?.trim(),
+      timestamp: formMatch[4]?.trim() || '',
+    });
+  }
+
   return reveals;
 }
 
 /**
- * Usuwa znaczniki pobrania kontaktu z tekstu notatek
+ * Usuwa znaczniki pobrania/odkrycia kontaktu z tekstu notatek
  */
 export function stripRevealTags(notes?: string | null): string {
   if (!notes) return '';
-  return notes.replace(/\[POBRANIE KONTAKTU:[^\]]+\]/gi, '').trim();
+  return notes
+    .replace(/\[ODKRYCIE KONTAKTU:[^\]]+\]/gi, '')
+    .replace(/\[POBRANIE KONTAKTU:[^\]]+\]/gi, '')
+    .trim();
 }

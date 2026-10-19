@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Phone, MapPin, Lock, MessageSquare } from 'lucide-react';
+import { Phone, MapPin, Eye, Loader2 } from 'lucide-react';
 import { useLeadReveal } from './lead-reveal-context';
 
 interface LeadBottomBarProps {
@@ -9,7 +9,7 @@ interface LeadBottomBarProps {
 }
 
 export const LeadBottomBar: React.FC<LeadBottomBarProps> = ({ city }) => {
-  const { isRevealed, phone, cleanPhone, customerName, openModal } = useLeadReveal();
+  const { isRevealed, phone, cleanPhone, customerName, revealLead, isRevealing } = useLeadReveal();
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 px-4 sm:px-6 py-2.5 sm:py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] text-white shadow-2xl">
@@ -38,11 +38,21 @@ export const LeadBottomBar: React.FC<LeadBottomBarProps> = ({ city }) => {
           {!isRevealed ? (
             <button
               type="button"
-              onClick={openModal}
-              className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs sm:text-sm shadow-lg shadow-emerald-500/20 transition-all active:scale-95 cursor-pointer"
+              onClick={() => revealLead()}
+              disabled={isRevealing}
+              className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-700 text-white font-black text-xs sm:text-sm shadow-lg shadow-emerald-500/20 transition-all active:scale-95 cursor-pointer"
             >
-              <Lock className="w-4 h-4 shrink-0" />
-              <span>Odkryj kontakt / Zadzwoń</span>
+              {isRevealing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                  <span>Odkrywam...</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="w-4 h-4 shrink-0" />
+                  <span>Pokaż numer i zadzwoń</span>
+                </>
+              )}
             </button>
           ) : (
             <>

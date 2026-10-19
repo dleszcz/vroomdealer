@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { formatRevealTag } from '@/lib/lead-reveal';
+import { formatClickRevealTag, formatRevealTag } from '@/lib/lead-reveal';
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { token, buyerName, buyerPhone, offerPrice } = body;
 
-    if (!token || !buyerName || !buyerPhone) {
+    if (!token) {
       return NextResponse.json(
-        { success: false, error: 'Wymagane jest podanie nazwy skupu oraz numeru telefonu.' },
+        { success: false, error: 'Brak tokena leada.' },
         { status: 400 }
       );
     }
@@ -64,12 +64,9 @@ export async function POST(req: NextRequest) {
       timeZone: 'Europe/Warsaw',
     });
 
-    const revealTag = formatRevealTag({
-      buyerName,
-      buyerPhone,
-      offerPrice: offerPrice ? String(offerPrice) : undefined,
-      timestamp: dateFormatted,
-    });
+    const revealTag = buyerName && buyerPhone
+      ? formatRevealTag({ buyerName, buyerPhone, offerPrice, timestamp: dateFormatted })
+      : formatClickRevealTag(dateFormatted);
 
     const currentNotes = lead.condition_notes ? lead.condition_notes.trim() : '';
     const updatedNotes = currentNotes ? `${currentNotes} | ${revealTag}` : revealTag;
@@ -99,7 +96,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error('[Reveal API Exception]:', err);
     return NextResponse.json(
-      { success: false, error: 'Wystąpił błąd podczas pobierania kontaktu.' },
+      { success: false, error: 'Wystąpił błąd podczas odkrywania kontaktu.' },
       { status: 500 }
     );
   }

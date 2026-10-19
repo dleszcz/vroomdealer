@@ -9,7 +9,8 @@ import {
   ExternalLink,
   MessageSquare,
   AlertTriangle,
-  Lock,
+  Eye,
+  Loader2,
 } from 'lucide-react';
 import { useLeadReveal } from './lead-reveal-context';
 
@@ -26,7 +27,7 @@ export const LeadGallery: React.FC<LeadGalleryProps> = ({
   cleanPhone: initialCleanPhone,
   brandLabel,
 }) => {
-  const { isRevealed, cleanPhone: revealedCleanPhone, openModal } = useLeadReveal();
+  const { isRevealed, cleanPhone: revealedCleanPhone, revealLead, isRevealing } = useLeadReveal();
   const cleanPhone = isRevealed && revealedCleanPhone ? revealedCleanPhone : initialCleanPhone;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -136,11 +137,12 @@ export const LeadGallery: React.FC<LeadGalleryProps> = ({
           {!isRevealed ? (
             <button
               type="button"
-              onClick={openModal}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs transition-all shrink-0 active:scale-95 cursor-pointer"
+              onClick={() => revealLead()}
+              disabled={isRevealing}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:bg-slate-700 text-white font-bold text-xs shadow-xs transition-all shrink-0 active:scale-95 cursor-pointer"
             >
-              <Lock className="w-3.5 h-3.5 text-amber-400" />
-              <span>Odblokuj kontakt (WhatsApp)</span>
+              <Eye className="w-3.5 h-3.5 text-amber-400" />
+              <span>{isRevealing ? 'Odkrywam...' : 'Pokaż numer (WhatsApp)'}</span>
             </button>
           ) : cleanPhone ? (
             <a

@@ -17,7 +17,6 @@ import { Logo } from '@/components/site/logo';
 import { LeadGallery } from '@/components/lead/lead-gallery';
 import { LeadQuickResponse } from '@/components/lead/lead-quick-response';
 import { LeadRevealProvider } from '@/components/lead/lead-reveal-context';
-import { LeadRevealModal } from '@/components/lead/lead-reveal-modal';
 import { LeadBottomBar } from '@/components/lead/lead-bottom-bar';
 import { maskPhoneNumber } from '@/lib/lead-reveal';
 import { formatPolishGreeting, formatPolishVocative } from '@/lib/greeting';
@@ -371,7 +370,6 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
       initialMaskedPhone={maskedPhone}
       customerName={lead.customer_name || 'Klient'}
     >
-      <LeadRevealModal />
       <div className="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-amber-200">
         {/* Top Header */}
       <header className="bg-slate-950 text-white py-3 px-4 sm:px-6 border-b border-slate-800 sticky top-0 z-30 shadow-md">

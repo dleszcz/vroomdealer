@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useId, useMemo, useEffect } from 'react';
-import { MessageSquare, Send, Copy, Check, TrendingDown, XCircle, Sparkles, Handshake, Lock } from 'lucide-react';
+import React, { useState, useId, useMemo } from 'react';
+import { MessageSquare, Send, Copy, Check, TrendingDown, XCircle, Sparkles, Handshake, Eye, Loader2 } from 'lucide-react';
 import { formatPolishGreeting } from '@/lib/greeting';
 import { useLeadReveal } from './lead-reveal-context';
 
@@ -20,20 +20,12 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
   customerName,
   customerPhone: initialCustomerPhone,
 }) => {
-  const { isRevealed, cleanPhone: revealedCleanPhone, openModal, lastOfferPrice } = useLeadReveal();
+  const { isRevealed, cleanPhone: revealedCleanPhone, revealLead, isRevealing } = useLeadReveal();
   const [activeTab, setActiveTab] = useState<ResponseTab>('interest');
   const [offerPrice, setOfferPrice] = useState<string>('');
   const [customMessage, setCustomMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
   const inputId = useId();
-
-  // Prefill offer price if dealer entered it in the reveal modal
-  useEffect(() => {
-    if (lastOfferPrice && lastOfferPrice.trim()) {
-      setOfferPrice(lastOfferPrice.trim());
-      setActiveTab('counter');
-    }
-  }, [lastOfferPrice]);
 
   const cleanPhone = isRevealed && revealedCleanPhone
     ? revealedCleanPhone
@@ -83,8 +75,7 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
   const handleCopy = () => {
     if (isActionDisabled) return;
     if (!isRevealed) {
-      openModal();
-      return;
+      revealLead();
     }
     if (navigator?.clipboard) {
       navigator.clipboard.writeText(currentMessage);
@@ -214,15 +205,15 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
       {/* Info baner o ukrytym numerze jeśli nieodblokowany */}
       {!isRevealed && (
         <div
-          onClick={openModal}
+          onClick={() => revealLead()}
           className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold flex items-center justify-between gap-2 cursor-pointer hover:bg-amber-100/80 transition-colors"
         >
           <div className="flex items-center gap-2">
-            <Lock className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>Numer telefonu klienta jest zamaskowany. Pobierz kontakt (0 zł), aby wysłać wiadomość.</span>
+            <Eye className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>Numer telefonu klienta jest ukryty. Kliknij, aby odkryć numer i wysłać wiadomość.</span>
           </div>
           <span className="text-[11px] text-amber-900 font-extrabold underline shrink-0">
-            Odblokuj ↗
+            {isRevealing ? 'Odkrywam...' : 'Pokaż numer ↗'}
           </span>
         </div>
       )}
@@ -240,11 +231,21 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
           {!isRevealed ? (
             <button
               type="button"
-              onClick={openModal}
-              className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-98 text-center cursor-pointer"
+              onClick={() => revealLead()}
+              disabled={isRevealing}
+              className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:bg-slate-700 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-98 text-center cursor-pointer"
             >
-              <Lock className="w-4 h-4 text-amber-400" />
-              <span>Odblokuj numer (SMS)</span>
+              {isRevealing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                  <span>Odkrywam...</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="w-4 h-4 text-emerald-400" />
+                  <span>Pokaż numer (SMS)</span>
+                </>
+              )}
             </button>
           ) : isActionDisabled ? (
             <button
@@ -269,11 +270,21 @@ export const LeadQuickResponse: React.FC<LeadQuickResponseProps> = ({
           {!isRevealed ? (
             <button
               type="button"
-              onClick={openModal}
-              className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-98 text-center cursor-pointer"
+              onClick={() => revealLead()}
+              disabled={isRevealing}
+              className="flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-700 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-98 text-center cursor-pointer"
             >
-              <Lock className="w-4 h-4 text-white" />
-              <span>Odblokuj (WhatsApp)</span>
+              {isRevealing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                  <span>Odkrywam...</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="w-4 h-4 text-white" />
+                  <span>Pokaż numer (WhatsApp)</span>
+                </>
+              )}
             </button>
           ) : isActionDisabled ? (
             <button

@@ -195,9 +195,12 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
 
           <div className="flex items-center gap-2">
             {buyerReveals.length > 0 && (
-              <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold flex items-center gap-1">
+              <span
+                className="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold flex items-center gap-1"
+                title="Skup odkrył pełny numer telefonu klienta"
+              >
                 <Eye className="w-2.5 h-2.5" />
-                <span>{buyerReveals.length} {buyerReveals.length === 1 ? 'skup' : 'skupy'}</span>
+                <span>Odkryto ({buyerReveals[buyerReveals.length - 1].timestamp})</span>
               </span>
             )}
 
@@ -385,15 +388,15 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
             </div>
           </div>
 
-          {/* Sekcja pobrań kontaktu przez skupy */}
+          {/* Sekcja statusu odkrycia kontaktu przez skup */}
           {buyerReveals.length > 0 && (
             <div className="p-3 rounded-xl bg-slate-900/90 border border-emerald-500/30 space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-emerald-400">
                 <span className="flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5" />
-                  <span>Skupy aut, które pobrały kontakt ({buyerReveals.length}):</span>
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Status kontaktu: Odkryty przez skup ({buyerReveals.length}x)</span>
                 </span>
-                <span className="text-[10px] text-slate-500 font-normal">Zarejestrowane w systemie</span>
+                <span className="text-[10px] text-emerald-400 font-medium">99% szans na kontakt</span>
               </div>
               <div className="space-y-1.5">
                 {buyerReveals.map((buyer, idx) => (
@@ -403,27 +406,31 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
                   >
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-white">{buyer.buyerName}</span>
+                        <span className="font-bold text-white">
+                          {buyer.buyerName || 'Skup aut (kliknięcie w link)'}
+                        </span>
                         {buyer.offerPrice && (
                           <span className="px-1.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold text-[10px]">
                             Oferta: {buyer.offerPrice} zł
                           </span>
                         )}
                       </div>
-                      <span className="text-[10px] text-slate-500 block">
-                        Pobrano: {buyer.timestamp}
+                      <span className="text-[10px] text-slate-400 block">
+                        Odkryto numer telefonu: <strong className="text-slate-300">{buyer.timestamp}</strong>
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={`tel:${buyer.buyerPhone.replace(/\D/g, '')}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 font-mono font-bold text-[11px] inline-flex items-center gap-1 transition-colors"
-                      >
-                        <Phone className="w-3 h-3" />
-                        <span>{buyer.buyerPhone}</span>
-                      </a>
-                    </div>
+                    {buyer.buyerPhone && (
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={`tel:${buyer.buyerPhone.replace(/\D/g, '')}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 font-mono font-bold text-[11px] inline-flex items-center gap-1 transition-colors"
+                        >
+                          <Phone className="w-3 h-3" />
+                          <span>{buyer.buyerPhone}</span>
+                        </a>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

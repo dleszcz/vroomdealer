@@ -3,24 +3,14 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { formatDisplayPhone } from '@/lib/lead-reveal';
 
-export interface BuyerProfile {
-  buyerName: string;
-  buyerPhone: string;
-}
-
 interface LeadRevealContextType {
   token: string;
   isRevealed: boolean;
   phone: string; // Wyświetlany numer (zamaskowany lub pełny sformatowany)
   cleanPhone: string; // Tylko cyfry (do linków tel: i sms:)
   customerName: string;
-  isModalOpen: boolean;
-  openModal: () => void;
-  closeModal: () => void;
-  revealLead: (buyerName: string, buyerPhone: string, offerPrice?: string) => Promise<{ success: boolean; error?: string }>;
-  isSubmitting: boolean;
-  buyerProfile: BuyerProfile;
-  lastOfferPrice?: string;
+  revealLead: () => Promise<{ success: boolean; phone?: string; error?: string }>;
+  isRevealing: boolean;
 }
 
 const LeadRevealContext = createContext<LeadRevealContextType | null>(null);
@@ -40,67 +30,36 @@ export const LeadRevealProvider: React.FC<LeadRevealProviderProps> = ({
 }) => {
   const [isRevealed, setIsRevealed] = useState<boolean>(false);
   const [unmaskedPhone, setUnmaskedPhone] = useState<string>('');
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [lastOfferPrice, setLastOfferPrice] = useState<string>('');
-  const [buyerProfile, setBuyerProfile] = useState<BuyerProfile>({ buyerName: '', buyerPhone: '' });
+  const [isRevealing, setIsRevealing] = useState<boolean>(false);
 
-  // 1. Sprawdź zapisany profil skupu i status odblokowania w localStorage
+  // 1. Sprawdź, czy lead był już wcześniej odkryty na tym urządzeniu
   useEffect(() => {
     try {
-      // Czy ten konkretny lead był już odblokowany na tym urządzeniu?
       const cachedPhone = localStorage.getItem(`vroom_revealed_${token}`);
       if (cachedPhone) {
         setUnmaskedPhone(cachedPhone);
         setIsRevealed(true);
       }
-
-      // Zapamiętany profil skupu / dealera
-      const savedProfile = localStorage.getItem('vroom_buyer_profile');
-      if (savedProfile) {
-        const parsed = JSON.parse(savedProfile);
-        if (parsed.buyerName || parsed.buyerPhone) {
-          setBuyerProfile({
-            buyerName: parsed.buyerName || '',
-            buyerPhone: parsed.buyerPhone || '',
-          });
-        }
-      }
     } catch {
-      // ignore localStorage errors (e.g. private mode)
+      // ignore localStorage errors (np. tryb incognito)
     }
   }, [token]);
 
-  const openModal = useCallback(() => {
-    setIsModalOpen(true);
-  }, []);
-
-  const closeModal = useCallback(() => {
-    setIsModalOpen(false);
-  }, []);
-
-  const revealLead = useCallback(async (
-    buyerName: string,
-    buyerPhone: string,
-    offerPrice?: string
-  ): Promise<{ success: boolean; error?: string }> => {
-    if (!buyerName.trim() || !buyerPhone.trim()) {
-      return { success: false, error: 'Wpisz nazwę swojej firmy/skupu oraz numer telefonu.' };
+  // 2. 1-kliknięcie: bezpośrednie odkrycie numeru i zarejestrowanie w bazie
+  const revealLead = useCallback(async (): Promise<{ success: boolean; phone?: string; error?: string }> => {
+    // Jeśli już odkryty, nic nie rób
+    if (isRevealed && unmaskedPhone) {
+      return { success: true, phone: unmaskedPhone };
     }
 
-    setIsSubmitting(true);
+    setIsRevealing(true);
     try {
       const res = await fetch('/api/lead/reveal', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          token,
-          buyerName: buyerName.trim(),
-          buyerPhone: buyerPhone.trim(),
-          offerPrice: offerPrice ? offerPrice.trim() : undefined,
-        }),
+        body: JSON.stringify({ token }),
       });
 
       const data = await res.json();
@@ -108,40 +67,30 @@ export const LeadRevealProvider: React.FC<LeadRevealProviderProps> = ({
       if (!res.ok || !data.success || !data.phone) {
         return {
           success: false,
-          error: data.error || 'Nie udało się pobrać kontaktu. Spróbuj ponownie za chwilę.',
+          error: data.error || 'Nie udało się odkryć numeru. Spróbuj ponownie.',
         };
       }
 
       const realPhone = String(data.phone);
       setUnmaskedPhone(realPhone);
       setIsRevealed(true);
-      if (offerPrice) {
-        setLastOfferPrice(offerPrice.trim());
-      }
 
-      // Zapisz w pamięci przeglądarki
       try {
         localStorage.setItem(`vroom_revealed_${token}`, realPhone);
-        localStorage.setItem(
-          'vroom_buyer_profile',
-          JSON.stringify({ buyerName: buyerName.trim(), buyerPhone: buyerPhone.trim() })
-        );
-        setBuyerProfile({ buyerName: buyerName.trim(), buyerPhone: buyerPhone.trim() });
       } catch {
         // ignore
       }
 
-      setIsModalOpen(false);
-      return { success: true };
+      return { success: true, phone: realPhone };
     } catch (err: any) {
       return {
         success: false,
         error: err.message || 'Błąd połączenia z serwerem.',
       };
     } finally {
-      setIsSubmitting(false);
+      setIsRevealing(false);
     }
-  }, [token]);
+  }, [token, isRevealed, unmaskedPhone]);
 
   const displayPhone = isRevealed && unmaskedPhone
     ? formatDisplayPhone(unmaskedPhone)
@@ -157,13 +106,8 @@ export const LeadRevealProvider: React.FC<LeadRevealProviderProps> = ({
         phone: displayPhone,
         cleanPhone,
         customerName,
-        isModalOpen,
-        openModal,
-        closeModal,
         revealLead,
-        isSubmitting,
-        buyerProfile,
-        lastOfferPrice,
+        isRevealing,
       }}
     >
       {children}
