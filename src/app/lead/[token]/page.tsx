@@ -345,6 +345,10 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
     lead.condition_notes?.includes('Off-market') ||
     (!isListedOnPortals && lead.condition_notes);
 
+  const isUrgent = lead.condition_notes?.includes('Pilna sprzedaż');
+  const isTwoWeeks = lead.condition_notes?.includes('Sprzedaż w ciągu 2 tygodni');
+  const isCheckingValue = lead.condition_notes?.includes('Tylko sprawdza wycenę');
+
   // Clean condition notes (strip the technical tags for cleaner display)
   const cleanConditionNotes = (lead.condition_notes || '')
     .split('|')
@@ -357,6 +361,10 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
       if (s.includes('Tylko w VroomScout')) return false;
       if (s.includes('Off-market')) return false;
       if (s.includes('POBRANIE KONTAKTU')) return false;
+      if (s.includes('ODKRYCIE KONTAKTU')) return false;
+      if (s.includes('Pilna sprzedaż')) return false;
+      if (s.includes('Sprzedaż w ciągu')) return false;
+      if (s.includes('Tylko sprawdza')) return false;
       if (s.startsWith('Oczekiwana kwota:')) return false;
       if (s.startsWith('Przebieg:')) return false;
       if (s.startsWith('Moc:')) return false;
@@ -432,6 +440,21 @@ export default async function LeadDetailPage({ params }: LeadPageProps) {
               {isListedOnPortals && (
                 <span className="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 font-bold">
                   Na portalach
+                </span>
+              )}
+              {isUrgent && (
+                <span className="px-2.5 py-1 rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-900 font-extrabold shadow-xs">
+                  ⚡ Pilna sprzedaż (1–3 dni)
+                </span>
+              )}
+              {isTwoWeeks && (
+                <span className="px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 font-bold">
+                  🗓️ W ciągu 2 tyg.
+                </span>
+              )}
+              {isCheckingValue && (
+                <span className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-semibold">
+                  🔍 Tylko wycena
                 </span>
               )}
             </div>

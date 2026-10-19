@@ -226,6 +226,18 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
               <span className="text-slate-300 font-semibold">{lead.city || 'Polska'}</span>
               <span className="text-slate-600">•</span>
               <span className="uppercase text-[11px] text-slate-400">{lead.fuel}</span>
+              {cleanNotes.includes('Pilna sprzedaż') && (
+                <>
+                  <span className="text-slate-600">•</span>
+                  <span className="text-emerald-400 font-extrabold text-[11px]">⚡ Pilnie (1–3 dni)</span>
+                </>
+              )}
+              {cleanNotes.includes('Sprzedaż w ciągu 2 tygodni') && (
+                <>
+                  <span className="text-slate-600">•</span>
+                  <span className="text-blue-400 font-medium text-[11px]">🗓️ W 2 tyg.</span>
+                </>
+              )}
               {mileage && (
                 <>
                   <span className="text-slate-600">•</span>

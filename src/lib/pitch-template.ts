@@ -50,6 +50,9 @@ export function extractExtras(notes?: string | null): string {
       if (s.startsWith('Przebieg:')) return false;
       if (s.startsWith('Moc:')) return false;
       if (s.includes('POBRANIE KONTAKTU')) return false;
+      if (s.includes('Pilna sprzedaż')) return false;
+      if (s.includes('Sprzedaż w ciągu')) return false;
+      if (s.includes('Tylko sprawdza')) return false;
       return true;
     })
     .join(', ');
@@ -75,6 +78,14 @@ export function generateBuyerPitch(lead: PitchLeadData, leadUrl?: string): strin
     stanFull += `, ${extras}`;
   }
 
+  const isUrgent = lead.condition_notes?.includes('Pilna sprzedaż');
+  const isTwoWeeks = lead.condition_notes?.includes('Sprzedaż w ciągu 2 tygodni');
+  const urgencyLine = isUrgent
+    ? '\nTermin: ⚡ PILNA SPRZEDAŻ (klientowi zależy na gotówce w 1-3 dni)'
+    : isTwoWeeks
+    ? '\nTermin: 🗓️ Sprzedaż planowana w ciągu 2 tygodni'
+    : '';
+
   const isUnpriced = !lead.price_bracket || /czeka|propozycj|uzgodnien|wycen|brak/i.test(lead.price_bracket);
   const priceDisplay = isUnpriced
     ? 'Cena: Klient nie podał kwoty (czeka na propozycję odkupu)'
@@ -87,7 +98,7 @@ Czy jesteście zainteresowani takim autem?
 ${lead.make_model} (${lead.year}) – ${fuel}
 Lokalizacja: ${city}
 Stan: ${stanFull}
-${priceDisplay}
+${priceDisplay}${urgencyLine}
 
 Auto pochodzi z mojego systemu do pozyskiwania aut od prywatnych właścicieli do skupów.
 Proszę dać znać czy podesłać zdjęcia i kontakt do sprzedawcy.${leadUrl ? `\n\nPodgląd zgłoszenia: ${leadUrl}` : ''}
