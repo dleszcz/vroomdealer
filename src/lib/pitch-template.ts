@@ -74,7 +74,10 @@ export function generateBuyerPitch(lead: PitchLeadData, leadUrl?: string): strin
     stanFull += `, ${extras}`;
   }
 
-  const price = lead.price_bracket || 'Czeka na propozycję kwoty';
+  const isUnpriced = !lead.price_bracket || /czeka|propozycj|uzgodnien|wycen|brak/i.test(lead.price_bracket);
+  const priceDisplay = isUnpriced
+    ? 'Cena: Klient nie podał kwoty (czeka na propozycję odkupu)'
+    : `Oczekiwana cena klienta: ${lead.price_bracket}`;
   const city = lead.city || 'Polska';
 
   return `Dzień dobry, 
@@ -83,7 +86,7 @@ Czy jesteście zainteresowani takim autem?
 ${lead.make_model} (${lead.year}) – ${fuel}
 Lokalizacja: ${city}
 Stan: ${stanFull}
-Oczekiwana cena klienta: ${price}
+${priceDisplay}
 
 Auto pochodzi z mojego systemu do pozyskiwania aut od prywatnych właścicieli do skupów.
 Proszę dać znać czy podesłać zdjęcia i kontakt do sprzedawcy.${leadUrl ? `\n\nPodgląd zgłoszenia: ${leadUrl}` : ''}

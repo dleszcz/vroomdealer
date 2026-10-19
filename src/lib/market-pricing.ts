@@ -12,19 +12,45 @@ export interface MarketAssessment {
 }
 
 /**
- * Wyciąga czystą liczbę kwoty ze stringa np. "35 000 zł (do negocjacji)" -> 35000
+ * Wyciąga czystą liczbę kwoty oczekiwanej przez klienta ze stringa (np. "35 000 zł (do negocjacji)" -> 35000).
+ * Zwraca `null`, gdy klient nie podał kwoty (np. "Czeka na propozycję wyceny", "Do uzgodnienia", brak ceny).
+ * NIGDY nie wyciąga liczb z przebiegu (km), mocy (KM) ani innych notatek technicznych.
  */
 export function parsePriceAmount(priceStr?: string | null, notes?: string | null): number | null {
-  const sources = [priceStr, notes].filter(Boolean) as string[];
-  for (const text of sources) {
-    const match = text.match(/(?:kwota|cena|oczekiwana)?[:\s]*([0-9\s]{4,7})\s*(?:zł|pln)?/i);
-    if (match && match[1]) {
-      const cleanNum = parseInt(match[1].replace(/\s+/g, ''), 10);
-      if (!isNaN(cleanNum) && cleanNum >= 1000 && cleanNum <= 1000000) {
+  // 1. Sprawdź, czy lead jest jednoznacznie oznaczony jako bez podanej kwoty
+  const isExplicitlyUnpriced = (str?: string | null): boolean => {
+    if (!str) return false;
+    return /czeka|propozycj|uzgodnien|wycen|brak\s*ceny|brak\s*kwoty/i.test(str);
+  };
+
+  if (isExplicitlyUnpriced(priceStr)) {
+    return null;
+  }
+
+  // 2. Jeśli mamy pole priceStr (np. "72000 zł (do negocjacji)" lub "55 000 PLN")
+  if (priceStr && priceStr.trim().length > 0) {
+    const match = priceStr.match(/(\d[\d\s]{2,8}\d|\d{4,7})/);
+    if (match) {
+      const cleanNum = parseInt(match[0].replace(/\s+/g, ''), 10);
+      if (!isNaN(cleanNum) && cleanNum >= 1000 && cleanNum <= 2000000) {
         return cleanNum;
       }
     }
   }
+
+  // 3. Jeśli priceStr nie zawiera ceny, sprawdzamy condition_notes WYŁĄCZNIE pod kątem wyraźnego znacznika kwoty klienta
+  // (np. "Oczekiwana kwota: 55000 zł" lub "Cena klienta: 45 000 PLN")
+  // Pod żadnym pozorem NIE dopasowujemy przebiegu (km) ani innych parametrów.
+  if (notes && notes.trim().length > 0) {
+    const notesMatch = notes.match(/(?:oczekiwana\s*kwota|cena(?:\s*klienta)?|kwota\s*odkupu)[\s:]*([0-9\s]{4,8})\s*(?:zł|pln)/i);
+    if (notesMatch && notesMatch[1]) {
+      const cleanNum = parseInt(notesMatch[1].replace(/\s+/g, ''), 10);
+      if (!isNaN(cleanNum) && cleanNum >= 1000 && cleanNum <= 2000000) {
+        return cleanNum;
+      }
+    }
+  }
+
   return null;
 }
 
@@ -75,7 +101,7 @@ export function assessMarketPrice(
       status: 'unpriced',
       badgeLabel: 'Czeka na wycenę',
       badgeClass: 'bg-slate-100 text-slate-700 border-slate-300',
-      description: 'Klient nie podał kwoty – wyliczenia marży i zysku są wyłączone.',
+      description: 'Klient nie podał kwoty – czeka na propozycję odkupu.',
     };
   }
 

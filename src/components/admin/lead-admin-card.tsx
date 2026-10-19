@@ -69,6 +69,7 @@ function formatTimeAgo(dateString: string): string {
 
 export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChange }) => {
   const [copied, setCopied] = useState(false);
+  const [copiedLeadUrl, setCopiedLeadUrl] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(lead.status || 'new');
 
@@ -81,9 +82,9 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
   const assessment = assessMarketPrice(lead.make_model, lead.year, numericPrice);
 
   const token = lead.access_token || lead.id;
-  const leadUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/lead/${token}`
-    : `https://scout.vroomdealer.pl/lead/${token}`;
+  const leadUrl = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+    ? `${window.location.origin}/${token}`
+    : `https://scout.vroomdealer.pl/${token}`;
 
   const pitchMessage = generateBuyerPitch(lead, leadUrl);
   const cleanPhone = (lead.customer_phone || '').replace(/\D/g, '');
@@ -222,20 +223,26 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
           </div>
 
           <div className="text-right shrink-0 space-y-0.5">
-            <span className="text-sm sm:text-base font-black text-emerald-400 block">
-              {lead.price_bracket || 'Do uzgodnienia'}
+            <span className={`text-sm sm:text-base font-black block ${numericPrice ? 'text-emerald-400' : 'text-slate-300'}`}>
+              {numericPrice ? (lead.price_bracket || `${numericPrice.toLocaleString('pl-PL')} zł`) : 'Czeka na wycenę'}
             </span>
-            <span className={`text-[11px] font-bold block ${
-              assessment.status === 'deal' 
-                ? 'text-emerald-400' 
-                : assessment.status === 'fair' 
-                ? 'text-amber-400' 
-                : assessment.status === 'overpriced' 
-                ? 'text-red-400' 
-                : 'text-slate-400'
-            }`}>
-              {assessment.badgeLabel}
-            </span>
+            {numericPrice ? (
+              <span className={`text-[11px] font-bold block ${
+                assessment.status === 'deal' 
+                  ? 'text-emerald-400' 
+                  : assessment.status === 'fair' 
+                  ? 'text-amber-400' 
+                  : assessment.status === 'overpriced' 
+                  ? 'text-red-400' 
+                  : 'text-slate-400'
+              }`}>
+                {assessment.badgeLabel}
+              </span>
+            ) : (
+              <span className="text-[11px] font-medium text-slate-500 block">
+                Brak oczekiwanej kwoty
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -310,9 +317,40 @@ export const LeadAdminCard: React.FC<LeadAdminCardProps> = ({ lead, onStatusChan
               </a>
             </div>
 
+            {/* Bezpośredni link do karty leada */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+              <span className="text-slate-400 font-medium">Link do leada: </span>
+              <a
+                href={leadUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-blue-400 hover:underline font-mono text-[11px] font-semibold inline-flex items-center gap-1"
+              >
+                <span>{leadUrl}</span>
+                <ExternalLink className="w-3 h-3 shrink-0" />
+              </a>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (navigator?.clipboard) {
+                    navigator.clipboard.writeText(leadUrl);
+                    setCopiedLeadUrl(true);
+                    setTimeout(() => setCopiedLeadUrl(false), 2000);
+                  }
+                }}
+                className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-semibold transition-colors cursor-pointer"
+              >
+                {copiedLeadUrl ? 'Skopiowano!' : 'Kopiuj'}
+              </button>
+            </div>
+
             {/* Market Valuation & Otomoto / OLX search links */}
             <div className="pt-1 flex flex-wrap items-center gap-2 text-[11px]">
-              <span className="text-slate-400">{assessment.description}</span>
+              <span className="text-slate-400">
+                {numericPrice ? assessment.description : 'Klient nie podał kwoty – czeka na propozycję odkupu.'}
+              </span>
               <span className="text-slate-600">|</span>
               <a
                 href={otomotoUrl}
