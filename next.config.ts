@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: [
         {
+          source: "/_next/image",
+          destination: `${vroomsitesUrl}/_next/image`,
+        },
+        {
           source: "/scout/:token",
           destination: "/lead/:token",
         },
@@ -29,6 +33,42 @@ const nextConfig: NextConfig = {
         },
       ],
     };
+  },
+  images: {
+    qualities: [75, 80, 85],
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.supabase.co",
+        pathname: "/storage/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.olxcdn.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "upload.wikimedia.org",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "autoplac.pl",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.autoplac.pl",
+        pathname: "/**",
+      },
+    ],
   },
   // Old B2C "skup" marketplace pages. Deliberately parked by the v2 strategy;
   // keep old links working by sending them to the dealer landing.
