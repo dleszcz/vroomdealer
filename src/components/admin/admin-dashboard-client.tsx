@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { 
   RefreshCw, 
   Search, 
@@ -10,7 +11,8 @@ import {
   Layers,
   Inbox,
   Flame,
-  ArrowUpDown
+  ArrowUpDown,
+  Car
 } from 'lucide-react';
 import { logoutAction, updateLeadStatusAction } from '@/app/admin/actions';
 import { createClient } from '@supabase/supabase-js';
@@ -289,6 +291,14 @@ export const AdminDashboardClient: React.FC<AdminDashboardClientProps> = ({ init
         </div>
 
         <div className="flex items-center gap-1.5">
+          <Link
+            href="/admin/cars"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition-all cursor-pointer"
+          >
+            <Car className="w-3.5 h-3.5" strokeWidth={1.75} />
+            <span>Flota aut</span>
+          </Link>
+
           <button
             type="button"
             onClick={handleRefresh}
