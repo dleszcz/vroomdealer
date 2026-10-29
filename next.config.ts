@@ -4,7 +4,9 @@ const nextConfig: NextConfig = {
   async rewrites() {
     const vroomsitesUrl =
       process.env.VROOMSITES_URL ||
-      (process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://d-car.com.pl");
+      (process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : "https://vroomsites-dleszczs-projects.vercel.app");
 
     return {
       beforeFiles: [
